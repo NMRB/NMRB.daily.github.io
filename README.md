@@ -1,16 +1,52 @@
-# React + Vite
+# Daily Planner - NMRB
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive daily planning web application built with React and Vite. This app helps you organize your day with interactive checklists and planning sections.
 
-Currently, two official plugins are available:
+## 🚀 Live Site
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Visit the live application: [https://nmrb.github.io/NMRB.daily.github.io/](https://nmrb.github.io/NMRB.daily.github.io/)
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🌅 Morning Checklist** - Interactive checkboxes for morning routine
+- **🏋️‍♂️ Gym Workout** - Plan your gym sessions
+- **🏠 Home Workout** - Organize home exercise routines
+- **🥗 Lunch Goals** - Set nutrition and meal objectives
+- **⚡ After Work Goals** - Plan post-work activities
+- **✨ Dreams & Aspirations** - Track long-term goals
+- **🌙 Evening Checklist** - Evening routine tracker
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React 18.2.0
+- Vite 4.5.5
+- Modern CSS with responsive design
+- GitHub Pages deployment
+
+## 📱 Usage
+
+The application automatically saves your progress as you interact with it. Use the checkboxes to track completed tasks and the text areas to plan your activities.
+
+## 🚀 Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 📦 Deployment
+
+This project is configured for automatic deployment to GitHub Pages. When you push to the main branch, GitHub Actions will automatically build and deploy the site.
+
+## 🤝 Contributing
+
+Feel free to submit issues and enhancement requests!

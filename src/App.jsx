@@ -1,51 +1,51 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
 function App() {
   const [morningChecklist, setMorningChecklist] = useState([
-    { id: 1, text: 'Wake up early', completed: false },
-    { id: 2, text: 'Drink water', completed: false },
-    { id: 3, text: 'Morning meditation', completed: false },
-    { id: 4, text: 'Review daily goals', completed: false }
-  ])
+    { id: 1, text: "Wake up early", completed: false },
+    { id: 2, text: "Drink water", completed: false },
+    { id: 3, text: "Morning meditation", completed: false },
+    { id: 4, text: "Review daily goals", completed: false },
+  ]);
 
   const [eveningChecklist, setEveningChecklist] = useState([
-    { id: 1, text: 'Review the day', completed: false },
-    { id: 2, text: 'Plan tomorrow', completed: false },
-    { id: 3, text: 'Evening gratitude', completed: false },
-    { id: 4, text: 'Prepare for bed', completed: false }
-  ])
+    { id: 1, text: "Review the day", completed: false },
+    { id: 2, text: "Plan tomorrow", completed: false },
+    { id: 3, text: "Evening gratitude", completed: false },
+    { id: 4, text: "Prepare for bed", completed: false },
+  ]);
 
-  const [gymWorkout, setGymWorkout] = useState('')
-  const [homeWorkout, setHomeWorkout] = useState('')
-  const [lunchGoals, setLunchGoals] = useState('')
-  const [afterWorkGoals, setAfterWorkGoals] = useState('')
-  const [dreams, setDreams] = useState('')
+  const [gymWorkout, setGymWorkout] = useState("");
+  const [homeWorkout, setHomeWorkout] = useState("");
+  const [lunchGoals, setLunchGoals] = useState("");
+  const [afterWorkGoals, setAfterWorkGoals] = useState("");
+  const [dreams, setDreams] = useState("");
 
   const toggleChecklistItem = (type, id) => {
-    if (type === 'morning') {
-      setMorningChecklist(prev => 
-        prev.map(item => 
+    if (type === "morning") {
+      setMorningChecklist((prev) =>
+        prev.map((item) =>
           item.id === id ? { ...item, completed: !item.completed } : item
         )
-      )
-    } else if (type === 'evening') {
-      setEveningChecklist(prev => 
-        prev.map(item => 
+      );
+    } else if (type === "evening") {
+      setEveningChecklist((prev) =>
+        prev.map((item) =>
           item.id === id ? { ...item, completed: !item.completed } : item
         )
-      )
+      );
     }
-  }
+  };
 
   const getCurrentDate = () => {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+    return new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="app">
@@ -59,14 +59,16 @@ function App() {
         <section className="section">
           <h2>🌅 Morning Checklist</h2>
           <div className="checklist">
-            {morningChecklist.map(item => (
+            {morningChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
                 <input
                   type="checkbox"
                   checked={item.completed}
-                  onChange={() => toggleChecklistItem('morning', item.id)}
+                  onChange={() => toggleChecklistItem("morning", item.id)}
                 />
-                <span className={item.completed ? 'completed' : ''}>{item.text}</span>
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
               </div>
             ))}
           </div>
@@ -131,21 +133,23 @@ function App() {
         <section className="section">
           <h2>🌙 Evening Checklist</h2>
           <div className="checklist">
-            {eveningChecklist.map(item => (
+            {eveningChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
                 <input
                   type="checkbox"
                   checked={item.completed}
-                  onChange={() => toggleChecklistItem('evening', item.id)}
+                  onChange={() => toggleChecklistItem("evening", item.id)}
                 />
-                <span className={item.completed ? 'completed' : ''}>{item.text}</span>
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
               </div>
             ))}
           </div>
         </section>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
