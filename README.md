@@ -50,3 +50,4 @@ This project is configured for automatic deployment to GitHub Pages. When you pu
 ## 🤝 Contributing
 
 Feel free to submit issues and enhancement requests!
+# Deployment trigger
