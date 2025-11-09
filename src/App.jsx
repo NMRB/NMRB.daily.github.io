@@ -58,7 +58,6 @@ function App() {
     setCookie(`${key}_date`, getTodayString());
   }, []);
 
-
   // Initialize state with stored data or defaults
   const [morningChecklist, setMorningChecklist] = useState(() =>
     getStoredData("morningChecklist", defaultMorningChecklist)
@@ -82,6 +81,23 @@ function App() {
   );
   const [dreamsChecklist, setDreamsChecklist] = useState(() =>
     getStoredData("dreamsChecklist", defaultDreamsChecklist)
+  );
+
+  // Time tracking state
+  const [gymWorkoutTime, setGymWorkoutTime] = useState(() =>
+    getStoredData("gymWorkoutTime", "")
+  );
+  const [homeWorkoutTime, setHomeWorkoutTime] = useState(() =>
+    getStoredData("homeWorkoutTime", "")
+  );
+  const [lunchTime, setLunchTime] = useState(() =>
+    getStoredData("lunchTime", "")
+  );
+  const [afterWorkTime, setAfterWorkTime] = useState(() =>
+    getStoredData("afterWorkTime", "")
+  );
+  const [dreamsTime, setDreamsTime] = useState(() =>
+    getStoredData("dreamsTime", "")
   );
 
   // Save data to cookies whenever state changes
@@ -112,6 +128,27 @@ function App() {
   useEffect(() => {
     saveData("dreamsChecklist", dreamsChecklist);
   }, [dreamsChecklist, saveData]);
+
+  // Save time data to cookies whenever time state changes
+  useEffect(() => {
+    saveData("gymWorkoutTime", gymWorkoutTime);
+  }, [gymWorkoutTime, saveData]);
+
+  useEffect(() => {
+    saveData("homeWorkoutTime", homeWorkoutTime);
+  }, [homeWorkoutTime, saveData]);
+
+  useEffect(() => {
+    saveData("lunchTime", lunchTime);
+  }, [lunchTime, saveData]);
+
+  useEffect(() => {
+    saveData("afterWorkTime", afterWorkTime);
+  }, [afterWorkTime, saveData]);
+
+  useEffect(() => {
+    saveData("dreamsTime", dreamsTime);
+  }, [dreamsTime, saveData]);
 
   const toggleChecklistItem = (type, id) => {
     if (type === "morning") {
@@ -168,6 +205,43 @@ function App() {
     });
   };
 
+  const clearAllCookies = () => {
+    // Clear all checklist cookies
+    const cookieKeys = [
+      "morningChecklist",
+      "morningChecklist_date",
+      "eveningChecklist",
+      "eveningChecklist_date",
+      "gymWorkoutChecklist",
+      "gymWorkoutChecklist_date",
+      "homeWorkoutChecklist",
+      "homeWorkoutChecklist_date",
+      "lunchGoalsChecklist",
+      "lunchGoalsChecklist_date",
+      "afterWorkGoalsChecklist",
+      "afterWorkGoalsChecklist_date",
+      "dreamsChecklist",
+      "dreamsChecklist_date",
+      "gymWorkoutTime",
+      "gymWorkoutTime_date",
+      "homeWorkoutTime",
+      "homeWorkoutTime_date",
+      "lunchTime",
+      "lunchTime_date",
+      "afterWorkTime",
+      "afterWorkTime_date",
+      "dreamsTime",
+      "dreamsTime_date",
+    ];
+
+    cookieKeys.forEach((key) => {
+      document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    });
+
+    // Refresh the page to load fresh data
+    window.location.reload();
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -200,7 +274,12 @@ function App() {
           <h2>🏋️‍♂️ Gym Workout</h2>
           <div className="checklist">
             {gymWorkoutChecklist.map((item) => (
-              <div key={item.id} className={`checklist-item exercise-item ${item.completed ? 'completed' : ''}`}>
+              <div
+                key={item.id}
+                className={`checklist-item exercise-item ${
+                  item.completed ? "completed" : ""
+                }`}
+              >
                 <input
                   type="checkbox"
                   checked={item.completed}
@@ -230,13 +309,31 @@ function App() {
                   </div>
                   {(item.reps || item.sets) && (
                     <div className="exercise-specs">
-                      {item.reps && <span className="reps">Reps: {item.reps}</span>}
-                      {item.sets && <span className="sets">Sets: {item.sets}</span>}
+                      {item.reps && (
+                        <span className="reps">Reps: {item.reps}</span>
+                      )}
+                      {item.sets && (
+                        <span className="sets">Sets: {item.sets}</span>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
             ))}
+          </div>
+          <div className="time-row">
+            <label htmlFor="gymWorkoutTime" className="time-label">
+              Time spent (minutes):
+            </label>
+            <input
+              type="number"
+              id="gymWorkoutTime"
+              className="time-input"
+              value={gymWorkoutTime}
+              onChange={(e) => setGymWorkoutTime(e.target.value)}
+              placeholder="0"
+              min="0"
+            />
           </div>
         </section>
 
@@ -245,7 +342,12 @@ function App() {
           <h2>🏠 Home Workout</h2>
           <div className="checklist">
             {homeWorkoutChecklist.map((item) => (
-              <div key={item.id} className={`checklist-item exercise-item ${item.completed ? 'completed' : ''}`}>
+              <div
+                key={item.id}
+                className={`checklist-item exercise-item ${
+                  item.completed ? "completed" : ""
+                }`}
+              >
                 <input
                   type="checkbox"
                   checked={item.completed}
@@ -275,13 +377,31 @@ function App() {
                   </div>
                   {(item.reps || item.sets) && (
                     <div className="exercise-specs">
-                      {item.reps && <span className="reps">Reps: {item.reps}</span>}
-                      {item.sets && <span className="sets">Sets: {item.sets}</span>}
+                      {item.reps && (
+                        <span className="reps">Reps: {item.reps}</span>
+                      )}
+                      {item.sets && (
+                        <span className="sets">Sets: {item.sets}</span>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
             ))}
+          </div>
+          <div className="time-row">
+            <label htmlFor="homeWorkoutTime" className="time-label">
+              Time spent (minutes):
+            </label>
+            <input
+              type="number"
+              id="homeWorkoutTime"
+              className="time-input"
+              value={homeWorkoutTime}
+              onChange={(e) => setHomeWorkoutTime(e.target.value)}
+              placeholder="0"
+              min="0"
+            />
           </div>
         </section>
 
@@ -301,6 +421,17 @@ function App() {
                 </span>
               </div>
             ))}
+          </div>
+          <div className="time-row">
+            <label className="time-label">Time spent (mins)</label>
+            <input
+              type="number"
+              min="0"
+              className="time-input"
+              value={lunchTime}
+              onChange={(e) => setLunchTime(e.target.value)}
+              placeholder="e.g. 30"
+            />
           </div>
         </section>
 
@@ -323,6 +454,17 @@ function App() {
               </div>
             ))}
           </div>
+          <div className="time-row">
+            <label className="time-label">Time spent (mins)</label>
+            <input
+              type="number"
+              min="0"
+              className="time-input"
+              value={afterWorkTime}
+              onChange={(e) => setAfterWorkTime(e.target.value)}
+              placeholder="e.g. 60"
+            />
+          </div>
         </section>
 
         {/* Dreams Section */}
@@ -341,6 +483,17 @@ function App() {
                 </span>
               </div>
             ))}
+          </div>
+          <div className="time-row">
+            <label className="time-label">Time spent (mins)</label>
+            <input
+              type="number"
+              min="0"
+              className="time-input"
+              value={dreamsTime}
+              onChange={(e) => setDreamsTime(e.target.value)}
+              placeholder="e.g. 20"
+            />
           </div>
         </section>
 
@@ -363,6 +516,17 @@ function App() {
           </div>
         </section>
       </div>
+
+      {/* Clear Cookies Button */}
+      <footer className="app-footer">
+        <button
+          onClick={clearAllCookies}
+          className="clear-cookies-btn"
+          title="Reset all checklists and clear saved progress"
+        >
+          🔄 Clear All Data
+        </button>
+      </footer>
     </div>
   );
 }

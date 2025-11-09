@@ -185,6 +185,47 @@
   border-color: #ddd;
 }
 
+/* Time tracking styles */
+.time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+.time-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  margin: 0;
+}
+
+.time-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.time-input:focus {
+  outline: none;
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.1);
+}
+
+.time-input::placeholder {
+  color: #adb5bd;
+  font-size: 0.85rem;
+}
+
 .text-area {
   width: 100%;
   min-height: 120px;
@@ -208,6 +249,60 @@
   color: #adb5bd;
 }
 
+/* Time input row for sections */
+.time-row {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.time-label {
+  font-size: 0.95rem;
+  color: #555;
+  min-width: 120px;
+}
+
+.time-input {
+  width: 120px;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  font-size: 0.95rem;
+}
+
+/* Footer and Clear Cookies Button */
+.app-footer {
+  margin-top: 3rem;
+  padding: 2rem;
+  text-align: center;
+  border-top: 2px solid #e9ecef;
+}
+
+.clear-cookies-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+}
+
+.clear-cookies-btn:hover {
+  background: linear-gradient(135deg, #ee5a24, #ff6348);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+}
+
+.clear-cookies-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .app {
@@ -225,5 +320,15 @@
 
   .section {
     padding: 1rem;
+  }
+  
+  .app-footer {
+    margin-top: 2rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .clear-cookies-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
   }
 }
