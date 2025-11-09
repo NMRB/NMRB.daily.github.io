@@ -52,6 +52,19 @@
   margin-bottom: 1rem;
   font-size: 1.3rem;
   font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-indicator {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #646cff;
+  background: rgba(100, 108, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  border: 1px solid rgba(100, 108, 255, 0.2);
 }
 
 .checklist {

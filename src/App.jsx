@@ -306,7 +306,7 @@ function App() {
       <div className="sections-container">
         {/* Morning Checklist */}
         <section className="section" id="morning-section">
-          <h2>🌅 Morning Checklist</h2>
+          <h2>🌅 Morning Checklist <span className="time-indicator">6:00 AM</span></h2>
           <div className="checklist">
             {morningChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -325,7 +325,7 @@ function App() {
 
         {/* Gym Workout */}
         <section className="section" id="gym-section">
-          <h2>🏋️‍♂️ Gym Workout</h2>
+          <h2>🏋️‍♂️ Gym Workout <span className="time-indicator">7:00 AM</span></h2>
 
           {/* Warm-up */}
           <div className="exercise-category">
@@ -518,7 +518,7 @@ function App() {
 
         {/* Home Workout */}
         <section className="section">
-          <h2>🏠 Home Workout</h2>
+          <h2>🏠 Home Workout <span className="time-indicator">Alternative</span></h2>
 
           {/* Warm-up */}
           <div className="exercise-category">
@@ -711,7 +711,7 @@ function App() {
 
         {/* Lunch Goals */}
         <section className="section" id="lunch-section">
-          <h2>🥗 Lunch Goals</h2>
+          <h2>🥗 Lunch Goals <span className="time-indicator">1:00 PM</span></h2>
           <div className="checklist">
             {lunchGoalsChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -741,7 +741,7 @@ function App() {
 
         {/* After Work Goals */}
         <section className="section">
-          <h2>⚡ After Work Goals</h2>
+          <h2>⚡ After Work Goals <span className="time-indicator">5:00 PM</span></h2>
           <div className="checklist">
             {afterWorkGoalsChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -773,7 +773,7 @@ function App() {
 
         {/* Dreams Section */}
         <section className="section">
-          <h2>✨ Dreams & Aspirations</h2>
+          <h2>✨ Dreams & Aspirations <span className="time-indicator">6:00 PM</span></h2>
           <div className="checklist">
             {dreamsChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -803,7 +803,7 @@ function App() {
 
         {/* Evening Checklist */}
         <section className="section" id="evening-section">
-          <h2>🌙 Evening Checklist</h2>
+          <h2>🌙 Evening Checklist <span className="time-indicator">7:00 PM</span></h2>
           <div className="checklist">
             {eveningChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
