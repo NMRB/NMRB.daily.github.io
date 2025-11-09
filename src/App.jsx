@@ -215,21 +215,25 @@ function App() {
                           : "exercise-name"
                       }
                     >
-                      {item.name}
+                      {item.name || item.text}
                     </span>
-                    <a
-                      href={item.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="exercise-link"
-                    >
-                      📹 Demo
-                    </a>
+                    {item.link && (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="exercise-link"
+                      >
+                        📹 Demo
+                      </a>
+                    )}
                   </div>
-                  <div className="exercise-specs">
-                    <span className="reps">Reps: {item.reps}</span>
-                    <span className="sets">Sets: {item.sets}</span>
-                  </div>
+                  {(item.reps || item.sets) && (
+                    <div className="exercise-specs">
+                      {item.reps && <span className="reps">Reps: {item.reps}</span>}
+                      {item.sets && <span className="sets">Sets: {item.sets}</span>}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -256,21 +260,25 @@ function App() {
                           : "exercise-name"
                       }
                     >
-                      {item.name}
+                      {item.name || item.text}
                     </span>
-                    <a
-                      href={item.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="exercise-link"
-                    >
-                      📹 Demo
-                    </a>
+                    {item.link && (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="exercise-link"
+                      >
+                        📹 Demo
+                      </a>
+                    )}
                   </div>
-                  <div className="exercise-specs">
-                    <span className="reps">Reps: {item.reps}</span>
-                    <span className="sets">Sets: {item.sets}</span>
-                  </div>
+                  {(item.reps || item.sets) && (
+                    <div className="exercise-specs">
+                      {item.reps && <span className="reps">Reps: {item.reps}</span>}
+                      {item.sets && <span className="sets">Sets: {item.sets}</span>}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
