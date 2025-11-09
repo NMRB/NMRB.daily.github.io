@@ -94,6 +94,27 @@
   opacity: 0.7;
 }
 
+/* Exercise category styles */
+.exercise-category {
+  margin-bottom: 2rem;
+}
+
+.exercise-category:last-child {
+  margin-bottom: 0;
+}
+
+.exercise-category h3 {
+  color: #495057;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Exercise-specific styles */
 .exercise-item {
   align-items: flex-start;
@@ -321,12 +342,12 @@
   .section {
     padding: 1rem;
   }
-  
+
   .app-footer {
     margin-top: 2rem;
     padding: 1.5rem 1rem;
   }
-  
+
   .clear-cookies-btn {
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;

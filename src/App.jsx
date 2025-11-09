@@ -67,12 +67,22 @@ function App() {
     getStoredData("eveningChecklist", defaultEveningChecklist)
   );
 
-  const [gymWorkoutChecklist, setGymWorkoutChecklist] = useState(() =>
-    getStoredData("gymWorkoutChecklist", defaultGymWorkoutChecklist)
-  );
-  const [homeWorkoutChecklist, setHomeWorkoutChecklist] = useState(() =>
-    getStoredData("homeWorkoutChecklist", defaultHomeWorkoutChecklist)
-  );
+  const [gymWorkoutChecklist, setGymWorkoutChecklist] = useState(() => {
+    const defaultFlattened = [
+      ...defaultGymWorkoutChecklist.warmup,
+      ...defaultGymWorkoutChecklist.main,
+      ...defaultGymWorkoutChecklist.cooldown,
+    ];
+    return getStoredData("gymWorkoutChecklist", defaultFlattened);
+  });
+  const [homeWorkoutChecklist, setHomeWorkoutChecklist] = useState(() => {
+    const defaultFlattened = [
+      ...defaultHomeWorkoutChecklist.warmup,
+      ...defaultHomeWorkoutChecklist.main,
+      ...defaultHomeWorkoutChecklist.cooldown,
+    ];
+    return getStoredData("homeWorkoutChecklist", defaultFlattened);
+  });
   const [lunchGoalsChecklist, setLunchGoalsChecklist] = useState(() =>
     getStoredData("lunchGoalsChecklist", defaultLunchGoalsChecklist)
   );
@@ -272,54 +282,179 @@ function App() {
         {/* Gym Workout */}
         <section className="section">
           <h2>🏋️‍♂️ Gym Workout</h2>
-          <div className="checklist">
-            {gymWorkoutChecklist.map((item) => (
-              <div
-                key={item.id}
-                className={`checklist-item exercise-item ${
-                  item.completed ? "completed" : ""
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={item.completed}
-                  onChange={() => toggleChecklistItem("gymWorkout", item.id)}
-                />
-                <div className="exercise-details">
-                  <div className="exercise-header">
-                    <span
-                      className={
-                        item.completed
-                          ? "completed exercise-name"
-                          : "exercise-name"
+
+          {/* Warm-up */}
+          <div className="exercise-category">
+            <h3>🔥 Warm-up</h3>
+            <div className="checklist">
+              {gymWorkoutChecklist
+                .filter((item) => item.id >= 1 && item.id <= 3)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`checklist-item exercise-item ${
+                      item.completed ? "completed" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.completed}
+                      onChange={() =>
+                        toggleChecklistItem("gymWorkout", item.id)
                       }
-                    >
-                      {item.name || item.text}
-                    </span>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="exercise-link"
-                      >
-                        📹 Demo
-                      </a>
-                    )}
-                  </div>
-                  {(item.reps || item.sets) && (
-                    <div className="exercise-specs">
-                      {item.reps && (
-                        <span className="reps">Reps: {item.reps}</span>
-                      )}
-                      {item.sets && (
-                        <span className="sets">Sets: {item.sets}</span>
+                    />
+                    <div className="exercise-details">
+                      <div className="exercise-header">
+                        <span
+                          className={
+                            item.completed
+                              ? "completed exercise-name"
+                              : "exercise-name"
+                          }
+                        >
+                          {item.name || item.text}
+                        </span>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="exercise-link"
+                          >
+                            📹 Demo
+                          </a>
+                        )}
+                      </div>
+                      {(item.reps || item.sets) && (
+                        <div className="exercise-specs">
+                          {item.reps && (
+                            <span className="reps">Reps: {item.reps}</span>
+                          )}
+                          {item.sets && (
+                            <span className="sets">Sets: {item.sets}</span>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Main Workout */}
+          <div className="exercise-category">
+            <h3>💪 Main Workout</h3>
+            <div className="checklist">
+              {gymWorkoutChecklist
+                .filter((item) => item.id >= 4 && item.id <= 7)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`checklist-item exercise-item ${
+                      item.completed ? "completed" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.completed}
+                      onChange={() =>
+                        toggleChecklistItem("gymWorkout", item.id)
+                      }
+                    />
+                    <div className="exercise-details">
+                      <div className="exercise-header">
+                        <span
+                          className={
+                            item.completed
+                              ? "completed exercise-name"
+                              : "exercise-name"
+                          }
+                        >
+                          {item.name || item.text}
+                        </span>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="exercise-link"
+                          >
+                            📹 Demo
+                          </a>
+                        )}
+                      </div>
+                      {(item.reps || item.sets) && (
+                        <div className="exercise-specs">
+                          {item.reps && (
+                            <span className="reps">Reps: {item.reps}</span>
+                          )}
+                          {item.sets && (
+                            <span className="sets">Sets: {item.sets}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Cool-down */}
+          <div className="exercise-category">
+            <h3>🧘 Cool-down</h3>
+            <div className="checklist">
+              {gymWorkoutChecklist
+                .filter((item) => item.id >= 8 && item.id <= 10)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`checklist-item exercise-item ${
+                      item.completed ? "completed" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.completed}
+                      onChange={() =>
+                        toggleChecklistItem("gymWorkout", item.id)
+                      }
+                    />
+                    <div className="exercise-details">
+                      <div className="exercise-header">
+                        <span
+                          className={
+                            item.completed
+                              ? "completed exercise-name"
+                              : "exercise-name"
+                          }
+                        >
+                          {item.name || item.text}
+                        </span>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="exercise-link"
+                          >
+                            📹 Demo
+                          </a>
+                        )}
+                      </div>
+                      {(item.reps || item.sets) && (
+                        <div className="exercise-specs">
+                          {item.reps && (
+                            <span className="reps">Reps: {item.reps}</span>
+                          )}
+                          {item.sets && (
+                            <span className="sets">Sets: {item.sets}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
           <div className="time-row">
             <label htmlFor="gymWorkoutTime" className="time-label">
@@ -340,54 +475,179 @@ function App() {
         {/* Home Workout */}
         <section className="section">
           <h2>🏠 Home Workout</h2>
-          <div className="checklist">
-            {homeWorkoutChecklist.map((item) => (
-              <div
-                key={item.id}
-                className={`checklist-item exercise-item ${
-                  item.completed ? "completed" : ""
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={item.completed}
-                  onChange={() => toggleChecklistItem("homeWorkout", item.id)}
-                />
-                <div className="exercise-details">
-                  <div className="exercise-header">
-                    <span
-                      className={
-                        item.completed
-                          ? "completed exercise-name"
-                          : "exercise-name"
+
+          {/* Warm-up */}
+          <div className="exercise-category">
+            <h3>🔥 Warm-up</h3>
+            <div className="checklist">
+              {homeWorkoutChecklist
+                .filter((item) => item.id >= 1 && item.id <= 3)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`checklist-item exercise-item ${
+                      item.completed ? "completed" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.completed}
+                      onChange={() =>
+                        toggleChecklistItem("homeWorkout", item.id)
                       }
-                    >
-                      {item.name || item.text}
-                    </span>
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="exercise-link"
-                      >
-                        📹 Demo
-                      </a>
-                    )}
-                  </div>
-                  {(item.reps || item.sets) && (
-                    <div className="exercise-specs">
-                      {item.reps && (
-                        <span className="reps">Reps: {item.reps}</span>
-                      )}
-                      {item.sets && (
-                        <span className="sets">Sets: {item.sets}</span>
+                    />
+                    <div className="exercise-details">
+                      <div className="exercise-header">
+                        <span
+                          className={
+                            item.completed
+                              ? "completed exercise-name"
+                              : "exercise-name"
+                          }
+                        >
+                          {item.name || item.text}
+                        </span>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="exercise-link"
+                          >
+                            📹 Demo
+                          </a>
+                        )}
+                      </div>
+                      {(item.reps || item.sets) && (
+                        <div className="exercise-specs">
+                          {item.reps && (
+                            <span className="reps">Reps: {item.reps}</span>
+                          )}
+                          {item.sets && (
+                            <span className="sets">Sets: {item.sets}</span>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Main Workout */}
+          <div className="exercise-category">
+            <h3>💪 Main Workout</h3>
+            <div className="checklist">
+              {homeWorkoutChecklist
+                .filter((item) => item.id >= 4 && item.id <= 7)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`checklist-item exercise-item ${
+                      item.completed ? "completed" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.completed}
+                      onChange={() =>
+                        toggleChecklistItem("homeWorkout", item.id)
+                      }
+                    />
+                    <div className="exercise-details">
+                      <div className="exercise-header">
+                        <span
+                          className={
+                            item.completed
+                              ? "completed exercise-name"
+                              : "exercise-name"
+                          }
+                        >
+                          {item.name || item.text}
+                        </span>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="exercise-link"
+                          >
+                            📹 Demo
+                          </a>
+                        )}
+                      </div>
+                      {(item.reps || item.sets) && (
+                        <div className="exercise-specs">
+                          {item.reps && (
+                            <span className="reps">Reps: {item.reps}</span>
+                          )}
+                          {item.sets && (
+                            <span className="sets">Sets: {item.sets}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Cool-down */}
+          <div className="exercise-category">
+            <h3>🧘 Cool-down</h3>
+            <div className="checklist">
+              {homeWorkoutChecklist
+                .filter((item) => item.id >= 8 && item.id <= 10)
+                .map((item) => (
+                  <div
+                    key={item.id}
+                    className={`checklist-item exercise-item ${
+                      item.completed ? "completed" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.completed}
+                      onChange={() =>
+                        toggleChecklistItem("homeWorkout", item.id)
+                      }
+                    />
+                    <div className="exercise-details">
+                      <div className="exercise-header">
+                        <span
+                          className={
+                            item.completed
+                              ? "completed exercise-name"
+                              : "exercise-name"
+                          }
+                        >
+                          {item.name || item.text}
+                        </span>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="exercise-link"
+                          >
+                            📹 Demo
+                          </a>
+                        )}
+                      </div>
+                      {(item.reps || item.sets) && (
+                        <div className="exercise-specs">
+                          {item.reps && (
+                            <span className="reps">Reps: {item.reps}</span>
+                          )}
+                          {item.sets && (
+                            <span className="sets">Sets: {item.sets}</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
           <div className="time-row">
             <label htmlFor="homeWorkoutTime" className="time-label">
