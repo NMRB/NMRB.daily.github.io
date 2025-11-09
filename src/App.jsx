@@ -1,26 +1,156 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./App.css";
 
 function App() {
-  const [morningChecklist, setMorningChecklist] = useState([
+  // Cookie utility functions
+  const setCookie = (name, value, days = 1) => {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${JSON.stringify(
+      value
+    )};expires=${expires.toUTCString()};path=/`;
+  };
+
+  const getCookie = (name) => {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === " ") c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) {
+        try {
+          return JSON.parse(c.substring(nameEQ.length, c.length));
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
+  };
+
+  const getTodayString = () => {
+    return new Date().toDateString();
+  };
+
+  const getStoredData = (key, defaultValue) => {
+    const stored = getCookie(key);
+    const lastDate = getCookie(`${key}_date`);
+    const today = getTodayString();
+
+    // If data exists and it's from today, return it; otherwise return default
+    if (stored && lastDate === today) {
+      return stored;
+    }
+    return defaultValue;
+  };
+
+  const saveData = useCallback((key, value) => {
+    setCookie(key, value);
+    setCookie(`${key}_date`, getTodayString());
+  }, []);
+  // Default checklist items
+  const defaultMorningChecklist = [
     { id: 1, text: "Wake up early", completed: false },
     { id: 2, text: "Drink water", completed: false },
     { id: 3, text: "Morning meditation", completed: false },
     { id: 4, text: "Review daily goals", completed: false },
-  ]);
+  ];
 
-  const [eveningChecklist, setEveningChecklist] = useState([
+  const defaultEveningChecklist = [
     { id: 1, text: "Review the day", completed: false },
     { id: 2, text: "Plan tomorrow", completed: false },
     { id: 3, text: "Evening gratitude", completed: false },
     { id: 4, text: "Prepare for bed", completed: false },
-  ]);
+  ];
 
-  const [gymWorkout, setGymWorkout] = useState("");
-  const [homeWorkout, setHomeWorkout] = useState("");
-  const [lunchGoals, setLunchGoals] = useState("");
-  const [afterWorkGoals, setAfterWorkGoals] = useState("");
-  const [dreams, setDreams] = useState("");
+  const defaultGymWorkoutChecklist = [
+    { id: 1, text: "Warm-up exercises", completed: false },
+    { id: 2, text: "Cardio workout", completed: false },
+    { id: 3, text: "Strength training", completed: false },
+    { id: 4, text: "Cool down and stretch", completed: false },
+  ];
+
+  const defaultHomeWorkoutChecklist = [
+    { id: 1, text: "Set up workout space", completed: false },
+    { id: 2, text: "Complete workout routine", completed: false },
+    { id: 3, text: "Track workout progress", completed: false },
+    { id: 4, text: "Clean up equipment", completed: false },
+  ];
+
+  const defaultLunchGoalsChecklist = [
+    { id: 1, text: "Eat a balanced meal", completed: false },
+    { id: 2, text: "Include vegetables/fruits", completed: false },
+    { id: 3, text: "Drink enough water", completed: false },
+    { id: 4, text: "Practice mindful eating", completed: false },
+  ];
+
+  const defaultAfterWorkGoalsChecklist = [
+    { id: 1, text: "Complete personal project", completed: false },
+    { id: 2, text: "Connect with friends/family", completed: false },
+    { id: 3, text: "Learn something new", completed: false },
+    { id: 4, text: "Relax and unwind", completed: false },
+  ];
+
+  const defaultDreamsChecklist = [
+    { id: 1, text: "Write in journal", completed: false },
+    { id: 2, text: "Visualize future goals", completed: false },
+    { id: 3, text: "Plan next steps", completed: false },
+    { id: 4, text: "Practice gratitude", completed: false },
+  ];
+
+  // Initialize state with stored data or defaults
+  const [morningChecklist, setMorningChecklist] = useState(() =>
+    getStoredData("morningChecklist", defaultMorningChecklist)
+  );
+
+  const [eveningChecklist, setEveningChecklist] = useState(() =>
+    getStoredData("eveningChecklist", defaultEveningChecklist)
+  );
+
+  const [gymWorkoutChecklist, setGymWorkoutChecklist] = useState(() =>
+    getStoredData("gymWorkoutChecklist", defaultGymWorkoutChecklist)
+  );
+  const [homeWorkoutChecklist, setHomeWorkoutChecklist] = useState(() =>
+    getStoredData("homeWorkoutChecklist", defaultHomeWorkoutChecklist)
+  );
+  const [lunchGoalsChecklist, setLunchGoalsChecklist] = useState(() =>
+    getStoredData("lunchGoalsChecklist", defaultLunchGoalsChecklist)
+  );
+  const [afterWorkGoalsChecklist, setAfterWorkGoalsChecklist] = useState(() =>
+    getStoredData("afterWorkGoalsChecklist", defaultAfterWorkGoalsChecklist)
+  );
+  const [dreamsChecklist, setDreamsChecklist] = useState(() => 
+    getStoredData("dreamsChecklist", defaultDreamsChecklist)
+  );
+
+  // Save data to cookies whenever state changes
+  useEffect(() => {
+    saveData("morningChecklist", morningChecklist);
+  }, [morningChecklist, saveData]);
+
+  useEffect(() => {
+    saveData("eveningChecklist", eveningChecklist);
+  }, [eveningChecklist, saveData]);
+
+  useEffect(() => {
+    saveData("gymWorkoutChecklist", gymWorkoutChecklist);
+  }, [gymWorkoutChecklist, saveData]);
+
+  useEffect(() => {
+    saveData("homeWorkoutChecklist", homeWorkoutChecklist);
+  }, [homeWorkoutChecklist, saveData]);
+
+  useEffect(() => {
+    saveData("lunchGoalsChecklist", lunchGoalsChecklist);
+  }, [lunchGoalsChecklist, saveData]);
+
+  useEffect(() => {
+    saveData("afterWorkGoalsChecklist", afterWorkGoalsChecklist);
+  }, [afterWorkGoalsChecklist, saveData]);
+
+  useEffect(() => {
+    saveData("dreamsChecklist", dreamsChecklist);
+  }, [dreamsChecklist, saveData]);
 
   const toggleChecklistItem = (type, id) => {
     if (type === "morning") {
@@ -31,6 +161,36 @@ function App() {
       );
     } else if (type === "evening") {
       setEveningChecklist((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, completed: !item.completed } : item
+        )
+      );
+    } else if (type === "gymWorkout") {
+      setGymWorkoutChecklist((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, completed: !item.completed } : item
+        )
+      );
+    } else if (type === "homeWorkout") {
+      setHomeWorkoutChecklist((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, completed: !item.completed } : item
+        )
+      );
+    } else if (type === "lunchGoals") {
+      setLunchGoalsChecklist((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, completed: !item.completed } : item
+        )
+      );
+    } else if (type === "afterWorkGoals") {
+      setAfterWorkGoalsChecklist((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, completed: !item.completed } : item
+        )
+      );
+    } else if (type === "dreams") {
+      setDreamsChecklist((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, completed: !item.completed } : item
         )
@@ -77,56 +237,96 @@ function App() {
         {/* Gym Workout */}
         <section className="section">
           <h2>🏋️‍♂️ Gym Workout</h2>
-          <textarea
-            value={gymWorkout}
-            onChange={(e) => setGymWorkout(e.target.value)}
-            placeholder="Plan your gym workout routine..."
-            className="text-area"
-          />
+          <div className="checklist">
+            {gymWorkoutChecklist.map((item) => (
+              <div key={item.id} className="checklist-item">
+                <input
+                  type="checkbox"
+                  checked={item.completed}
+                  onChange={() => toggleChecklistItem("gymWorkout", item.id)}
+                />
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Home Workout */}
         <section className="section">
           <h2>🏠 Home Workout</h2>
-          <textarea
-            value={homeWorkout}
-            onChange={(e) => setHomeWorkout(e.target.value)}
-            placeholder="Plan your home workout routine..."
-            className="text-area"
-          />
+          <div className="checklist">
+            {homeWorkoutChecklist.map((item) => (
+              <div key={item.id} className="checklist-item">
+                <input
+                  type="checkbox"
+                  checked={item.completed}
+                  onChange={() => toggleChecklistItem("homeWorkout", item.id)}
+                />
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Lunch Goals */}
         <section className="section">
           <h2>🥗 Lunch Goals</h2>
-          <textarea
-            value={lunchGoals}
-            onChange={(e) => setLunchGoals(e.target.value)}
-            placeholder="What are your nutrition and meal goals for today?"
-            className="text-area"
-          />
+          <div className="checklist">
+            {lunchGoalsChecklist.map((item) => (
+              <div key={item.id} className="checklist-item">
+                <input
+                  type="checkbox"
+                  checked={item.completed}
+                  onChange={() => toggleChecklistItem("lunchGoals", item.id)}
+                />
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* After Work Goals */}
         <section className="section">
           <h2>⚡ After Work Goals</h2>
-          <textarea
-            value={afterWorkGoals}
-            onChange={(e) => setAfterWorkGoals(e.target.value)}
-            placeholder="What do you want to accomplish after work?"
-            className="text-area"
-          />
+          <div className="checklist">
+            {afterWorkGoalsChecklist.map((item) => (
+              <div key={item.id} className="checklist-item">
+                <input
+                  type="checkbox"
+                  checked={item.completed}
+                  onChange={() => toggleChecklistItem("afterWorkGoals", item.id)}
+                />
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Dreams Section */}
         <section className="section">
           <h2>✨ Dreams & Aspirations</h2>
-          <textarea
-            value={dreams}
-            onChange={(e) => setDreams(e.target.value)}
-            placeholder="Write about your dreams, goals, and future aspirations..."
-            className="text-area"
-          />
+          <div className="checklist">
+            {dreamsChecklist.map((item) => (
+              <div key={item.id} className="checklist-item">
+                <input
+                  type="checkbox"
+                  checked={item.completed}
+                  onChange={() => toggleChecklistItem("dreams", item.id)}
+                />
+                <span className={item.completed ? "completed" : ""}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Evening Checklist */}

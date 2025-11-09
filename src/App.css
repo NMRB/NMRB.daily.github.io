@@ -26,9 +26,11 @@
 }
 
 .sections-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .section {
@@ -117,15 +119,20 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .sections-container {
-    grid-template-columns: 1fr;
-  }
-
   .app {
     padding: 1rem;
   }
 
+  .sections-container {
+    max-width: 100%;
+    gap: 1.5rem;
+  }
+
   .app-header h1 {
     font-size: 2rem;
+  }
+
+  .section {
+    padding: 1rem;
   }
 }
