@@ -242,11 +242,53 @@
 }
 
 .reps,
-.sets {
+.sets,
+.weight {
   background: #f8f9fa;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   border: 1px solid #e9ecef;
+}
+
+/* Exercise category badge styling */
+.exercise-category-badge {
+  background: #646cff;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  margin-left: 0.5rem;
+}
+
+/* Category-specific colors */
+.exercise-category-badge.legs {
+  background: #28a745;
+}
+
+.exercise-category-badge.chest {
+  background: #dc3545;
+}
+
+.exercise-category-badge.back {
+  background: #17a2b8;
+}
+
+.exercise-category-badge.arms {
+  background: #fd7e14;
+}
+
+.exercise-category-badge.shoulders {
+  background: #6610f2;
+}
+
+.exercise-category-badge.cardio {
+  background: #e83e8c;
+}
+
+.exercise-category-badge.mobility {
+  background: #20c997;
 }
 
 /* Completed exercise styling */
@@ -272,7 +314,8 @@
 }
 
 .exercise-item.completed .reps,
-.exercise-item.completed .sets {
+.exercise-item.completed .sets,
+.exercise-item.completed .weight {
   background: #e9ecef;
   color: #6c757d;
   border-color: #ddd;

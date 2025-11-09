@@ -61,15 +61,23 @@ function App() {
   // Get current day and determine which muscle groups are recommended
   const getTodaysMuscleGroup = () => {
     const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     const daySchedule = {
-      1: { groups: ['Legs'], name: 'Monday' }, 
-      2: { groups: ['Chest'], name: 'Tuesday' },
-      3: { groups: ['Back'], name: 'Wednesday' },
-      4: { groups: ['Arms'], name: 'Thursday' },
-      5: { groups: ['Shoulders'], name: 'Friday' },
-      6: { groups: ['Legs', 'Chest'], name: 'Saturday' }, // Weekend combo
-      0: { groups: ['Back', 'Arms'], name: 'Sunday' }, // Weekend combo
+      1: { groups: ["Legs"], name: "Monday" },
+      2: { groups: ["Chest"], name: "Tuesday" },
+      3: { groups: ["Back"], name: "Wednesday" },
+      4: { groups: ["Arms"], name: "Thursday" },
+      5: { groups: ["Shoulders"], name: "Friday" },
+      6: { groups: ["Legs", "Chest"], name: "Saturday" }, // Weekend combo
+      0: { groups: ["Back", "Arms"], name: "Sunday" }, // Weekend combo
     };
     return daySchedule[today] || { groups: [], name: dayNames[today] };
   };
@@ -185,9 +193,9 @@ function App() {
     const autoScrollToSection = () => {
       const now = new Date();
       const currentHour = now.getHours();
-      
+
       let targetSectionId = "";
-      
+
       // 6 AM - Morning checklist
       if (currentHour >= 6 && currentHour < 7) {
         targetSectionId = "morning-section";
@@ -208,14 +216,14 @@ function App() {
       else {
         targetSectionId = "morning-section";
       }
-      
+
       // Scroll to the target section with smooth behavior
       setTimeout(() => {
         const targetElement = document.getElementById(targetSectionId);
         if (targetElement) {
-          targetElement.scrollIntoView({ 
-            behavior: "smooth", 
-            block: "start" 
+          targetElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
           });
         }
       }, 100); // Small delay to ensure DOM is ready
@@ -326,7 +334,9 @@ function App() {
       <div className="sections-container">
         {/* Morning Checklist */}
         <section className="section" id="morning-section">
-          <h2>🌅 Morning Checklist <span className="time-indicator">6:00 AM</span></h2>
+          <h2>
+            🌅 Morning Checklist <span className="time-indicator">6:00 AM</span>
+          </h2>
           <div className="checklist">
             {morningChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -345,11 +355,16 @@ function App() {
 
         {/* Gym Workout */}
         <section className="section" id="gym-section">
-          <h2>🏋️‍♂️ Gym Workout <span className="time-indicator">7:00 AM</span></h2>
-          
+          <h2>
+            🏋️‍♂️ Gym Workout <span className="time-indicator">7:00 AM</span>
+          </h2>
+
           {/* Daily Schedule Indicator */}
           <div className="daily-schedule">
-            <p><strong>📅 Today's Focus ({getTodaysMuscleGroup().name}):</strong> {getTodaysMuscleGroup().groups.join(', ')}</p>
+            <p>
+              <strong>📅 Today's Focus ({getTodaysMuscleGroup().name}):</strong>{" "}
+              {getTodaysMuscleGroup().groups.join(", ")}
+            </p>
           </div>
 
           {/* Warm-up */}
@@ -374,15 +389,22 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <span
-                          className={
-                            item.completed
-                              ? "completed exercise-name"
-                              : "exercise-name"
-                          }
-                        >
-                          {item.name || item.text}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span
+                            className={
+                              item.completed
+                                ? "completed exercise-name"
+                                : "exercise-name"
+                            }
+                          >
+                            {item.name || item.text}
+                          </span>
+                          {item.category && (
+                            <span className={`exercise-category-badge ${item.category}`}>
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
                         {item.link && (
                           <a
                             href={item.link}
@@ -394,8 +416,13 @@ function App() {
                           </a>
                         )}
                       </div>
-                      {(item.reps || item.sets) && (
+                      {(item.reps || item.sets || item.weight) && (
                         <div className="exercise-specs">
+                          {item.weight && (
+                            <span className="weight">
+                              Weight: {item.weight}
+                            </span>
+                          )}
                           {item.reps && (
                             <span className="reps">Reps: {item.reps}</span>
                           )}
@@ -415,7 +442,7 @@ function App() {
             <h3>💪 Main Workout</h3>
             <div className="checklist">
               {gymWorkoutChecklist
-                .filter((item) => item.id >= 4 && item.id <= 7)
+                .filter((item) => item.id >= 4 && item.id <= 20)
                 .map((item) => (
                   <div
                     key={item.id}
@@ -432,15 +459,22 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <span
-                          className={
-                            item.completed
-                              ? "completed exercise-name"
-                              : "exercise-name"
-                          }
-                        >
-                          {item.name || item.text}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span
+                            className={
+                              item.completed
+                                ? "completed exercise-name"
+                                : "exercise-name"
+                            }
+                          >
+                            {item.name || item.text}
+                          </span>
+                          {item.category && (
+                            <span className={`exercise-category-badge ${item.category}`}>
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
                         {item.link && (
                           <a
                             href={item.link}
@@ -473,7 +507,7 @@ function App() {
             <h3>🧘 Cool-down</h3>
             <div className="checklist">
               {gymWorkoutChecklist
-                .filter((item) => item.id >= 8 && item.id <= 10)
+                .filter((item) => item.id >= 21 && item.id <= 23)
                 .map((item) => (
                   <div
                     key={item.id}
@@ -490,15 +524,22 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <span
-                          className={
-                            item.completed
-                              ? "completed exercise-name"
-                              : "exercise-name"
-                          }
-                        >
-                          {item.name || item.text}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span
+                            className={
+                              item.completed
+                                ? "completed exercise-name"
+                                : "exercise-name"
+                            }
+                          >
+                            {item.name || item.text}
+                          </span>
+                          {item.category && (
+                            <span className={`exercise-category-badge ${item.category}`}>
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
                         {item.link && (
                           <a
                             href={item.link}
@@ -543,7 +584,9 @@ function App() {
 
         {/* Home Workout */}
         <section className="section">
-          <h2>🏠 Home Workout <span className="time-indicator">Alternative</span></h2>
+          <h2>
+            🏠 Home Workout <span className="time-indicator">Alternative</span>
+          </h2>
 
           {/* Warm-up */}
           <div className="exercise-category">
@@ -567,15 +610,22 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <span
-                          className={
-                            item.completed
-                              ? "completed exercise-name"
-                              : "exercise-name"
-                          }
-                        >
-                          {item.name || item.text}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span
+                            className={
+                              item.completed
+                                ? "completed exercise-name"
+                                : "exercise-name"
+                            }
+                          >
+                            {item.name || item.text}
+                          </span>
+                          {item.category && (
+                            <span className={`exercise-category-badge ${item.category}`}>
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
                         {item.link && (
                           <a
                             href={item.link}
@@ -625,15 +675,22 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <span
-                          className={
-                            item.completed
-                              ? "completed exercise-name"
-                              : "exercise-name"
-                          }
-                        >
-                          {item.name || item.text}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span
+                            className={
+                              item.completed
+                                ? "completed exercise-name"
+                                : "exercise-name"
+                            }
+                          >
+                            {item.name || item.text}
+                          </span>
+                          {item.category && (
+                            <span className={`exercise-category-badge ${item.category}`}>
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
                         {item.link && (
                           <a
                             href={item.link}
@@ -683,15 +740,22 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <span
-                          className={
-                            item.completed
-                              ? "completed exercise-name"
-                              : "exercise-name"
-                          }
-                        >
-                          {item.name || item.text}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span
+                            className={
+                              item.completed
+                                ? "completed exercise-name"
+                                : "exercise-name"
+                            }
+                          >
+                            {item.name || item.text}
+                          </span>
+                          {item.category && (
+                            <span className={`exercise-category-badge ${item.category}`}>
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
                         {item.link && (
                           <a
                             href={item.link}
@@ -736,7 +800,9 @@ function App() {
 
         {/* Lunch Goals */}
         <section className="section" id="lunch-section">
-          <h2>🥗 Lunch Goals <span className="time-indicator">1:00 PM</span></h2>
+          <h2>
+            🥗 Lunch Goals <span className="time-indicator">1:00 PM</span>
+          </h2>
           <div className="checklist">
             {lunchGoalsChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -766,7 +832,9 @@ function App() {
 
         {/* After Work Goals */}
         <section className="section">
-          <h2>⚡ After Work Goals <span className="time-indicator">5:00 PM</span></h2>
+          <h2>
+            ⚡ After Work Goals <span className="time-indicator">5:00 PM</span>
+          </h2>
           <div className="checklist">
             {afterWorkGoalsChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -798,7 +866,10 @@ function App() {
 
         {/* Dreams Section */}
         <section className="section">
-          <h2>✨ Dreams & Aspirations <span className="time-indicator">6:00 PM</span></h2>
+          <h2>
+            ✨ Dreams & Aspirations{" "}
+            <span className="time-indicator">6:00 PM</span>
+          </h2>
           <div className="checklist">
             {dreamsChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
@@ -828,7 +899,9 @@ function App() {
 
         {/* Evening Checklist */}
         <section className="section" id="evening-section">
-          <h2>🌙 Evening Checklist <span className="time-indicator">7:00 PM</span></h2>
+          <h2>
+            🌙 Evening Checklist <span className="time-indicator">7:00 PM</span>
+          </h2>
           <div className="checklist">
             {eveningChecklist.map((item) => (
               <div key={item.id} className="checklist-item">
