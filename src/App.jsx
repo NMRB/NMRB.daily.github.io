@@ -160,6 +160,50 @@ function App() {
     saveData("dreamsTime", dreamsTime);
   }, [dreamsTime, saveData]);
 
+  // Auto-scroll to appropriate section based on time
+  useEffect(() => {
+    const autoScrollToSection = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      
+      let targetSectionId = "";
+      
+      // 6 AM - Morning checklist
+      if (currentHour >= 6 && currentHour < 7) {
+        targetSectionId = "morning-section";
+      }
+      // 7 AM - Gym workout
+      else if (currentHour >= 7 && currentHour < 13) {
+        targetSectionId = "gym-section";
+      }
+      // 1 PM (13:00) - Lunch goals
+      else if (currentHour >= 13 && currentHour < 19) {
+        targetSectionId = "lunch-section";
+      }
+      // 7 PM (19:00) - Evening checklist
+      else if (currentHour >= 19) {
+        targetSectionId = "evening-section";
+      }
+      // Before 6 AM - Default to morning
+      else {
+        targetSectionId = "morning-section";
+      }
+      
+      // Scroll to the target section with smooth behavior
+      setTimeout(() => {
+        const targetElement = document.getElementById(targetSectionId);
+        if (targetElement) {
+          targetElement.scrollIntoView({ 
+            behavior: "smooth", 
+            block: "start" 
+          });
+        }
+      }, 100); // Small delay to ensure DOM is ready
+    };
+
+    autoScrollToSection();
+  }, []); // Run once on component mount
+
   const toggleChecklistItem = (type, id) => {
     if (type === "morning") {
       setMorningChecklist((prev) =>
@@ -261,7 +305,7 @@ function App() {
 
       <div className="sections-container">
         {/* Morning Checklist */}
-        <section className="section">
+        <section className="section" id="morning-section">
           <h2>🌅 Morning Checklist</h2>
           <div className="checklist">
             {morningChecklist.map((item) => (
@@ -280,7 +324,7 @@ function App() {
         </section>
 
         {/* Gym Workout */}
-        <section className="section">
+        <section className="section" id="gym-section">
           <h2>🏋️‍♂️ Gym Workout</h2>
 
           {/* Warm-up */}
@@ -666,7 +710,7 @@ function App() {
         </section>
 
         {/* Lunch Goals */}
-        <section className="section">
+        <section className="section" id="lunch-section">
           <h2>🥗 Lunch Goals</h2>
           <div className="checklist">
             {lunchGoalsChecklist.map((item) => (
@@ -758,7 +802,7 @@ function App() {
         </section>
 
         {/* Evening Checklist */}
-        <section className="section">
+        <section className="section" id="evening-section">
           <h2>🌙 Evening Checklist</h2>
           <div className="checklist">
             {eveningChecklist.map((item) => (
