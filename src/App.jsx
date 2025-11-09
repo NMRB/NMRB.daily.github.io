@@ -58,6 +58,22 @@ function App() {
     setCookie(`${key}_date`, getTodayString());
   }, []);
 
+  // Get current day and determine which muscle groups are recommended
+  const getTodaysMuscleGroup = () => {
+    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const daySchedule = {
+      1: { groups: ['Legs'], name: 'Monday' }, 
+      2: { groups: ['Chest'], name: 'Tuesday' },
+      3: { groups: ['Back'], name: 'Wednesday' },
+      4: { groups: ['Arms'], name: 'Thursday' },
+      5: { groups: ['Shoulders'], name: 'Friday' },
+      6: { groups: ['Legs', 'Chest'], name: 'Saturday' }, // Weekend combo
+      0: { groups: ['Back', 'Arms'], name: 'Sunday' }, // Weekend combo
+    };
+    return daySchedule[today] || { groups: [], name: dayNames[today] };
+  };
+
   // Initialize state with stored data or defaults
   const [morningChecklist, setMorningChecklist] = useState(() =>
     getStoredData("morningChecklist", defaultMorningChecklist)
@@ -70,7 +86,11 @@ function App() {
   const [gymWorkoutChecklist, setGymWorkoutChecklist] = useState(() => {
     const defaultFlattened = [
       ...defaultGymWorkoutChecklist.warmup,
-      ...defaultGymWorkoutChecklist.main,
+      ...defaultGymWorkoutChecklist.main.legs,
+      ...defaultGymWorkoutChecklist.main.chest,
+      ...defaultGymWorkoutChecklist.main.back,
+      ...defaultGymWorkoutChecklist.main.arms,
+      ...defaultGymWorkoutChecklist.main.shoulders,
       ...defaultGymWorkoutChecklist.cooldown,
     ];
     return getStoredData("gymWorkoutChecklist", defaultFlattened);
@@ -326,6 +346,11 @@ function App() {
         {/* Gym Workout */}
         <section className="section" id="gym-section">
           <h2>🏋️‍♂️ Gym Workout <span className="time-indicator">7:00 AM</span></h2>
+          
+          {/* Daily Schedule Indicator */}
+          <div className="daily-schedule">
+            <p><strong>📅 Today's Focus ({getTodaysMuscleGroup().name}):</strong> {getTodaysMuscleGroup().groups.join(', ')}</p>
+          </div>
 
           {/* Warm-up */}
           <div className="exercise-category">

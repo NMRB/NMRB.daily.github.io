@@ -128,6 +128,65 @@
   gap: 0.5rem;
 }
 
+/* Muscle group styles */
+.muscle-group {
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  border-left: 3px solid #dee2e6;
+}
+
+.muscle-group:last-child {
+  margin-bottom: 0;
+}
+
+.muscle-group h4 {
+  color: #6c757d;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Daily schedule styles */
+.daily-schedule {
+  background: linear-gradient(135deg, #646cff 0%, #747bff 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.daily-schedule p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.today-indicator {
+  background: #28a745;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  margin-left: 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Exercise-specific styles */
 .exercise-item {
   align-items: flex-start;
