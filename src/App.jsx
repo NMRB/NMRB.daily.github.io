@@ -1,5 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import "./App.css";
+import {
+  morningChecklist as defaultMorningChecklist,
+  eveningChecklist as defaultEveningChecklist,
+  gymWorkoutChecklist as defaultGymWorkoutChecklist,
+  homeWorkoutChecklist as defaultHomeWorkoutChecklist,
+  lunchGoalsChecklist as defaultLunchGoalsChecklist,
+  afterWorkGoalsChecklist as defaultAfterWorkGoalsChecklist,
+  dreamsChecklist as defaultDreamsChecklist,
+} from "./data";
 
 function App() {
   // Cookie utility functions
@@ -48,55 +57,7 @@ function App() {
     setCookie(key, value);
     setCookie(`${key}_date`, getTodayString());
   }, []);
-  // Default checklist items
-  const defaultMorningChecklist = [
-    { id: 1, text: "Wake up early", completed: false },
-    { id: 2, text: "Drink water", completed: false },
-    { id: 3, text: "Morning meditation", completed: false },
-    { id: 4, text: "Review daily goals", completed: false },
-  ];
 
-  const defaultEveningChecklist = [
-    { id: 1, text: "Review the day", completed: false },
-    { id: 2, text: "Plan tomorrow", completed: false },
-    { id: 3, text: "Evening gratitude", completed: false },
-    { id: 4, text: "Prepare for bed", completed: false },
-  ];
-
-  const defaultGymWorkoutChecklist = [
-    { id: 1, text: "Warm-up exercises", completed: false },
-    { id: 2, text: "Cardio workout", completed: false },
-    { id: 3, text: "Strength training", completed: false },
-    { id: 4, text: "Cool down and stretch", completed: false },
-  ];
-
-  const defaultHomeWorkoutChecklist = [
-    { id: 1, text: "Set up workout space", completed: false },
-    { id: 2, text: "Complete workout routine", completed: false },
-    { id: 3, text: "Track workout progress", completed: false },
-    { id: 4, text: "Clean up equipment", completed: false },
-  ];
-
-  const defaultLunchGoalsChecklist = [
-    { id: 1, text: "Eat a balanced meal", completed: false },
-    { id: 2, text: "Include vegetables/fruits", completed: false },
-    { id: 3, text: "Drink enough water", completed: false },
-    { id: 4, text: "Practice mindful eating", completed: false },
-  ];
-
-  const defaultAfterWorkGoalsChecklist = [
-    { id: 1, text: "Complete personal project", completed: false },
-    { id: 2, text: "Connect with friends/family", completed: false },
-    { id: 3, text: "Learn something new", completed: false },
-    { id: 4, text: "Relax and unwind", completed: false },
-  ];
-
-  const defaultDreamsChecklist = [
-    { id: 1, text: "Write in journal", completed: false },
-    { id: 2, text: "Visualize future goals", completed: false },
-    { id: 3, text: "Plan next steps", completed: false },
-    { id: 4, text: "Practice gratitude", completed: false },
-  ];
 
   // Initialize state with stored data or defaults
   const [morningChecklist, setMorningChecklist] = useState(() =>
@@ -119,7 +80,7 @@ function App() {
   const [afterWorkGoalsChecklist, setAfterWorkGoalsChecklist] = useState(() =>
     getStoredData("afterWorkGoalsChecklist", defaultAfterWorkGoalsChecklist)
   );
-  const [dreamsChecklist, setDreamsChecklist] = useState(() => 
+  const [dreamsChecklist, setDreamsChecklist] = useState(() =>
     getStoredData("dreamsChecklist", defaultDreamsChecklist)
   );
 
@@ -239,15 +200,37 @@ function App() {
           <h2>🏋️‍♂️ Gym Workout</h2>
           <div className="checklist">
             {gymWorkoutChecklist.map((item) => (
-              <div key={item.id} className="checklist-item">
+              <div key={item.id} className={`checklist-item exercise-item ${item.completed ? 'completed' : ''}`}>
                 <input
                   type="checkbox"
                   checked={item.completed}
                   onChange={() => toggleChecklistItem("gymWorkout", item.id)}
                 />
-                <span className={item.completed ? "completed" : ""}>
-                  {item.text}
-                </span>
+                <div className="exercise-details">
+                  <div className="exercise-header">
+                    <span
+                      className={
+                        item.completed
+                          ? "completed exercise-name"
+                          : "exercise-name"
+                      }
+                    >
+                      {item.name}
+                    </span>
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="exercise-link"
+                    >
+                      📹 Demo
+                    </a>
+                  </div>
+                  <div className="exercise-specs">
+                    <span className="reps">Reps: {item.reps}</span>
+                    <span className="sets">Sets: {item.sets}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -258,15 +241,37 @@ function App() {
           <h2>🏠 Home Workout</h2>
           <div className="checklist">
             {homeWorkoutChecklist.map((item) => (
-              <div key={item.id} className="checklist-item">
+              <div key={item.id} className={`checklist-item exercise-item ${item.completed ? 'completed' : ''}`}>
                 <input
                   type="checkbox"
                   checked={item.completed}
                   onChange={() => toggleChecklistItem("homeWorkout", item.id)}
                 />
-                <span className={item.completed ? "completed" : ""}>
-                  {item.text}
-                </span>
+                <div className="exercise-details">
+                  <div className="exercise-header">
+                    <span
+                      className={
+                        item.completed
+                          ? "completed exercise-name"
+                          : "exercise-name"
+                      }
+                    >
+                      {item.name}
+                    </span>
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="exercise-link"
+                    >
+                      📹 Demo
+                    </a>
+                  </div>
+                  <div className="exercise-specs">
+                    <span className="reps">Reps: {item.reps}</span>
+                    <span className="sets">Sets: {item.sets}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -300,7 +305,9 @@ function App() {
                 <input
                   type="checkbox"
                   checked={item.completed}
-                  onChange={() => toggleChecklistItem("afterWorkGoals", item.id)}
+                  onChange={() =>
+                    toggleChecklistItem("afterWorkGoals", item.id)
+                  }
                 />
                 <span className={item.completed ? "completed" : ""}>
                   {item.text}
