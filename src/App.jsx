@@ -9,6 +9,7 @@ import {
   afterWorkGoalsChecklist as defaultAfterWorkGoalsChecklist,
   dreamsChecklist as defaultDreamsChecklist,
 } from "./data";
+import { useFirebaseSync } from "./hooks/useFirebaseSync";
 
 function App() {
   // Cookie utility functions
@@ -138,6 +139,39 @@ function App() {
     getStoredData("dreamsTime", "")
   );
 
+  // Firebase sync integration
+  const checklistData = {
+    morningChecklist,
+    eveningChecklist,
+    gymWorkoutChecklist,
+    homeWorkoutChecklist,
+    lunchGoalsChecklist,
+    afterWorkGoalsChecklist,
+    dreamsChecklist,
+    gymWorkoutTime,
+    homeWorkoutTime,
+    lunchTime,
+    afterWorkTime,
+    dreamsTime
+  };
+
+  const setters = {
+    setMorningChecklist,
+    setEveningChecklist,
+    setGymWorkoutChecklist,
+    setHomeWorkoutChecklist,
+    setLunchGoalsChecklist,
+    setAfterWorkGoalsChecklist,
+    setDreamsChecklist,
+    setGymWorkoutTime,
+    setHomeWorkoutTime,
+    setLunchTime,
+    setAfterWorkTime,
+    setDreamsTime
+  };
+
+  const { saveToFirebase, loadFromFirebase, logCompletionEvent } = useFirebaseSync(checklistData, setters);
+
   // Save data to cookies whenever state changes
   useEffect(() => {
     saveData("morningChecklist", morningChecklist);
@@ -233,49 +267,149 @@ function App() {
   }, []); // Run once on component mount
 
   const toggleChecklistItem = (type, id) => {
+    // Helper function to log completion events
+    const logToggleEvent = (item, newCompletedState) => {
+      logCompletionEvent(
+        newCompletedState ? 'item_completed' : 'item_unchecked',
+        {
+          id: item.id,
+          name: item.name || item.text,
+          checklistType: type,
+          wasCompleted: item.completed,
+          nowCompleted: newCompletedState,
+          category: item.category || null,
+          weight: item.weight || null,
+          reps: item.reps || null,
+          sets: item.sets || null
+        }
+      );
+    };
+
     if (type === "morning") {
       setMorningChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     } else if (type === "evening") {
       setEveningChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     } else if (type === "gymWorkout") {
       setGymWorkoutChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     } else if (type === "homeWorkout") {
       setHomeWorkoutChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     } else if (type === "lunchGoals") {
       setLunchGoalsChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     } else if (type === "afterWorkGoals") {
       setAfterWorkGoalsChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     } else if (type === "dreams") {
       setDreamsChecklist((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, completed: !item.completed } : item
-        )
+        prev.map((item) => {
+          if (item.id === id) {
+            const newCompleted = !item.completed;
+            const updatedItem = { ...item, completed: newCompleted };
+            logToggleEvent(item, newCompleted);
+            return updatedItem;
+          }
+          return item;
+        })
       );
     }
+  };
+
+  // Enhanced time change handlers that log to Firebase
+  const handleTimeChange = (timeType, newValue, oldValue) => {
+    logCompletionEvent('time_updated', {
+      timeType,
+      oldValue,
+      newValue,
+      checklistType: timeType.replace('Time', '')
+    });
+  };
+
+  const handleGymWorkoutTimeChange = (e) => {
+    const newValue = e.target.value;
+    handleTimeChange('gymWorkoutTime', newValue, gymWorkoutTime);
+    setGymWorkoutTime(newValue);
+  };
+
+  const handleHomeWorkoutTimeChange = (e) => {
+    const newValue = e.target.value;
+    handleTimeChange('homeWorkoutTime', newValue, homeWorkoutTime);
+    setHomeWorkoutTime(newValue);
+  };
+
+  const handleLunchTimeChange = (e) => {
+    const newValue = e.target.value;
+    handleTimeChange('lunchTime', newValue, lunchTime);
+    setLunchTime(newValue);
+  };
+
+  const handleAfterWorkTimeChange = (e) => {
+    const newValue = e.target.value;
+    handleTimeChange('afterWorkTime', newValue, afterWorkTime);
+    setAfterWorkTime(newValue);
+  };
+
+  const handleDreamsTimeChange = (e) => {
+    const newValue = e.target.value;
+    handleTimeChange('dreamsTime', newValue, dreamsTime);
+    setDreamsTime(newValue);
   };
 
   const getCurrentDate = () => {
@@ -329,6 +463,22 @@ function App() {
       <header className="app-header">
         <h1>Daily Planner</h1>
         <p className="date">{getCurrentDate()}</p>
+        <div className="firebase-controls">
+          <button 
+            onClick={() => saveToFirebase(true)} 
+            className="firebase-save-btn"
+            title="Manually save to Firebase"
+          >
+            💾 Save to Cloud
+          </button>
+          <button 
+            onClick={loadFromFirebase} 
+            className="firebase-load-btn"
+            title="Load latest from Firebase"
+          >
+            📥 Load from Cloud
+          </button>
+        </div>
       </header>
 
       <div className="sections-container">
@@ -389,7 +539,7 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <span
                             className={
                               item.completed
@@ -400,7 +550,9 @@ function App() {
                             {item.name || item.text}
                           </span>
                           {item.category && (
-                            <span className={`exercise-category-badge ${item.category}`}>
+                            <span
+                              className={`exercise-category-badge ${item.category}`}
+                            >
                               {item.category}
                             </span>
                           )}
@@ -459,7 +611,7 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <span
                             className={
                               item.completed
@@ -470,7 +622,9 @@ function App() {
                             {item.name || item.text}
                           </span>
                           {item.category && (
-                            <span className={`exercise-category-badge ${item.category}`}>
+                            <span
+                              className={`exercise-category-badge ${item.category}`}
+                            >
                               {item.category}
                             </span>
                           )}
@@ -524,7 +678,7 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <span
                             className={
                               item.completed
@@ -535,7 +689,9 @@ function App() {
                             {item.name || item.text}
                           </span>
                           {item.category && (
-                            <span className={`exercise-category-badge ${item.category}`}>
+                            <span
+                              className={`exercise-category-badge ${item.category}`}
+                            >
                               {item.category}
                             </span>
                           )}
@@ -575,7 +731,7 @@ function App() {
               id="gymWorkoutTime"
               className="time-input"
               value={gymWorkoutTime}
-              onChange={(e) => setGymWorkoutTime(e.target.value)}
+              onChange={handleGymWorkoutTimeChange}
               placeholder="0"
               min="0"
             />
@@ -610,7 +766,7 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <span
                             className={
                               item.completed
@@ -621,7 +777,9 @@ function App() {
                             {item.name || item.text}
                           </span>
                           {item.category && (
-                            <span className={`exercise-category-badge ${item.category}`}>
+                            <span
+                              className={`exercise-category-badge ${item.category}`}
+                            >
                               {item.category}
                             </span>
                           )}
@@ -675,7 +833,7 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <span
                             className={
                               item.completed
@@ -686,7 +844,9 @@ function App() {
                             {item.name || item.text}
                           </span>
                           {item.category && (
-                            <span className={`exercise-category-badge ${item.category}`}>
+                            <span
+                              className={`exercise-category-badge ${item.category}`}
+                            >
                               {item.category}
                             </span>
                           )}
@@ -740,7 +900,7 @@ function App() {
                     />
                     <div className="exercise-details">
                       <div className="exercise-header">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <span
                             className={
                               item.completed
@@ -751,7 +911,9 @@ function App() {
                             {item.name || item.text}
                           </span>
                           {item.category && (
-                            <span className={`exercise-category-badge ${item.category}`}>
+                            <span
+                              className={`exercise-category-badge ${item.category}`}
+                            >
                               {item.category}
                             </span>
                           )}
@@ -791,7 +953,7 @@ function App() {
               id="homeWorkoutTime"
               className="time-input"
               value={homeWorkoutTime}
-              onChange={(e) => setHomeWorkoutTime(e.target.value)}
+              onChange={handleHomeWorkoutTimeChange}
               placeholder="0"
               min="0"
             />
@@ -824,7 +986,7 @@ function App() {
               min="0"
               className="time-input"
               value={lunchTime}
-              onChange={(e) => setLunchTime(e.target.value)}
+              onChange={handleLunchTimeChange}
               placeholder="e.g. 30"
             />
           </div>
@@ -858,7 +1020,7 @@ function App() {
               min="0"
               className="time-input"
               value={afterWorkTime}
-              onChange={(e) => setAfterWorkTime(e.target.value)}
+              onChange={handleAfterWorkTimeChange}
               placeholder="e.g. 60"
             />
           </div>
@@ -891,7 +1053,7 @@ function App() {
               min="0"
               className="time-input"
               value={dreamsTime}
-              onChange={(e) => setDreamsTime(e.target.value)}
+              onChange={handleDreamsTimeChange}
               placeholder="e.g. 20"
             />
           </div>
