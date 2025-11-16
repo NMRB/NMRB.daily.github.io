@@ -141,7 +141,7 @@ function App() {
   );
 
   // Page navigation state
-  const [currentPage, setCurrentPage] = useState('daily'); // 'daily' or 'weekly'
+  const [currentPage, setCurrentPage] = useState("daily"); // 'daily' or 'weekly'
 
   // Firebase sync integration
   const checklistData = {
@@ -464,8 +464,8 @@ function App() {
   };
 
   // Handle page navigation
-  if (currentPage === 'weekly') {
-    return <WeeklyBreakdown onBack={() => setCurrentPage('daily')} />;
+  if (currentPage === "weekly") {
+    return <WeeklyBreakdown onBack={() => setCurrentPage("daily")} />;
   }
 
   return (
@@ -489,7 +489,7 @@ function App() {
             📥 Load from Cloud
           </button>
           <button
-            onClick={() => setCurrentPage('weekly')}
+            onClick={() => setCurrentPage("weekly")}
             className="weekly-breakdown-btn"
             title="View weekly analytics and progress"
           >

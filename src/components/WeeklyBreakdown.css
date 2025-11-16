@@ -77,7 +77,8 @@
 }
 
 /* Loading and Error States */
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   padding: 2rem;
   font-size: 1.1rem;
@@ -174,13 +175,27 @@
 }
 
 /* Category-specific colors */
-.category-card.legs { border-color: #28a745; }
-.category-card.chest { border-color: #dc3545; }
-.category-card.back { border-color: #17a2b8; }
-.category-card.arms { border-color: #fd7e14; }
-.category-card.shoulders { border-color: #6610f2; }
-.category-card.cardio { border-color: #e83e8c; }
-.category-card.mobility { border-color: #20c997; }
+.category-card.legs {
+  border-color: #28a745;
+}
+.category-card.chest {
+  border-color: #dc3545;
+}
+.category-card.back {
+  border-color: #17a2b8;
+}
+.category-card.arms {
+  border-color: #fd7e14;
+}
+.category-card.shoulders {
+  border-color: #6610f2;
+}
+.category-card.cardio {
+  border-color: #e83e8c;
+}
+.category-card.mobility {
+  border-color: #20c997;
+}
 
 .category-name {
   font-size: 1.1rem;
@@ -211,13 +226,27 @@
   transition: width 0.3s ease;
 }
 
-.category-card.legs .progress-bar { background: #28a745; }
-.category-card.chest .progress-bar { background: #dc3545; }
-.category-card.back .progress-bar { background: #17a2b8; }
-.category-card.arms .progress-bar { background: #fd7e14; }
-.category-card.shoulders .progress-bar { background: #6610f2; }
-.category-card.cardio .progress-bar { background: #e83e8c; }
-.category-card.mobility .progress-bar { background: #20c997; }
+.category-card.legs .progress-bar {
+  background: #28a745;
+}
+.category-card.chest .progress-bar {
+  background: #dc3545;
+}
+.category-card.back .progress-bar {
+  background: #17a2b8;
+}
+.category-card.arms .progress-bar {
+  background: #fd7e14;
+}
+.category-card.shoulders .progress-bar {
+  background: #6610f2;
+}
+.category-card.cardio .progress-bar {
+  background: #e83e8c;
+}
+.category-card.mobility .progress-bar {
+  background: #20c997;
+}
 
 /* Daily Breakdown */
 .daily-breakdown {
@@ -253,7 +282,11 @@
 
 .day-card.today {
   border-color: #646cff;
-  background: linear-gradient(135deg, rgba(100, 108, 255, 0.05) 0%, rgba(116, 123, 255, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(100, 108, 255, 0.05) 0%,
+    rgba(116, 123, 255, 0.05) 100%
+  );
 }
 
 .day-header {
@@ -341,13 +374,34 @@
 }
 
 /* Mini category colors */
-.mini-category.legs { background: rgba(40, 167, 69, 0.1); border-color: #28a745; }
-.mini-category.chest { background: rgba(220, 53, 69, 0.1); border-color: #dc3545; }
-.mini-category.back { background: rgba(23, 162, 184, 0.1); border-color: #17a2b8; }
-.mini-category.arms { background: rgba(253, 126, 20, 0.1); border-color: #fd7e14; }
-.mini-category.shoulders { background: rgba(102, 16, 242, 0.1); border-color: #6610f2; }
-.mini-category.cardio { background: rgba(232, 62, 140, 0.1); border-color: #e83e8c; }
-.mini-category.mobility { background: rgba(32, 201, 151, 0.1); border-color: #20c997; }
+.mini-category.legs {
+  background: rgba(40, 167, 69, 0.1);
+  border-color: #28a745;
+}
+.mini-category.chest {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: #dc3545;
+}
+.mini-category.back {
+  background: rgba(23, 162, 184, 0.1);
+  border-color: #17a2b8;
+}
+.mini-category.arms {
+  background: rgba(253, 126, 20, 0.1);
+  border-color: #fd7e14;
+}
+.mini-category.shoulders {
+  background: rgba(102, 16, 242, 0.1);
+  border-color: #6610f2;
+}
+.mini-category.cardio {
+  background: rgba(232, 62, 140, 0.1);
+  border-color: #e83e8c;
+}
+.mini-category.mobility {
+  background: rgba(32, 201, 151, 0.1);
+  border-color: #20c997;
+}
 
 /* Quick Actions */
 .quick-actions {
@@ -358,7 +412,8 @@
   flex-wrap: wrap;
 }
 
-.refresh-btn, .current-week-btn {
+.refresh-btn,
+.current-week-btn {
   background: white;
   border: 2px solid #646cff;
   color: #646cff;
@@ -369,7 +424,8 @@
   transition: all 0.2s ease;
 }
 
-.refresh-btn:hover, .current-week-btn:hover {
+.refresh-btn:hover,
+.current-week-btn:hover {
   background: #646cff;
   color: white;
 }
@@ -379,31 +435,31 @@
   .weekly-breakdown {
     padding: 1rem;
   }
-  
+
   .weekly-header {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
-  
+
   .week-navigation {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
-  
+
   .summary-grid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
-  
+
   .categories-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .days-grid {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
-  
+
   .quick-actions {
     flex-direction: column;
     align-items: center;
