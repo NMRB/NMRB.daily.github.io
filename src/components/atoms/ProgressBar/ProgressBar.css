@@ -1,0 +1,59 @@
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar__track {
+  flex: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar__fill--primary {
+  background: linear-gradient(90deg, #4caf50, #45a049);
+}
+
+.progress-bar__fill--success {
+  background: linear-gradient(90deg, #4caf50, #2e7d32);
+}
+
+.progress-bar__fill--warning {
+  background: linear-gradient(90deg, #ff9800, #f57c00);
+}
+
+.progress-bar__fill--danger {
+  background: linear-gradient(90deg, #f44336, #d32f2f);
+}
+
+.progress-bar__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  min-width: 35px;
+  text-align: right;
+}
+
+.progress-bar--small .progress-bar__track {
+  height: 4px;
+}
+
+.progress-bar--small .progress-bar__label {
+  font-size: 10px;
+}
+
+.progress-bar--large .progress-bar__track {
+  height: 12px;
+}
+
+.progress-bar--large .progress-bar__label {
+  font-size: 14px;
+}

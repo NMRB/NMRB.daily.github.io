@@ -1,0 +1,23 @@
+.week-summary {
+  margin: 24px 0;
+}
+
+.week-summary__title {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.week-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .week-summary__grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+}

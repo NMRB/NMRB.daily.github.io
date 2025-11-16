@@ -1,0 +1,16 @@
+.daily-planner-template {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.main-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0 16px 40px;
+  }
+}

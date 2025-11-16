@@ -1,0 +1,12 @@
+.summary-card {
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-card__icon {
+  font-size: 20px;
+  margin-bottom: 8px;
+}

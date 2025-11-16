@@ -1,0 +1,43 @@
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card--summary {
+  text-align: center;
+  padding: 20px 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+}
+
+.card--category {
+  border-left: 4px solid #4caf50;
+  padding: 12px 16px;
+}
+
+.card--day {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card--compact {
+  padding: 8px 12px;
+}
+
+.card--interactive {
+  cursor: pointer;
+}
+
+.card--interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}

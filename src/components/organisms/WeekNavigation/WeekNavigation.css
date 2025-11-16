@@ -1,0 +1,39 @@
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 0;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.week-navigation__btn {
+  font-size: 14px;
+  padding: 8px 16px;
+  white-space: nowrap;
+}
+
+.week-navigation__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .week-navigation {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .week-navigation__title {
+    font-size: 16px;
+  }
+
+  .week-navigation__btn {
+    width: 100%;
+  }
+}

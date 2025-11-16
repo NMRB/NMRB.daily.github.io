@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import { db } from "../firebase";
-import "./WeeklyBreakdown.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db, auth } from "../firebase";
+import { useAuth } from "../contexts/AuthContext";
+import WeeklyBreakdownTemplate from "./templates/WeeklyBreakdownTemplate/WeeklyBreakdownTemplate";
 
-const WeeklyBreakdown = ({ onBack }) => {
+const WeeklyBreakdown = ({ onBack, initialWeekStart }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [weeklyData, setWeeklyData] = useState({});
-  const [selectedWeek, setSelectedWeek] = useState(getThisWeekStart());
+  const [selectedWeek, setSelectedWeek] = useState(
+    initialWeekStart || getThisWeekStart()
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedDay, setSelectedDay] = useState(null);
 
   // Get the start of the current week (Monday)
   function getThisWeekStart() {
@@ -53,12 +60,56 @@ const WeeklyBreakdown = ({ onBack }) => {
     return date.toISOString().split("T")[0];
   };
 
+  // Calculate week totals from weekly data
+  const calculateWeekTotals = (weeklyData) => {
+    const totals = {
+      totalTasks: 0,
+      completedTasks: 0,
+      completionRate: 0,
+      totalTime: 0,
+      categoryTotals: {},
+    };
+
+    Object.values(weeklyData).forEach((dayData) => {
+      if (dayData && dayData.stats) {
+        totals.totalTasks += dayData.stats.totalTasks || 0;
+        totals.completedTasks += dayData.stats.completedTasks || 0;
+        totals.totalTime += dayData.stats.timeSpent || 0;
+
+        // Aggregate categories
+        Object.entries(dayData.stats.categories || {}).forEach(
+          ([category, data]) => {
+            if (!totals.categoryTotals[category]) {
+              totals.categoryTotals[category] = { total: 0, completed: 0 };
+            }
+            totals.categoryTotals[category].total += data.total || 0;
+            totals.categoryTotals[category].completed += data.completed || 0;
+          }
+        );
+      }
+    });
+
+    totals.completionRate =
+      totals.totalTasks > 0
+        ? ((totals.completedTasks / totals.totalTasks) * 100).toFixed(1)
+        : 0;
+
+    return totals;
+  };
+
   // Load weekly data from Firebase
   const loadWeeklyData = async (weekStart) => {
     setLoading(true);
     setError("");
 
     try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        setError("Please log in to view weekly analytics");
+        setLoading(false);
+        return;
+      }
+
       const weekDates = getWeekDates(weekStart);
       const weekData = {};
 
@@ -66,20 +117,26 @@ const WeeklyBreakdown = ({ onBack }) => {
       for (const date of weekDates) {
         const dateStr = formatDateForFirebase(date);
 
-        // Load daily checklist data
-        const dailyChecklistsRef = collection(db, "dailyChecklists");
+        // Load daily checklist data from user-specific collection
+        const dailyChecklistsRef = collection(
+          db,
+          "users",
+          currentUser.uid,
+          "dailyChecklists"
+        );
         const dailyQuery = query(
           dailyChecklistsRef,
           where("__name__", "==", dateStr)
         );
 
-        // Load events data for more detailed analytics
-        const eventsRef = collection(db, "checklistEvents");
-        const eventsQuery = query(
-          eventsRef,
-          where("date", "==", dateStr),
-          orderBy("timestamp", "asc")
+        // Load events data for more detailed analytics from user-specific collection
+        const eventsRef = collection(
+          db,
+          "users",
+          currentUser.uid,
+          "checklistEvents"
         );
+        const eventsQuery = query(eventsRef, where("date", "==", dateStr));
 
         const [dailySnapshot, eventsSnapshot] = await Promise.all([
           getDocs(dailyQuery),
@@ -159,6 +216,13 @@ const WeeklyBreakdown = ({ onBack }) => {
           });
         });
 
+        // Sort events by timestamp (client-side sorting to avoid Firestore index requirement)
+        dayData.events.sort((a, b) => {
+          const timestampA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+          const timestampB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+          return timestampA - timestampB;
+        });
+
         weekData[dateStr] = dayData;
       }
 
@@ -171,315 +235,49 @@ const WeeklyBreakdown = ({ onBack }) => {
     }
   };
 
-  // Navigate to previous/next week
+  // Navigate to different weeks
   const navigateWeek = (direction) => {
-    const newDate = new Date(selectedWeek);
-    newDate.setDate(newDate.getDate() + direction * 7);
-    setSelectedWeek(newDate);
+    const newWeekStart = new Date(selectedWeek);
+    newWeekStart.setDate(selectedWeek.getDate() + direction * 7);
+    setSelectedWeek(newWeekStart);
+
+    // Update the URL to reflect the new week
+    const weekParam = newWeekStart.toISOString().split("T")[0]; // YYYY-MM-DD format
+    navigate(`/weekly?week=${weekParam}`, { replace: true });
   };
 
-  // Calculate week totals
-  const calculateWeekTotals = () => {
-    let totalTasks = 0;
-    let completedTasks = 0;
-    let totalTime = 0;
-    const categoryTotals = {};
-
-    // Add null check for weeklyData
-    if (
-      !weeklyData ||
-      typeof weeklyData !== "object" ||
-      Object.keys(weeklyData).length === 0
-    ) {
-      return {
-        totalTasks: 0,
-        completedTasks: 0,
-        completionRate: "0",
-        totalTime: 0,
-        categoryTotals: {},
-      };
-    }
-
-    Object.values(weeklyData).forEach((dayData) => {
-      // Add null checks for dayData and stats
-      if (!dayData || !dayData.stats) return;
-
-      totalTasks += dayData.stats.totalTasks || 0;
-      completedTasks += dayData.stats.completedTasks || 0;
-      totalTime += dayData.stats.timeSpent || 0;
-
-      // Add null check for categories
-      if (
-        dayData.stats.categories &&
-        typeof dayData.stats.categories === "object"
-      ) {
-        Object.entries(dayData.stats.categories || {}).forEach(
-          ([category, stats]) => {
-            if (!stats || !category) return;
-
-            categoryTotals[category] = categoryTotals[category] || {
-              total: 0,
-              completed: 0,
-            };
-            categoryTotals[category].total += stats.total || 0;
-            categoryTotals[category].completed += stats.completed || 0;
-          }
-        );
-      }
-    });
-
-    return {
-      totalTasks,
-      completedTasks,
-      completionRate:
-        totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(1) : 0,
-      totalTime,
-      categoryTotals,
-    };
-  };
-
+  // Load data when week changes
   useEffect(() => {
-    loadWeeklyData(selectedWeek);
-  }, [selectedWeek]);
-
-  // Safe calculation of week totals with fallbacks
-  const weekTotals = React.useMemo(() => {
-    try {
-      return calculateWeekTotals();
-    } catch (error) {
-      console.error("Error calculating week totals:", error);
-      return {
-        totalTasks: 0,
-        completedTasks: 0,
-        completionRate: 0,
-        totalTime: 0,
-        categoryTotals: {},
-      };
-    }
-  }, [weeklyData]);
-
-  const weekDates = React.useMemo(() => {
-    try {
-      return getWeekDates(selectedWeek);
-    } catch (error) {
-      console.error("Error getting week dates:", error);
-      return [];
+    if (selectedWeek) {
+      loadWeeklyData(selectedWeek);
     }
   }, [selectedWeek]);
+
+  // Calculate current week data
+  const weekDates = getWeekDates(selectedWeek);
+  const weekTotals = calculateWeekTotals(weeklyData);
 
   return (
-    <div className="weekly-breakdown">
-      {/* Header */}
-      <div className="weekly-header">
-        <button onClick={onBack} className="back-btn">
-          ← Back to Daily Planner
-        </button>
-        <h1>📊 Weekly Breakdown</h1>
-      </div>
-
-      {/* Week Navigation */}
-      <div className="week-navigation">
-        <button onClick={() => navigateWeek(-1)} className="nav-btn">
-          ← Previous Week
-        </button>
-        <h2>
-          Week of {formatDate(weekDates[0])} - {formatDate(weekDates[6])}
-        </h2>
-        <button onClick={() => navigateWeek(1)} className="nav-btn">
-          Next Week →
-        </button>
-      </div>
-
-      {loading && <div className="loading">Loading weekly data...</div>}
-      {error && <div className="error">{error}</div>}
-
-      {!loading && !error && (
-        <>
-          {/* Week Summary */}
-          <div className="week-summary">
-            <h3>📈 Week Overview</h3>
-            <div className="summary-grid">
-              <div className="summary-card">
-                <div className="summary-number">{weekTotals.totalTasks}</div>
-                <div className="summary-label">Total Tasks</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-number">
-                  {weekTotals.completedTasks}
-                </div>
-                <div className="summary-label">Completed</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-number">
-                  {weekTotals.completionRate}%
-                </div>
-                <div className="summary-label">Completion Rate</div>
-              </div>
-              <div className="summary-card">
-                <div className="summary-number">{weekTotals.totalTime}</div>
-                <div className="summary-label">Minutes Spent</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Category Breakdown */}
-          {weekTotals?.categoryTotals &&
-            Object.keys(weekTotals.categoryTotals).length > 0 && (
-              <div className="category-breakdown">
-                <h3>🎯 Category Performance</h3>
-                <div className="categories-grid">
-                  {Object.entries(weekTotals.categoryTotals || {}).map(
-                    ([category, stats]) => {
-                      if (!stats) return null;
-                      const rate =
-                        stats.total > 0
-                          ? ((stats.completed / stats.total) * 100).toFixed(1)
-                          : 0;
-                      return (
-                        <div
-                          key={category}
-                          className={`category-card ${category}`}
-                        >
-                          <div className="category-name">{category}</div>
-                          <div className="category-stats">
-                            {stats.completed}/{stats.total} ({rate}%)
-                          </div>
-                          <div className="category-progress">
-                            <div
-                              className="progress-bar"
-                              style={{ width: `${rate}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    }
-                  )}
-                </div>
-              </div>
-            )}
-
-          {/* Daily Breakdown */}
-          <div className="daily-breakdown">
-            <h3>📅 Daily Performance</h3>
-            <div className="days-grid">
-              {weekDates && Array.isArray(weekDates) ? (
-                weekDates.map((date, index) => {
-                  if (!date) return null;
-
-                  const dateStr = formatDateForFirebase(date);
-                  const dayData = weeklyData[dateStr] || {
-                    stats: {
-                      totalTasks: 0,
-                      completedTasks: 0,
-                      completionRate: 0,
-                      timeSpent: 0,
-                      categories: {},
-                    },
-                  };
-
-                  // Ensure stats exist with defaults
-                  const stats = dayData.stats || {
-                    totalTasks: 0,
-                    completedTasks: 0,
-                    completionRate: 0,
-                    timeSpent: 0,
-                    categories: {},
-                  };
-
-                  const isToday =
-                    dateStr === new Date().toISOString().split("T")[0];
-
-                  return (
-                    <div
-                      key={dateStr}
-                      className={`day-card ${isToday ? "today" : ""}`}
-                    >
-                      <div className="day-header">
-                        <div className="day-name">{formatDate(date)}</div>
-                        {isToday && <span className="today-badge">Today</span>}
-                      </div>
-
-                      <div className="day-stats">
-                        <div className="stat-row">
-                          <span className="stat-label">Tasks:</span>
-                          <span className="stat-value">
-                            {stats.completedTasks || 0}/{stats.totalTasks || 0}
-                          </span>
-                        </div>
-                        <div className="stat-row">
-                          <span className="stat-label">Rate:</span>
-                          <span className="stat-value">
-                            {stats.completionRate || 0}%
-                          </span>
-                        </div>
-                        <div className="stat-row">
-                          <span className="stat-label">Time:</span>
-                          <span className="stat-value">
-                            {stats.timeSpent || 0}m
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="completion-bar">
-                        <div
-                          className="completion-fill"
-                          style={{ width: `${stats.completionRate || 0}%` }}
-                        ></div>
-                      </div>
-
-                      {/* Mini category breakdown */}
-                      {stats.categories &&
-                        typeof stats.categories === "object" &&
-                        Object.keys(stats.categories).length > 0 && (
-                          <div className="day-categories">
-                            {Object.entries(stats.categories || {})
-                              .slice(0, 3)
-                              .map(([category, categoryStats]) => {
-                                if (!categoryStats) return null;
-                                return (
-                                  <div
-                                    key={category}
-                                    className={`mini-category ${category}`}
-                                  >
-                                    <span className="mini-category-name">
-                                      {category}
-                                    </span>
-                                    <span className="mini-category-count">
-                                      {categoryStats.completed || 0}/
-                                      {categoryStats.total || 0}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        )}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="error">No dates available</div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            <button
-              onClick={() => loadWeeklyData(selectedWeek)}
-              className="refresh-btn"
-            >
-              🔄 Refresh Data
-            </button>
-            <button
-              onClick={() => setSelectedWeek(getThisWeekStart())}
-              className="current-week-btn"
-            >
-              📅 Current Week
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+    <WeeklyBreakdownTemplate
+      // Header props
+      onBack={onBack}
+      // Navigation props
+      weekDates={weekDates}
+      formatDate={formatDate}
+      onPreviousWeek={() => navigateWeek(-1)}
+      onNextWeek={() => navigateWeek(1)}
+      // Data props
+      weekTotals={weekTotals}
+      weeklyData={weeklyData}
+      // State props
+      loading={loading}
+      error={error}
+      // Utility functions
+      formatDateForFirebase={formatDateForFirebase}
+      // Optional features
+      selectedDay={selectedDay}
+      onDaySelect={setSelectedDay}
+    />
   );
 };
 

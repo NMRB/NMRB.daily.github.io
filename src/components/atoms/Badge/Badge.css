@@ -1,0 +1,57 @@
+/* Badge Atom Styles */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Time Indicator Badge */
+.badge-time {
+  background: rgba(100, 108, 255, 0.1);
+  color: #646cff;
+  border: 1px solid rgba(100, 108, 255, 0.2);
+}
+
+/* Exercise Category Badges */
+.badge-category {
+  color: white;
+  margin-left: 0.5rem;
+}
+
+.badge-legs {
+  background: #28a745;
+}
+
+.badge-chest {
+  background: #dc3545;
+}
+
+.badge-back {
+  background: #17a2b8;
+}
+
+.badge-arms {
+  background: #fd7e14;
+}
+
+.badge-shoulders {
+  background: #6610f2;
+}
+
+.badge-cardio {
+  background: #e83e8c;
+}
+
+.badge-mobility {
+  background: #20c997;
+}
+
+/* Default Badge */
+.badge-default {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid #e9ecef;
+}

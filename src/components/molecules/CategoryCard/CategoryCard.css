@@ -1,0 +1,16 @@
+.category-card {
+  min-height: 80px;
+}
+
+.category-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.category-card__stats {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}

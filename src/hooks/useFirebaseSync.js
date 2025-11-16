@@ -11,63 +11,66 @@ export const useFirebaseSync = (checklistData, setters) => {
   const saveTimeoutRef = useRef(null);
 
   // Load data from Firebase on component mount (manual load function)
-  const loadFromFirebase = useCallback(async (forceLoad = false) => {
-    try {
-      const result = await loadDailyChecklistFromFirebase();
-      if (result.success && result.data) {
-        // Update state with Firebase data if it exists and is more recent
-        const firebaseData = result.data;
+  const loadFromFirebase = useCallback(
+    async (forceLoad = false) => {
+      try {
+        const result = await loadDailyChecklistFromFirebase();
+        if (result.success && result.data) {
+          // Update state with Firebase data if it exists and is more recent
+          const firebaseData = result.data;
 
-        // Only update if the Firebase data has checklist items
-        if (firebaseData.morningChecklist) {
-          setters.setMorningChecklist(firebaseData.morningChecklist);
-        }
-        if (firebaseData.eveningChecklist) {
-          setters.setEveningChecklist(firebaseData.eveningChecklist);
-        }
-        if (firebaseData.gymWorkoutChecklist) {
-          setters.setGymWorkoutChecklist(firebaseData.gymWorkoutChecklist);
-        }
-        if (firebaseData.homeWorkoutChecklist) {
-          setters.setHomeWorkoutChecklist(firebaseData.homeWorkoutChecklist);
-        }
-        if (firebaseData.lunchGoalsChecklist) {
-          setters.setLunchGoalsChecklist(firebaseData.lunchGoalsChecklist);
-        }
-        if (firebaseData.afterWorkGoalsChecklist) {
-          setters.setAfterWorkGoalsChecklist(
-            firebaseData.afterWorkGoalsChecklist
-          );
-        }
-        if (firebaseData.dreamsChecklist) {
-          setters.setDreamsChecklist(firebaseData.dreamsChecklist);
-        }
+          // Only update if the Firebase data has checklist items
+          if (firebaseData.morningChecklist) {
+            setters.setMorningChecklist(firebaseData.morningChecklist);
+          }
+          if (firebaseData.eveningChecklist) {
+            setters.setEveningChecklist(firebaseData.eveningChecklist);
+          }
+          if (firebaseData.gymWorkoutChecklist) {
+            setters.setGymWorkoutChecklist(firebaseData.gymWorkoutChecklist);
+          }
+          if (firebaseData.homeWorkoutChecklist) {
+            setters.setHomeWorkoutChecklist(firebaseData.homeWorkoutChecklist);
+          }
+          if (firebaseData.lunchGoalsChecklist) {
+            setters.setLunchGoalsChecklist(firebaseData.lunchGoalsChecklist);
+          }
+          if (firebaseData.afterWorkGoalsChecklist) {
+            setters.setAfterWorkGoalsChecklist(
+              firebaseData.afterWorkGoalsChecklist
+            );
+          }
+          if (firebaseData.dreamsChecklist) {
+            setters.setDreamsChecklist(firebaseData.dreamsChecklist);
+          }
 
-        // Update time data if available
-        if (firebaseData.gymWorkoutTime !== undefined) {
-          setters.setGymWorkoutTime(firebaseData.gymWorkoutTime);
-        }
-        if (firebaseData.homeWorkoutTime !== undefined) {
-          setters.setHomeWorkoutTime(firebaseData.homeWorkoutTime);
-        }
-        if (firebaseData.lunchTime !== undefined) {
-          setters.setLunchTime(firebaseData.lunchTime);
-        }
-        if (firebaseData.afterWorkTime !== undefined) {
-          setters.setAfterWorkTime(firebaseData.afterWorkTime);
-        }
-        if (firebaseData.dreamsTime !== undefined) {
-          setters.setDreamsTime(firebaseData.dreamsTime);
-        }
+          // Update time data if available
+          if (firebaseData.gymWorkoutTime !== undefined) {
+            setters.setGymWorkoutTime(firebaseData.gymWorkoutTime);
+          }
+          if (firebaseData.homeWorkoutTime !== undefined) {
+            setters.setHomeWorkoutTime(firebaseData.homeWorkoutTime);
+          }
+          if (firebaseData.lunchTime !== undefined) {
+            setters.setLunchTime(firebaseData.lunchTime);
+          }
+          if (firebaseData.afterWorkTime !== undefined) {
+            setters.setAfterWorkTime(firebaseData.afterWorkTime);
+          }
+          if (firebaseData.dreamsTime !== undefined) {
+            setters.setDreamsTime(firebaseData.dreamsTime);
+          }
 
-        if (forceLoad || !hasLoadedOnce.current) {
-          console.log("Successfully loaded data from Firebase");
+          if (forceLoad || !hasLoadedOnce.current) {
+            console.log("Successfully loaded data from Firebase");
+          }
         }
+      } catch (error) {
+        console.error("Error loading from Firebase:", error);
       }
-    } catch (error) {
-      console.error("Error loading from Firebase:", error);
-    }
-  }, [setters]);
+    },
+    [setters]
+  );
 
   // Auto-save to Firebase with debouncing
   const saveToFirebase = useCallback(

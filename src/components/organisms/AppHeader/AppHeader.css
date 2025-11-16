@@ -1,0 +1,63 @@
+.app-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  margin-bottom: 20px;
+}
+
+.header-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scroll-btn,
+.analytics-btn,
+.reset-btn {
+  font-size: 12px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .header-controls {
+    justify-content: center;
+  }
+
+  .scroll-btn,
+  .analytics-btn,
+  .reset-btn {
+    flex: 1;
+    min-width: 0;
+  }
+}

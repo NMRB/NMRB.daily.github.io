@@ -1,0 +1,43 @@
+.stat-number {
+  text-align: center;
+}
+
+.stat-number__value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.stat-number__label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-number--large .stat-number__value {
+  font-size: 32px;
+}
+
+.stat-number--small .stat-number__value {
+  font-size: 18px;
+}
+
+.stat-number--success .stat-number__value {
+  color: #4caf50;
+}
+
+.stat-number--warning .stat-number__value {
+  color: #ff9800;
+}
+
+.stat-number--danger .stat-number__value {
+  color: #f44336;
+}
+
+.stat-number--primary .stat-number__value {
+  color: #2196f3;
+}
