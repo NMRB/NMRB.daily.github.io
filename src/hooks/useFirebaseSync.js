@@ -1,9 +1,9 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { 
-  saveDailyChecklistToFirebase, 
+import { useEffect, useRef, useCallback } from "react";
+import {
+  saveDailyChecklistToFirebase,
   loadDailyChecklistFromFirebase,
-  saveChecklistCompletionEvent 
-} from '../firebase';
+  saveChecklistCompletionEvent,
+} from "../firebase";
 
 export const useFirebaseSync = (checklistData, setters) => {
   const isInitialized = useRef(false);
@@ -16,7 +16,7 @@ export const useFirebaseSync = (checklistData, setters) => {
       if (result.success && result.data) {
         // Update state with Firebase data if it exists and is more recent
         const firebaseData = result.data;
-        
+
         // Only update if the Firebase data has checklist items
         if (firebaseData.morningChecklist) {
           setters.setMorningChecklist(firebaseData.morningChecklist);
@@ -34,12 +34,14 @@ export const useFirebaseSync = (checklistData, setters) => {
           setters.setLunchGoalsChecklist(firebaseData.lunchGoalsChecklist);
         }
         if (firebaseData.afterWorkGoalsChecklist) {
-          setters.setAfterWorkGoalsChecklist(firebaseData.afterWorkGoalsChecklist);
+          setters.setAfterWorkGoalsChecklist(
+            firebaseData.afterWorkGoalsChecklist
+          );
         }
         if (firebaseData.dreamsChecklist) {
           setters.setDreamsChecklist(firebaseData.dreamsChecklist);
         }
-        
+
         // Update time data if available
         if (firebaseData.gymWorkoutTime !== undefined) {
           setters.setGymWorkoutTime(firebaseData.gymWorkoutTime);
@@ -56,41 +58,44 @@ export const useFirebaseSync = (checklistData, setters) => {
         if (firebaseData.dreamsTime !== undefined) {
           setters.setDreamsTime(firebaseData.dreamsTime);
         }
-        
-        console.log('Successfully loaded data from Firebase');
+
+        console.log("Successfully loaded data from Firebase");
       }
     } catch (error) {
-      console.error('Error loading from Firebase:', error);
+      console.error("Error loading from Firebase:", error);
     }
   }, [setters]);
 
   // Auto-save to Firebase with debouncing
-  const saveToFirebase = useCallback(async (immediate = false) => {
-    if (!isInitialized.current) return;
+  const saveToFirebase = useCallback(
+    async (immediate = false) => {
+      if (!isInitialized.current) return;
 
-    // Clear existing timeout
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    const performSave = async () => {
-      try {
-        const result = await saveDailyChecklistToFirebase(checklistData);
-        if (result.success) {
-          console.log('Auto-saved to Firebase');
-        }
-      } catch (error) {
-        console.error('Auto-save failed:', error);
+      // Clear existing timeout
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
       }
-    };
 
-    if (immediate) {
-      await performSave();
-    } else {
-      // Debounce saves to avoid too many writes
-      saveTimeoutRef.current = setTimeout(performSave, 2000);
-    }
-  }, [checklistData]);
+      const performSave = async () => {
+        try {
+          const result = await saveDailyChecklistToFirebase(checklistData);
+          if (result.success) {
+            console.log("Auto-saved to Firebase");
+          }
+        } catch (error) {
+          console.error("Auto-save failed:", error);
+        }
+      };
+
+      if (immediate) {
+        await performSave();
+      } else {
+        // Debounce saves to avoid too many writes
+        saveTimeoutRef.current = setTimeout(performSave, 2000);
+      }
+    },
+    [checklistData]
+  );
 
   // Log checklist completion events
   const logCompletionEvent = useCallback(async (eventType, itemData) => {
@@ -98,12 +103,12 @@ export const useFirebaseSync = (checklistData, setters) => {
       await saveChecklistCompletionEvent({
         eventType, // 'item_completed', 'item_unchecked', 'time_updated', etc.
         itemData,
-        checklistType: itemData.checklistType || 'unknown',
+        checklistType: itemData.checklistType || "unknown",
         itemId: itemData.id,
-        itemName: itemData.name || itemData.text
+        itemName: itemData.name || itemData.text,
       });
     } catch (error) {
-      console.error('Error logging completion event:', error);
+      console.error("Error logging completion event:", error);
     }
   }, []);
 
@@ -113,7 +118,7 @@ export const useFirebaseSync = (checklistData, setters) => {
       await loadFromFirebase();
       isInitialized.current = true;
     };
-    
+
     initializeSync();
   }, [loadFromFirebase]);
 
@@ -135,7 +140,7 @@ export const useFirebaseSync = (checklistData, setters) => {
     checklistData.lunchTime,
     checklistData.afterWorkTime,
     checklistData.dreamsTime,
-    saveToFirebase
+    saveToFirebase,
   ]);
 
   // Cleanup timeout on unmount
@@ -150,6 +155,6 @@ export const useFirebaseSync = (checklistData, setters) => {
   return {
     saveToFirebase: (immediate) => saveToFirebase(immediate),
     loadFromFirebase,
-    logCompletionEvent
+    logCompletionEvent,
   };
 };

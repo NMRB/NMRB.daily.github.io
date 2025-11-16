@@ -10,6 +10,7 @@ import {
   dreamsChecklist as defaultDreamsChecklist,
 } from "./data";
 import { useFirebaseSync } from "./hooks/useFirebaseSync";
+import WeeklyBreakdown from "./components/WeeklyBreakdown";
 
 function App() {
   // Cookie utility functions
@@ -139,6 +140,9 @@ function App() {
     getStoredData("dreamsTime", "")
   );
 
+  // Page navigation state
+  const [currentPage, setCurrentPage] = useState('daily'); // 'daily' or 'weekly'
+
   // Firebase sync integration
   const checklistData = {
     morningChecklist,
@@ -152,7 +156,7 @@ function App() {
     homeWorkoutTime,
     lunchTime,
     afterWorkTime,
-    dreamsTime
+    dreamsTime,
   };
 
   const setters = {
@@ -167,10 +171,11 @@ function App() {
     setHomeWorkoutTime,
     setLunchTime,
     setAfterWorkTime,
-    setDreamsTime
+    setDreamsTime,
   };
 
-  const { saveToFirebase, loadFromFirebase, logCompletionEvent } = useFirebaseSync(checklistData, setters);
+  const { saveToFirebase, loadFromFirebase, logCompletionEvent } =
+    useFirebaseSync(checklistData, setters);
 
   // Save data to cookies whenever state changes
   useEffect(() => {
@@ -270,7 +275,7 @@ function App() {
     // Helper function to log completion events
     const logToggleEvent = (item, newCompletedState) => {
       logCompletionEvent(
-        newCompletedState ? 'item_completed' : 'item_unchecked',
+        newCompletedState ? "item_completed" : "item_unchecked",
         {
           id: item.id,
           name: item.name || item.text,
@@ -280,7 +285,7 @@ function App() {
           category: item.category || null,
           weight: item.weight || null,
           reps: item.reps || null,
-          sets: item.sets || null
+          sets: item.sets || null,
         }
       );
     };
@@ -374,41 +379,41 @@ function App() {
 
   // Enhanced time change handlers that log to Firebase
   const handleTimeChange = (timeType, newValue, oldValue) => {
-    logCompletionEvent('time_updated', {
+    logCompletionEvent("time_updated", {
       timeType,
       oldValue,
       newValue,
-      checklistType: timeType.replace('Time', '')
+      checklistType: timeType.replace("Time", ""),
     });
   };
 
   const handleGymWorkoutTimeChange = (e) => {
     const newValue = e.target.value;
-    handleTimeChange('gymWorkoutTime', newValue, gymWorkoutTime);
+    handleTimeChange("gymWorkoutTime", newValue, gymWorkoutTime);
     setGymWorkoutTime(newValue);
   };
 
   const handleHomeWorkoutTimeChange = (e) => {
     const newValue = e.target.value;
-    handleTimeChange('homeWorkoutTime', newValue, homeWorkoutTime);
+    handleTimeChange("homeWorkoutTime", newValue, homeWorkoutTime);
     setHomeWorkoutTime(newValue);
   };
 
   const handleLunchTimeChange = (e) => {
     const newValue = e.target.value;
-    handleTimeChange('lunchTime', newValue, lunchTime);
+    handleTimeChange("lunchTime", newValue, lunchTime);
     setLunchTime(newValue);
   };
 
   const handleAfterWorkTimeChange = (e) => {
     const newValue = e.target.value;
-    handleTimeChange('afterWorkTime', newValue, afterWorkTime);
+    handleTimeChange("afterWorkTime", newValue, afterWorkTime);
     setAfterWorkTime(newValue);
   };
 
   const handleDreamsTimeChange = (e) => {
     const newValue = e.target.value;
-    handleTimeChange('dreamsTime', newValue, dreamsTime);
+    handleTimeChange("dreamsTime", newValue, dreamsTime);
     setDreamsTime(newValue);
   };
 
@@ -458,25 +463,37 @@ function App() {
     window.location.reload();
   };
 
+  // Handle page navigation
+  if (currentPage === 'weekly') {
+    return <WeeklyBreakdown onBack={() => setCurrentPage('daily')} />;
+  }
+
   return (
     <div className="app">
       <header className="app-header">
         <h1>Daily Planner</h1>
         <p className="date">{getCurrentDate()}</p>
         <div className="firebase-controls">
-          <button 
-            onClick={() => saveToFirebase(true)} 
+          <button
+            onClick={() => saveToFirebase(true)}
             className="firebase-save-btn"
             title="Manually save to Firebase"
           >
             💾 Save to Cloud
           </button>
-          <button 
-            onClick={loadFromFirebase} 
+          <button
+            onClick={loadFromFirebase}
             className="firebase-load-btn"
             title="Load latest from Firebase"
           >
             📥 Load from Cloud
+          </button>
+          <button
+            onClick={() => setCurrentPage('weekly')}
+            className="weekly-breakdown-btn"
+            title="View weekly analytics and progress"
+          >
+            📊 Weekly Breakdown
           </button>
         </div>
       </header>

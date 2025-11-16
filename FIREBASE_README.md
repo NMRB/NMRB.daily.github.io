@@ -1,16 +1,19 @@
 # Firebase Integration Documentation
 
 ## Overview
+
 The Daily Planner now includes full Firebase integration for cloud-based data persistence and analytics. This ensures your daily progress is automatically saved and can be accessed across devices.
 
 ## Features
 
 ### 🔄 **Automatic Data Sync**
+
 - **Real-time Backup**: All checklist completions are automatically saved to Firebase
 - **Cross-device Sync**: Access your progress from any device
 - **Daily Reset Compatibility**: Works seamlessly with the existing daily reset functionality
 
 ### 📊 **Detailed Activity Logging**
+
 - **Completion Events**: Every checkbox interaction is logged with timestamps
 - **Time Tracking**: All time inputs are recorded when modified
 - **Exercise Details**: Logs include exercise categories, weights, reps, and sets
@@ -20,6 +23,7 @@ The Daily Planner now includes full Firebase integration for cloud-based data pe
   - `time_updated` - When time inputs are modified
 
 ### 💾 **Manual Controls**
+
 - **Save to Cloud** button - Force immediate sync to Firebase
 - **Load from Cloud** button - Pull latest data from Firebase
 - Located in the header for easy access
@@ -27,6 +31,7 @@ The Daily Planner now includes full Firebase integration for cloud-based data pe
 ## Data Structure
 
 ### Daily Checklists Collection (`dailyChecklists`)
+
 ```javascript
 {
   date: "YYYY-MM-DD",
@@ -48,6 +53,7 @@ The Daily Planner now includes full Firebase integration for cloud-based data pe
 ```
 
 ### Checklist Events Collection (`checklistEvents`)
+
 ```javascript
 {
   eventType: "item_completed|item_unchecked|time_updated",
@@ -68,12 +74,15 @@ The Daily Planner now includes full Firebase integration for cloud-based data pe
 ## Configuration
 
 ### Firebase Project Setup
+
 - **Project ID**: `checklist-173c5`
 - **Database**: Cloud Firestore
 - **Collections**: `dailyChecklists`, `checklistEvents`
 
 ### Security Rules
+
 Ensure your Firestore security rules allow read/write access:
+
 ```javascript
 rules_version = '2';
 service cloud.firestore {
@@ -88,15 +97,18 @@ service cloud.firestore {
 ## Usage
 
 ### Automatic Behavior
+
 - Data is automatically loaded from Firebase when the app starts
 - Changes are auto-saved with a 2-second debounce delay
 - Cookie data remains as fallback/offline storage
 
 ### Manual Controls
+
 1. **💾 Save to Cloud**: Click to immediately sync current state to Firebase
 2. **📥 Load from Cloud**: Click to pull the latest data from Firebase
 
 ### Error Handling
+
 - All Firebase operations include comprehensive error handling
 - Console logs provide debugging information
 - Graceful fallback to cookie-based storage if Firebase fails
