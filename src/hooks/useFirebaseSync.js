@@ -7,10 +7,11 @@ import {
 
 export const useFirebaseSync = (checklistData, setters) => {
   const isInitialized = useRef(false);
+  const hasLoadedOnce = useRef(false);
   const saveTimeoutRef = useRef(null);
 
-  // Load data from Firebase on component mount
-  const loadFromFirebase = useCallback(async () => {
+  // Load data from Firebase on component mount (manual load function)
+  const loadFromFirebase = useCallback(async (forceLoad = false) => {
     try {
       const result = await loadDailyChecklistFromFirebase();
       if (result.success && result.data) {
@@ -59,7 +60,9 @@ export const useFirebaseSync = (checklistData, setters) => {
           setters.setDreamsTime(firebaseData.dreamsTime);
         }
 
-        console.log("Successfully loaded data from Firebase");
+        if (forceLoad || !hasLoadedOnce.current) {
+          console.log("Successfully loaded data from Firebase");
+        }
       }
     } catch (error) {
       console.error("Error loading from Firebase:", error);
@@ -112,15 +115,18 @@ export const useFirebaseSync = (checklistData, setters) => {
     }
   }, []);
 
-  // Initialize Firebase sync
+  // Initialize Firebase sync - only run once on mount
   useEffect(() => {
     const initializeSync = async () => {
-      await loadFromFirebase();
-      isInitialized.current = true;
+      if (!hasLoadedOnce.current) {
+        await loadFromFirebase(false);
+        hasLoadedOnce.current = true;
+        isInitialized.current = true;
+      }
     };
 
     initializeSync();
-  }, [loadFromFirebase]);
+  }, []); // Empty dependency array - only run once on mount
 
   // Auto-save when data changes
   useEffect(() => {
@@ -154,7 +160,7 @@ export const useFirebaseSync = (checklistData, setters) => {
 
   return {
     saveToFirebase: (immediate) => saveToFirebase(immediate),
-    loadFromFirebase,
+    loadFromFirebase: () => loadFromFirebase(true), // Force logging for manual loads
     logCompletionEvent,
   };
 };

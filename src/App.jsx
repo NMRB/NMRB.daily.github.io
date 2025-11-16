@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import "./App.css";
 import {
   morningChecklist as defaultMorningChecklist,
@@ -143,8 +143,8 @@ function App() {
   // Page navigation state
   const [currentPage, setCurrentPage] = useState("daily"); // 'daily' or 'weekly'
 
-  // Firebase sync integration
-  const checklistData = {
+  // Firebase sync integration - memoized to prevent unnecessary re-renders
+  const checklistData = useMemo(() => ({
     morningChecklist,
     eveningChecklist,
     gymWorkoutChecklist,
@@ -157,9 +157,22 @@ function App() {
     lunchTime,
     afterWorkTime,
     dreamsTime,
-  };
+  }), [
+    morningChecklist,
+    eveningChecklist,
+    gymWorkoutChecklist,
+    homeWorkoutChecklist,
+    lunchGoalsChecklist,
+    afterWorkGoalsChecklist,
+    dreamsChecklist,
+    gymWorkoutTime,
+    homeWorkoutTime,
+    lunchTime,
+    afterWorkTime,
+    dreamsTime,
+  ]);
 
-  const setters = {
+  const setters = useMemo(() => ({
     setMorningChecklist,
     setEveningChecklist,
     setGymWorkoutChecklist,
@@ -172,7 +185,7 @@ function App() {
     setLunchTime,
     setAfterWorkTime,
     setDreamsTime,
-  };
+  }), []); // Empty dependency array since these functions are stable
 
   const { saveToFirebase, loadFromFirebase, logCompletionEvent } =
     useFirebaseSync(checklistData, setters);
