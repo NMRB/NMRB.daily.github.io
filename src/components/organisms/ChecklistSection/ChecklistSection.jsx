@@ -63,7 +63,8 @@ const ChecklistSection = ({
             item.sets ||
             item.weight ||
             item.duration ||
-            item.category ? (
+            item.category ||
+            item.needsEquipment ? (
               <ExerciseDetails item={item} />
             ) : (
               <span className="simple-item-text">{item.text || item.name}</span>

@@ -24,7 +24,11 @@ const ChecklistSettingsPage = () => {
   const [newItemReps, setNewItemReps] = useState("");
   const [newItemSets, setNewItemSets] = useState("");
   const [newItemDuration, setNewItemDuration] = useState("");
+  const [newItemCategory, setNewItemCategory] = useState("");
+  const [newItemEquipment, setNewItemEquipment] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const sections = [
     { key: "morning", title: "Morning Checklist", icon: "🌅" },
@@ -42,6 +46,20 @@ const ChecklistSettingsPage = () => {
     setEditingSectionGoal(false);
   }, [activeSection, customChecklists]);
 
+  // Handle window resize for responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setShowMobileMenu(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const getCurrentItems = () => {
     return customChecklists[activeSection] || [];
   };
@@ -58,10 +76,12 @@ const ChecklistSettingsPage = () => {
       text: newItemText.trim(),
       name: newItemText.trim(),
       completed: false,
-      category: isWorkoutSection() ? "Custom" : null,
+      category:
+        newItemCategory.trim() || (isWorkoutSection() ? "Custom" : null),
       reps: isWorkoutSection() && newItemReps ? newItemReps : null,
       sets: isWorkoutSection() && newItemSets ? newItemSets : null,
       duration: newItemDuration.trim() || null,
+      needsEquipment: newItemEquipment,
       weight: null,
     };
 
@@ -71,6 +91,8 @@ const ChecklistSettingsPage = () => {
     setNewItemReps("");
     setNewItemSets("");
     setNewItemDuration("");
+    setNewItemCategory("");
+    setNewItemEquipment(false);
     setShowAddForm(false);
   };
 
@@ -187,190 +209,315 @@ const ChecklistSettingsPage = () => {
             maxWidth: "1200px",
             margin: "0 auto",
             display: "grid",
-            gridTemplateColumns: "300px 1fr",
+            gridTemplateColumns: isMobile ? "1fr" : "300px 1fr",
             gap: "20px",
           }}
         >
-          {/* Sidebar */}
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "8px",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-              padding: "20px",
-              height: "fit-content",
-            }}
-          >
-            <h2
-              style={{
-                marginBottom: "20px",
-                color: "#333",
-                fontSize: "20px",
-                borderBottom: "2px solid #007bff",
-                paddingBottom: "10px",
-              }}
-            >
-              Checklist Sections
-            </h2>
-
-            {sections.map((section) => (
+          {/* Mobile Menu Button - Only visible on mobile */}
+          {isMobile && (
+            <>
               <button
-                key={section.key}
-                onClick={() => setActiveSection(section.key)}
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
                 style={{
-                  width: "100%",
-                  padding: "15px",
-                  marginBottom: "10px",
-                  backgroundColor:
-                    activeSection === section.key ? "#007bff" : "#f8f9fa",
-                  color: activeSection === section.key ? "white" : "#333",
-                  border: "1px solid #dee2e6",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontSize: "16px",
-                  textAlign: "left",
-                }}
-              >
-                <span style={{ fontSize: "20px" }}>{section.icon}</span>
-                {section.title}
-              </button>
-            ))}
-
-            <div
-              style={{
-                marginTop: "30px",
-                padding: "15px",
-                backgroundColor: "#f0f8ff",
-                borderRadius: "6px",
-                border: "1px solid #b3d9ff",
-              }}
-            >
-              <h3
-                style={{
-                  margin: "0 0 10px 0",
-                  color: "#0066cc",
-                  fontSize: "16px",
-                }}
-              >
-                Backup & Restore
-              </h3>
-              <button
-                onClick={exportChecklists}
-                style={{
-                  width: "100%",
-                  padding: "10px",
+                  marginBottom: "20px",
+                  padding: "12px 20px",
                   backgroundColor: "#007bff",
                   color: "white",
                   border: "none",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   cursor: "pointer",
-                  marginBottom: "10px",
-                }}
-              >
-                Export Settings
-              </button>
-              <input
-                type="file"
-                accept=".json"
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = async (event) => {
-                      const result = await importChecklists(
-                        event.target.result
-                      );
-                      if (!result.success) {
-                        alert(`Import failed: ${result.error}`);
-                      } else {
-                        alert("Settings imported successfully!");
-                        window.location.reload();
-                      }
-                    };
-                    reader.readAsText(file);
-                  }
-                  e.target.value = ""; // Reset file input
-                }}
-                style={{ display: "none" }}
-                id="importFile"
-              />
-              <button
-                onClick={() => document.getElementById("importFile").click()}
-                style={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
                   width: "100%",
-                  padding: "10px",
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  marginBottom: "20px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gridColumn: "1 / -1",
                 }}
               >
-                Import Settings
+                <span>
+                  📋 {sections.find((s) => s.key === activeSection)?.title}
+                </span>
+                <span>{showMobileMenu ? "▲" : "▼"}</span>
               </button>
-            </div>
 
+              {/* Mobile Overlay Menu */}
+              {showMobileMenu && (
+                <div
+                  style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    zIndex: 1000,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "20px",
+                  }}
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  <div
+                    style={{
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      padding: "20px",
+                      maxWidth: "400px",
+                      width: "100%",
+                      maxHeight: "80vh",
+                      overflow: "auto",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "20px",
+                        borderBottom: "2px solid #007bff",
+                        paddingBottom: "10px",
+                      }}
+                    >
+                      <h2
+                        style={{ margin: 0, color: "#333", fontSize: "20px" }}
+                      >
+                        Checklist Sections
+                      </h2>
+                      <button
+                        onClick={() => setShowMobileMenu(false)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          fontSize: "24px",
+                          cursor: "pointer",
+                          color: "#666",
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    {sections.map((section) => (
+                      <button
+                        key={section.key}
+                        onClick={() => {
+                          setActiveSection(section.key);
+                          setShowMobileMenu(false);
+                        }}
+                        style={{
+                          width: "100%",
+                          padding: "15px",
+                          marginBottom: "10px",
+                          backgroundColor:
+                            activeSection === section.key
+                              ? "#007bff"
+                              : "#f8f9fa",
+                          color:
+                            activeSection === section.key ? "white" : "#333",
+                          border: "1px solid #dee2e6",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          fontSize: "16px",
+                          textAlign: "left",
+                        }}
+                      >
+                        <span style={{ fontSize: "20px" }}>{section.icon}</span>
+                        {section.title}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+          {/* Sidebar - Only visible on desktop */}
+          {!isMobile && (
             <div
               style={{
-                marginTop: "20px",
-                padding: "15px",
-                backgroundColor: "#fff5f5",
-                borderRadius: "6px",
-                border: "1px solid #fed7d7",
+                backgroundColor: "white",
+                borderRadius: "8px",
+                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                padding: "20px",
+                height: "fit-content",
               }}
             >
-              <h3
+              <h2
                 style={{
-                  margin: "0 0 10px 0",
-                  color: "#721c24",
-                  fontSize: "16px",
+                  marginBottom: "20px",
+                  color: "#333",
+                  fontSize: "20px",
+                  borderBottom: "2px solid #007bff",
+                  paddingBottom: "10px",
                 }}
               >
-                Reset Options
-              </h3>
-              <button
-                onClick={handleResetSection}
+                Checklist Sections
+              </h2>
+
+              {sections.map((section) => (
+                <button
+                  key={section.key}
+                  onClick={() => setActiveSection(section.key)}
+                  style={{
+                    width: "100%",
+                    padding: "15px",
+                    marginBottom: "10px",
+                    backgroundColor:
+                      activeSection === section.key ? "#007bff" : "#f8f9fa",
+                    color: activeSection === section.key ? "white" : "#333",
+                    border: "1px solid #dee2e6",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    fontSize: "16px",
+                    textAlign: "left",
+                  }}
+                >
+                  <span style={{ fontSize: "20px" }}>{section.icon}</span>
+                  {section.title}
+                </button>
+              ))}
+
+              <div
                 style={{
-                  width: "100%",
-                  padding: "10px",
-                  backgroundColor: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  marginBottom: "10px",
+                  marginTop: "30px",
+                  padding: "15px",
+                  backgroundColor: "#f0f8ff",
+                  borderRadius: "6px",
+                  border: "1px solid #b3d9ff",
                 }}
               >
-                Reset Current Section
-              </button>
-              <button
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      "Reset ALL checklists to defaults? This cannot be undone."
-                    )
-                  ) {
-                    resetToDefaults();
-                  }
-                }}
+                <h3
+                  style={{
+                    margin: "0 0 10px 0",
+                    color: "#0066cc",
+                    fontSize: "16px",
+                  }}
+                >
+                  Backup & Restore
+                </h3>
+                <button
+                  onClick={exportChecklists}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    backgroundColor: "#007bff",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Export Settings
+                </button>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = async (event) => {
+                        const result = await importChecklists(
+                          event.target.result
+                        );
+                        if (!result.success) {
+                          alert(`Import failed: ${result.error}`);
+                        } else {
+                          alert("Settings imported successfully!");
+                          window.location.reload();
+                        }
+                      };
+                      reader.readAsText(file);
+                    }
+                    e.target.value = ""; // Reset file input
+                  }}
+                  style={{ display: "none" }}
+                  id="importFile"
+                />
+                <button
+                  onClick={() => document.getElementById("importFile").click()}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    backgroundColor: "#28a745",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    marginBottom: "20px",
+                  }}
+                >
+                  Import Settings
+                </button>
+              </div>
+
+              <div
                 style={{
-                  width: "100%",
-                  padding: "10px",
-                  backgroundColor: "#6c757d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
+                  marginTop: "20px",
+                  padding: "15px",
+                  backgroundColor: "#fff5f5",
+                  borderRadius: "6px",
+                  border: "1px solid #fed7d7",
                 }}
               >
-                Reset All Sections
-              </button>
+                <h3
+                  style={{
+                    margin: "0 0 10px 0",
+                    color: "#721c24",
+                    fontSize: "16px",
+                  }}
+                >
+                  Reset Options
+                </h3>
+                <button
+                  onClick={handleResetSection}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    backgroundColor: "#dc3545",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Reset Current Section
+                </button>
+                <button
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Reset ALL checklists to defaults? This cannot be undone."
+                      )
+                    ) {
+                      resetToDefaults();
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    backgroundColor: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Reset All Sections
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Main Content */}
           <div
@@ -418,8 +565,20 @@ const ChecklistSettingsPage = () => {
               {/* Section Goal Time */}
               <div style={{ marginTop: "10px", marginBottom: "15px" }}>
                 {editingSectionGoal ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <label style={{ fontSize: "16px", fontWeight: "bold", color: "#666" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        color: "#666",
+                      }}
+                    >
                       Section Goal Time:
                     </label>
                     <input
@@ -468,7 +627,13 @@ const ChecklistSettingsPage = () => {
                     </button>
                   </div>
                 ) : (
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
                     <span style={{ fontSize: "16px", color: "#666" }}>
                       <strong>Goal Time:</strong>{" "}
                       {getSectionGoalTime() ? (
@@ -658,6 +823,57 @@ const ChecklistSettingsPage = () => {
                   />
                 </div>
 
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Category (optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newItemCategory}
+                    onChange={(e) => setNewItemCategory(e.target.value)}
+                    placeholder="e.g., Legs, Cardio, Stretching, Work"
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: "1px solid #ddd",
+                      borderRadius: "4px",
+                      fontSize: "16px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={newItemEquipment}
+                      onChange={(e) => setNewItemEquipment(e.target.checked)}
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        cursor: "pointer",
+                      }}
+                    />
+                    Requires Equipment
+                  </label>
+                </div>
+
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button
                     onClick={handleAddItem}
@@ -679,6 +895,8 @@ const ChecklistSettingsPage = () => {
                       setNewItemReps("");
                       setNewItemSets("");
                       setNewItemDuration("");
+                      setNewItemCategory("");
+                      setNewItemEquipment(false);
                     }}
                     style={{
                       padding: "12px 20px",
@@ -866,6 +1084,67 @@ const ChecklistSettingsPage = () => {
                         />
                       </div>
 
+                      <div style={{ marginTop: "10px" }}>
+                        <label
+                          style={{
+                            display: "block",
+                            marginBottom: "5px",
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Category:
+                        </label>
+                        <input
+                          type="text"
+                          value={editingItem.category || ""}
+                          onChange={(e) =>
+                            setEditingItem({
+                              ...editingItem,
+                              category: e.target.value,
+                            })
+                          }
+                          placeholder="e.g., Legs, Cardio, Stretching, Work"
+                          style={{
+                            padding: "8px",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px",
+                            width: "200px",
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ marginTop: "10px" }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={editingItem.needsEquipment || false}
+                            onChange={(e) =>
+                              setEditingItem({
+                                ...editingItem,
+                                needsEquipment: e.target.checked,
+                              })
+                            }
+                            style={{
+                              width: "16px",
+                              height: "16px",
+                              cursor: "pointer",
+                            }}
+                          />
+                          Requires Equipment
+                        </label>
+                      </div>
+
                       <div
                         style={{
                           display: "flex",
@@ -972,15 +1251,44 @@ const ChecklistSettingsPage = () => {
                           </div>
                         )}
 
-                        {item.category && (
-                          <div style={{ fontSize: "13px", color: "#666" }}>
-                            Category: {item.category}
-                            {!isWorkoutSection() &&
-                              item.reps &&
-                              ` • Reps: ${item.reps}`}
-                            {!isWorkoutSection() &&
-                              item.sets &&
-                              ` • Sets: ${item.sets}`}
+                        {(item.category || item.needsEquipment) && (
+                          <div
+                            style={{
+                              fontSize: "14px",
+                              marginBottom: "3px",
+                              display: "flex",
+                              gap: "10px",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {item.category && (
+                              <span
+                                style={{
+                                  backgroundColor: "#e7f3ff",
+                                  padding: "2px 8px",
+                                  borderRadius: "12px",
+                                  border: "1px solid #007bff",
+                                  color: "#007bff",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                📂 {item.category}
+                              </span>
+                            )}
+                            {item.needsEquipment && (
+                              <span
+                                style={{
+                                  backgroundColor: "#fff3cd",
+                                  padding: "2px 8px",
+                                  borderRadius: "12px",
+                                  border: "1px solid #ffc107",
+                                  color: "#856404",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                🔧 Equipment Needed
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

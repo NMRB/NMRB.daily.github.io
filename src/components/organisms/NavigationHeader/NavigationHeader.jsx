@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const NavigationHeader = () => {
@@ -97,27 +97,30 @@ const NavigationHeader = () => {
   return (
     <header style={headerStyle}>
       <div style={containerStyle}>
-        <Link to="/" style={logoStyle}>
+        <a href="/NMRB.daily.github.io/" style={logoStyle}>
           Daily Planner
-        </Link>
+        </a>
 
         {currentUser && (
           <nav style={navLinksStyle}>
-            <Link to="/" style={isActive("/") ? activeLinkStyle : linkStyle}>
+            <a
+              href="/NMRB.daily.github.io/"
+              style={isActive("/") ? activeLinkStyle : linkStyle}
+            >
               Daily
-            </Link>
-            <Link
-              to="/weekly"
+            </a>
+            <a
+              href="/NMRB.daily.github.io/weekly"
               style={isActive("/weekly") ? activeLinkStyle : linkStyle}
             >
               Weekly
-            </Link>
-            <Link
-              to="/settings"
+            </a>
+            <a
+              href="/NMRB.daily.github.io/settings"
               style={isActive("/settings") ? activeLinkStyle : linkStyle}
             >
               Settings
-            </Link>
+            </a>
 
             <div style={userInfoStyle}>
               <span>
@@ -125,12 +128,12 @@ const NavigationHeader = () => {
                 {currentUser.displayName || currentUser.email?.split("@")[0]}
               </span>
               <div style={avatarStyle}>{getInitials(currentUser)}</div>
-              <Link
-                to="/account"
+              <a
+                href="/NMRB.daily.github.io/account"
                 style={isActive("/account") ? activeLinkStyle : linkStyle}
               >
                 Account
-              </Link>
+              </a>
             </div>
           </nav>
         )}

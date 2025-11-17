@@ -14,6 +14,11 @@ const ExerciseDetails = ({ item }) => {
               {item.category}
             </Badge>
           )}
+          {item.needsEquipment && (
+            <Badge variant="equipment" className="equipment">
+              🔧 Equipment
+            </Badge>
+          )}
         </div>
         {item.link && (
           <Button
@@ -30,7 +35,9 @@ const ExerciseDetails = ({ item }) => {
 
       {(item.reps || item.sets || item.weight || item.duration) && (
         <div className="exercise-specs">
-          {item.duration && <span className="spec duration">⏱️ {item.duration}</span>}
+          {item.duration && (
+            <span className="spec duration">⏱️ {item.duration}</span>
+          )}
           {item.weight && (
             <span className="spec weight">Weight: {item.weight}</span>
           )}

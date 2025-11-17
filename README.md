@@ -59,8 +59,7 @@ November 8, 2025
 
 # Deployment trigger
 
-
-Gym exercises 
+Gym exercises
 
 tread mill
 
@@ -71,4 +70,3 @@ row machine
 Arm Machines
 
 leg machines
-

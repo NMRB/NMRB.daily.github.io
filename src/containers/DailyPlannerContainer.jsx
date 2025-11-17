@@ -217,25 +217,59 @@ function DailyPlannerContainer() {
   // Update checklists when custom checklists change
   useEffect(() => {
     if (!checklistsLoading && customChecklists) {
-      // Only update if we don't have stored daily progress for today
-      const today = getTodayString();
-      const hasStoredProgress = getCookie("morningChecklist_date") === today;
+      // Helper function to merge custom checklist with existing completion state
+      const mergeWithCompletionState = (customItems, currentItems) => {
+        if (!customItems) return currentItems;
 
-      if (!hasStoredProgress) {
-        if (customChecklists.morning)
-          setMorningChecklist(customChecklists.morning);
-        if (customChecklists.evening)
-          setEveningChecklist(customChecklists.evening);
-        if (customChecklists.gymWorkout)
-          setGymWorkoutChecklist(customChecklists.gymWorkout);
-        if (customChecklists.homeWorkout)
-          setHomeWorkoutChecklist(customChecklists.homeWorkout);
-        if (customChecklists.lunchGoals)
-          setLunchGoalsChecklist(customChecklists.lunchGoals);
-        if (customChecklists.afterWorkGoals)
-          setAfterWorkGoalsChecklist(customChecklists.afterWorkGoals);
-        if (customChecklists.dreams)
-          setDreamsChecklist(customChecklists.dreams);
+        // Create a map of current completion states by item text/name
+        const completionMap = new Map();
+        currentItems.forEach((item) => {
+          const key = item.text || item.name;
+          completionMap.set(key, item.completed || false);
+        });
+
+        // Update custom items with preserved completion states
+        return customItems.map((item) => ({
+          ...item,
+          completed: completionMap.get(item.text || item.name) || false,
+        }));
+      };
+
+      // Always update checklists but preserve completion states
+      if (customChecklists.morning) {
+        setMorningChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.morning, prev)
+        );
+      }
+      if (customChecklists.evening) {
+        setEveningChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.evening, prev)
+        );
+      }
+      if (customChecklists.gymWorkout) {
+        setGymWorkoutChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.gymWorkout, prev)
+        );
+      }
+      if (customChecklists.homeWorkout) {
+        setHomeWorkoutChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.homeWorkout, prev)
+        );
+      }
+      if (customChecklists.lunchGoals) {
+        setLunchGoalsChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.lunchGoals, prev)
+        );
+      }
+      if (customChecklists.afterWorkGoals) {
+        setAfterWorkGoalsChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.afterWorkGoals, prev)
+        );
+      }
+      if (customChecklists.dreams) {
+        setDreamsChecklist((prev) =>
+          mergeWithCompletionState(customChecklists.dreams, prev)
+        );
       }
     }
   }, [customChecklists, checklistsLoading]);

@@ -7,7 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "npm run predeploy && git add . && git commit -m \"Deploy: $(date)\" && git push origin main",
+    "deploy:force": "npm run build && git add . && git commit -m \"Force deploy: $(date)\" --allow-empty && git push origin main",
+    "deploy:message": "npm run build && git add . && git commit -m",
+    "check:build": "npm run build && echo 'Build successful!'",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build"
   },
   "dependencies": {
     "firebase": "^12.5.0",
