@@ -11,5 +11,5 @@ export default defineConfig({
       external: [],
     },
   },
-  publicDir: 'public',
+  publicDir: "public",
 });
