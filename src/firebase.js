@@ -237,4 +237,69 @@ export const loadCustomChecklistsFromFirebase = async (userId = null) => {
   }
 };
 
+// Save preferred categories to Firebase
+export const savePreferredCategoriesToFirebase = async (
+  preferredCategories,
+  userId = null
+) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn("No authenticated user, cannot save preferred categories");
+      return { success: false, error: "No authenticated user" };
+    }
+
+    const docRef = doc(db, "users", userIdToUse, "settings", "preferences");
+
+    const dataToSave = {
+      preferredCategories,
+      lastUpdated: serverTimestamp(),
+      userId: userIdToUse,
+    };
+
+    await setDoc(docRef, dataToSave, { merge: true });
+    console.log("Preferred categories saved to Firebase for user:", userIdToUse);
+    return { success: true, userId: userIdToUse };
+  } catch (error) {
+    console.error("Error saving preferred categories:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Load preferred categories from Firebase
+export const loadPreferredCategoriesFromFirebase = async (userId = null) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn("No authenticated user, cannot load preferred categories");
+      return { success: false, error: "No authenticated user" };
+    }
+
+    const docRef = doc(db, "users", userIdToUse, "settings", "preferences");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log(
+        "Preferred categories loaded from Firebase for user:",
+        userIdToUse
+      );
+      return { success: true, data: data.preferredCategories || {} };
+    } else {
+      console.log("No preferred categories found for user:", userIdToUse);
+      return {
+        success: false,
+        error: "No preferred categories found",
+      };
+    }
+  } catch (error) {
+    console.error("Error loading preferred categories:", error);
+    return { success: false, error: error.message };
+  }
+};
+
 export default app;

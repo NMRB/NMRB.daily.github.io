@@ -15,6 +15,10 @@ const DailyPlannerTemplate = ({
   onShowWeeklyBreakdown,
   onResetDay,
   onScrollToActive,
+  gymWorkoutSelection,
+  onRegenerateGymWorkout,
+  homeWorkoutSelection,
+  onRegenerateHomeWorkout,
 }) => {
   return (
     <div className="daily-planner-template">
@@ -25,22 +29,40 @@ const DailyPlannerTemplate = ({
       />
 
       <main className="main-content">
-        {sections.map((section, index) => (
-          <ChecklistSection
-            key={section.title || index}
-            title={section.title}
-            timeIndicator={section.timeIndicator}
-            items={section.items}
-            checkedItems={checkedItems}
-            onItemToggle={onItemToggle}
-            timeTracking={timeTracking}
-            onTimeChange={onTimeChange}
-            weightInputs={weightInputs}
-            onWeightChange={onWeightChange}
-            onUpdateWeight={onUpdateWeight}
-            showWeightTracking={section.showWeightTracking}
-          />
-        ))}
+        {sections.map((section, index) => {
+          const isGymWorkout = section.title?.toLowerCase().includes("gym workout");
+          const isHomeWorkout = section.title?.toLowerCase().includes("home workout");
+          
+          let workoutSelection = null;
+          let onRegenerateWorkout = null;
+          
+          if (isGymWorkout) {
+            workoutSelection = gymWorkoutSelection;
+            onRegenerateWorkout = onRegenerateGymWorkout;
+          } else if (isHomeWorkout) {
+            workoutSelection = homeWorkoutSelection;
+            onRegenerateWorkout = onRegenerateHomeWorkout;
+          }
+          
+          return (
+            <ChecklistSection
+              key={section.title || index}
+              title={section.title}
+              timeIndicator={section.timeIndicator}
+              items={section.items}
+              checkedItems={checkedItems}
+              onItemToggle={onItemToggle}
+              timeTracking={timeTracking}
+              onTimeChange={onTimeChange}
+              weightInputs={weightInputs}
+              onWeightChange={onWeightChange}
+              onUpdateWeight={onUpdateWeight}
+              showWeightTracking={section.showWeightTracking}
+              workoutSelection={workoutSelection}
+              onRegenerateWorkout={onRegenerateWorkout}
+            />
+          );
+        })}
       </main>
     </div>
   );

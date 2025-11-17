@@ -3,6 +3,8 @@ import { useAuth } from "../contexts/AuthContext";
 import {
   saveCustomChecklistsToFirebase,
   loadCustomChecklistsFromFirebase,
+  savePreferredCategoriesToFirebase,
+  loadPreferredCategoriesFromFirebase,
 } from "../firebase";
 import {
   morningChecklist as defaultMorningChecklist,
@@ -12,11 +14,31 @@ import {
   lunchGoalsChecklist as defaultLunchGoalsChecklist,
   afterWorkGoalsChecklist as defaultAfterWorkGoalsChecklist,
   dreamsChecklist as defaultDreamsChecklist,
+  warmupChecklist as defaultWarmupChecklist,
+  cooldownChecklist as defaultCooldownChecklist,
 } from "../data";
 
 export const useChecklistSettings = () => {
   const { currentUser } = useAuth();
   const [customChecklists, setCustomChecklists] = useState({});
+  const [preferredCategories, setPreferredCategories] = useState({
+    monday: "",
+    tuesday: "",
+    wednesday: "",
+    thursday: "",
+    friday: "",
+    saturday: "",
+    sunday: ""
+  });
+  const [exerciseTimeLimits, setExerciseTimeLimits] = useState({
+    monday: "60",
+    tuesday: "60", 
+    wednesday: "60",
+    thursday: "60",
+    friday: "60",
+    saturday: "90",
+    sunday: "90"
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -48,6 +70,8 @@ export const useChecklistSettings = () => {
       lunchGoals: defaultLunchGoalsChecklist,
       afterWorkGoals: defaultAfterWorkGoalsChecklist,
       dreams: defaultDreamsChecklist,
+      warmup: defaultWarmupChecklist,
+      cooldown: defaultCooldownChecklist,
     };
   }, []);
 
@@ -64,16 +88,43 @@ export const useChecklistSettings = () => {
       setError("");
 
       try {
-        const result = await loadCustomChecklistsFromFirebase();
+        const [checklistResult, preferencesResult] = await Promise.all([
+          loadCustomChecklistsFromFirebase(),
+          loadPreferredCategoriesFromFirebase()
+        ]);
 
-        if (result.success && result.data) {
+        if (checklistResult.success && checklistResult.data) {
           // Merge with defaults to ensure all sections exist
           const defaults = getDefaultChecklists();
-          const merged = { ...defaults, ...result.data };
+          const merged = { ...defaults, ...checklistResult.data };
           setCustomChecklists(merged);
         } else {
           // No custom data found, use defaults
           setCustomChecklists(getDefaultChecklists());
+        }
+
+        if (preferencesResult.success && preferencesResult.data) {
+          setPreferredCategories({
+            monday: preferencesResult.data.monday || "",
+            tuesday: preferencesResult.data.tuesday || "",
+            wednesday: preferencesResult.data.wednesday || "",
+            thursday: preferencesResult.data.thursday || "",
+            friday: preferencesResult.data.friday || "",
+            saturday: preferencesResult.data.saturday || "",
+            sunday: preferencesResult.data.sunday || ""
+          });
+          
+          if (preferencesResult.data.exerciseTimeLimits) {
+            setExerciseTimeLimits({
+              monday: preferencesResult.data.exerciseTimeLimits.monday || "60",
+              tuesday: preferencesResult.data.exerciseTimeLimits.tuesday || "60",
+              wednesday: preferencesResult.data.exerciseTimeLimits.wednesday || "60",
+              thursday: preferencesResult.data.exerciseTimeLimits.thursday || "60",
+              friday: preferencesResult.data.exerciseTimeLimits.friday || "60",
+              saturday: preferencesResult.data.exerciseTimeLimits.saturday || "90",
+              sunday: preferencesResult.data.exerciseTimeLimits.sunday || "90"
+            });
+          }
         }
       } catch (err) {
         console.error("Error loading custom checklists:", err);
@@ -111,6 +162,45 @@ export const useChecklistSettings = () => {
       }
     },
     [currentUser]
+  );
+
+  // Save preferences (categories and time limits) to Firebase
+  const savePreferences = useCallback(
+    async (newPreferredCategories, newExerciseTimeLimits) => {
+      if (!currentUser) {
+        setError("Must be logged in to save preferences");
+        return;
+      }
+
+      try {
+        setError("");
+        const preferencesData = {
+          ...newPreferredCategories,
+          exerciseTimeLimits: newExerciseTimeLimits
+        };
+        const result = await savePreferredCategoriesToFirebase(preferencesData);
+
+        if (result.success) {
+          setPreferredCategories(newPreferredCategories);
+          setExerciseTimeLimits(newExerciseTimeLimits);
+          console.log("Preferences saved successfully");
+        } else {
+          throw new Error(result.error || "Failed to save");
+        }
+      } catch (err) {
+        console.error("Error saving preferences:", err);
+        setError("Failed to save preferences. Please try again.");
+      }
+    },
+    [currentUser]
+  );
+
+  // Save preferred categories (backward compatibility)
+  const savePreferredCategories = useCallback(
+    async (newPreferredCategories) => {
+      await savePreferences(newPreferredCategories, exerciseTimeLimits);
+    },
+    [savePreferences, exerciseTimeLimits]
   );
 
   // Reset to defaults (either specific section or all)
@@ -202,9 +292,13 @@ export const useChecklistSettings = () => {
 
   return {
     customChecklists,
+    preferredCategories,
+    exerciseTimeLimits,
     loading,
     error,
     saveCustomChecklists,
+    savePreferredCategories,
+    savePreferences,
     resetToDefaults,
     getChecklistForSection,
     hasCustomizations,

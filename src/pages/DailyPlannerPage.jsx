@@ -14,6 +14,10 @@ const DailyPlannerPage = ({
   onUpdateWeight,
   onResetDay,
   onScrollToActive,
+  gymWorkoutSelection,
+  onRegenerateGymWorkout,
+  homeWorkoutSelection,
+  onRegenerateHomeWorkout,
 }) => {
   const navigate = useNavigate();
 
@@ -32,6 +36,10 @@ const DailyPlannerPage = ({
         onShowWeeklyBreakdown={() => navigate("/weekly")}
         onResetDay={onResetDay}
         onScrollToActive={onScrollToActive}
+        gymWorkoutSelection={gymWorkoutSelection}
+        onRegenerateGymWorkout={onRegenerateGymWorkout}
+        homeWorkoutSelection={homeWorkoutSelection}
+        onRegenerateHomeWorkout={onRegenerateHomeWorkout}
       />
     </>
   );

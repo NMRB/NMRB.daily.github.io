@@ -8,7 +8,11 @@ const ChecklistSettingsPage = () => {
   const { currentUser } = useAuth();
   const {
     customChecklists,
+    preferredCategories,
+    exerciseTimeLimits,
     saveCustomChecklists,
+    savePreferredCategories,
+    savePreferences,
     resetToDefaults,
     loading,
     error,
@@ -25,19 +29,26 @@ const ChecklistSettingsPage = () => {
   const [newItemSets, setNewItemSets] = useState("");
   const [newItemDuration, setNewItemDuration] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("");
+  const [newItemLink, setNewItemLink] = useState("");
   const [newItemEquipment, setNewItemEquipment] = useState(false);
+  const [newItemWeight, setNewItemWeight] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [tempPreferredCategories, setTempPreferredCategories] = useState(preferredCategories);
+  const [tempExerciseTimeLimits, setTempExerciseTimeLimits] = useState(exerciseTimeLimits);
 
   const sections = [
     { key: "morning", title: "Morning Checklist", icon: "🌅" },
     { key: "evening", title: "Evening Checklist", icon: "🌙" },
+    { key: "warmup", title: "Warmup", icon: "🔥" },
     { key: "gymWorkout", title: "Gym Workout", icon: "🏋️" },
     { key: "homeWorkout", title: "Home Workout", icon: "🏠" },
+    { key: "cooldown", title: "Cooldown", icon: "❄️" },
     { key: "lunchGoals", title: "Lunch Goals", icon: "🥗" },
     { key: "afterWorkGoals", title: "After Work Goals", icon: "⚡" },
     { key: "dreams", title: "Dreams", icon: "💭" },
+    { key: "preferences", title: "Workout Preferences", icon: "⚙️" },
   ];
 
   // Update section goal time when active section changes
@@ -45,6 +56,16 @@ const ChecklistSettingsPage = () => {
     setSectionGoalTime(getSectionGoalTime());
     setEditingSectionGoal(false);
   }, [activeSection, customChecklists]);
+
+  // Update temp preferred categories when preferred categories change
+  useEffect(() => {
+    setTempPreferredCategories(preferredCategories);
+  }, [preferredCategories]);
+
+  // Update temp exercise time limits when exercise time limits change
+  useEffect(() => {
+    setTempExerciseTimeLimits(exerciseTimeLimits);
+  }, [exerciseTimeLimits]);
 
   // Handle window resize for responsive behavior
   useEffect(() => {
@@ -81,8 +102,9 @@ const ChecklistSettingsPage = () => {
       reps: isWorkoutSection() && newItemReps ? newItemReps : null,
       sets: isWorkoutSection() && newItemSets ? newItemSets : null,
       duration: newItemDuration.trim() || null,
+      link: newItemLink.trim() || null,
       needsEquipment: newItemEquipment,
-      weight: null,
+      weight: newItemWeight.trim() || null,
     };
 
     const updatedItems = [...getCurrentItems(), newItem];
@@ -92,7 +114,9 @@ const ChecklistSettingsPage = () => {
     setNewItemSets("");
     setNewItemDuration("");
     setNewItemCategory("");
+    setNewItemLink("");
     setNewItemEquipment(false);
+    setNewItemWeight("");
     setShowAddForm(false);
   };
 
@@ -175,6 +199,55 @@ const ChecklistSettingsPage = () => {
     ];
     updateSection(newItems);
   };
+
+  // Handle preferred category changes
+  const handlePreferredCategoryChange = (day, category) => {
+    setTempPreferredCategories(prev => ({
+      ...prev,
+      [day]: category
+    }));
+  };
+
+  // Save preferred categories
+  const handleSavePreferredCategories = () => {
+    savePreferredCategories(tempPreferredCategories);
+  };
+
+  // Handle exercise time limit changes
+  const handleExerciseTimeLimitChange = (day, timeLimit) => {
+    setTempExerciseTimeLimits(prev => ({
+      ...prev,
+      [day]: timeLimit
+    }));
+  };
+
+  // Save all preferences (categories and time limits)
+  const handleSaveAllPreferences = () => {
+    savePreferences(tempPreferredCategories, tempExerciseTimeLimits);
+  };
+
+  // Available exercise categories
+  const exerciseCategories = [
+    { value: "", label: "No preference" },
+    { value: "legs", label: "Legs" },
+    { value: "chest", label: "Chest" },
+    { value: "back", label: "Back" },
+    { value: "arms", label: "Arms" },
+    { value: "shoulders", label: "Shoulders" },
+    { value: "cardio", label: "Cardio" },
+    { value: "mobility", label: "Mobility" }
+  ];
+
+  // Days of the week
+  const daysOfWeek = [
+    { key: "monday", label: "Monday" },
+    { key: "tuesday", label: "Tuesday" },
+    { key: "wednesday", label: "Wednesday" },
+    { key: "thursday", label: "Thursday" },
+    { key: "friday", label: "Friday" },
+    { key: "saturday", label: "Saturday" },
+    { key: "sunday", label: "Sunday" }
+  ];
 
   if (loading) {
     return (
@@ -673,25 +746,204 @@ const ChecklistSettingsPage = () => {
                 )}
               </div>
 
-              <button
-                onClick={() => setShowAddForm(true)}
-                style={{
-                  padding: "12px 24px",
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                }}
-              >
-                + Add Item
-              </button>
+              {activeSection !== "preferences" && (
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  style={{
+                    padding: "12px 24px",
+                    backgroundColor: "#28a745",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  + Add Item
+                </button>
+              )}
             </div>
 
-            {/* Add New Item Form */}
-            {showAddForm && (
+            {/* Preferences Section - Show instead of regular checklist items */}
+            {activeSection === "preferences" && (
+              <div style={{ marginTop: "30px" }}>
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    padding: "30px",
+                    borderRadius: "8px",
+                    border: "1px solid #dee2e6",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <div style={{ marginBottom: "25px" }}>
+                    <h3 style={{ margin: "0 0 15px 0", color: "#333", fontSize: "20px" }}>
+                      Daily Exercise Category Preferences
+                    </h3>
+                    <p style={{ color: "#666", margin: "0 0 20px 0", fontSize: "16px" }}>
+                      Set your preferred exercise category for each day of the week. These preferences will help filter and organize your workout routines.
+                    </p>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gap: "15px",
+                      maxWidth: "600px",
+                    }}
+                  >
+                    {daysOfWeek.map((day) => (
+                      <div
+                        key={day.key}
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "120px 1fr",
+                          alignItems: "center",
+                          gap: "15px",
+                          padding: "12px",
+                          backgroundColor: "#f8f9fa",
+                          borderRadius: "6px",
+                          border: "1px solid #dee2e6",
+                        }}
+                      >
+                        <label
+                          style={{
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                            color: "#333",
+                          }}
+                        >
+                          {day.label}:
+                        </label>
+                        <select
+                          value={tempPreferredCategories[day.key] || ""}
+                          onChange={(e) =>
+                            handlePreferredCategoryChange(day.key, e.target.value)
+                          }
+                          style={{
+                            padding: "8px 12px",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px",
+                            backgroundColor: "white",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {exerciseCategories.map((category) => (
+                            <option key={category.value} value={category.value}>
+                              {category.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Exercise Time Limits Section */}
+                  <div style={{ marginTop: "40px" }}>
+                    <div style={{ marginBottom: "20px" }}>
+                      <h3 style={{ margin: "0 0 10px 0", color: "#333", fontSize: "18px" }}>
+                        Daily Exercise Time Limits
+                      </h3>
+                      <p style={{ color: "#666", margin: "0 0 15px 0", fontSize: "14px" }}>
+                        Set maximum exercise time for each day. Workouts will be automatically filtered and randomized to fit within these limits.
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gap: "12px",
+                        maxWidth: "600px",
+                      }}
+                    >
+                      {daysOfWeek.map((day) => (
+                        <div
+                          key={day.key}
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "120px 1fr 80px",
+                            alignItems: "center",
+                            gap: "15px",
+                            padding: "10px",
+                            backgroundColor: "#f8f9fa",
+                            borderRadius: "6px",
+                            border: "1px solid #dee2e6",
+                          }}
+                        >
+                          <label
+                            style={{
+                              fontSize: "14px",
+                              fontWeight: "bold",
+                              color: "#333",
+                            }}
+                          >
+                            {day.label}:
+                          </label>
+                          <input
+                            type="number"
+                            min="15"
+                            max="300"
+                            step="15"
+                            value={tempExerciseTimeLimits[day.key] || "60"}
+                            onChange={(e) =>
+                              handleExerciseTimeLimitChange(day.key, e.target.value)
+                            }
+                            style={{
+                              padding: "6px 10px",
+                              border: "1px solid #ddd",
+                              borderRadius: "4px",
+                              fontSize: "14px",
+                              backgroundColor: "white",
+                            }}
+                          />
+                          <span
+                            style={{
+                              fontSize: "14px",
+                              color: "#666",
+                            }}
+                          >
+                            minutes
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: "30px",
+                      display: "flex",
+                      gap: "15px",
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <button
+                      onClick={handleSaveAllPreferences}
+                      style={{
+                        padding: "12px 24px",
+                        backgroundColor: "#28a745",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Save All Preferences
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Regular checklist sections - hide for preferences */}
+            {activeSection !== "preferences" && (
+              <>
+                {/* Add New Item Form */}
+                {showAddForm && (
               <div
                 style={{
                   backgroundColor: "#f8f9fa",
@@ -852,6 +1104,49 @@ const ChecklistSettingsPage = () => {
                 <div style={{ marginBottom: "15px" }}>
                   <label
                     style={{
+                      display: "block",
+                      marginBottom: "5px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Demo Link (optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={newItemLink}
+                    onChange={(e) => setNewItemLink(e.target.value)}
+                    placeholder="e.g., https://www.youtube.com/watch?v=..."
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      border: "1px solid #ddd",
+                      borderRadius: "4px",
+                      fontSize: "16px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  {newItemLink && (
+                    <a
+                      href={newItemLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-block",
+                        marginTop: "5px",
+                        color: "#007bff",
+                        textDecoration: "none",
+                        fontSize: "14px",
+                      }}
+                    >
+                      🎬 Preview Link
+                    </a>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "15px" }}>
+                  <label
+                    style={{
                       display: "flex",
                       alignItems: "center",
                       gap: "8px",
@@ -873,6 +1168,35 @@ const ChecklistSettingsPage = () => {
                     Requires Equipment
                   </label>
                 </div>
+
+                {newItemEquipment && (
+                  <div style={{ marginBottom: "15px" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: "5px",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Weight/Resistance (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newItemWeight}
+                      onChange={(e) => setNewItemWeight(e.target.value)}
+                      placeholder="e.g., 135 lbs, 25 lbs each, Bodyweight"
+                      style={{
+                        width: "100%",
+                        padding: "12px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                        fontSize: "16px",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                )}
 
                 <div style={{ display: "flex", gap: "10px" }}>
                   <button
@@ -896,7 +1220,9 @@ const ChecklistSettingsPage = () => {
                       setNewItemSets("");
                       setNewItemDuration("");
                       setNewItemCategory("");
+                      setNewItemLink("");
                       setNewItemEquipment(false);
+                      setNewItemWeight("");
                     }}
                     style={{
                       padding: "12px 20px",
@@ -1145,6 +1471,85 @@ const ChecklistSettingsPage = () => {
                         </label>
                       </div>
 
+                      {editingItem.needsEquipment && (
+                        <div style={{ marginTop: "10px" }}>
+                          <label
+                            style={{
+                              display: "block",
+                              marginBottom: "5px",
+                              fontSize: "14px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Weight/Resistance:
+                          </label>
+                          <input
+                            type="text"
+                            value={editingItem.weight || ""}
+                            onChange={(e) =>
+                              setEditingItem({
+                                ...editingItem,
+                                weight: e.target.value,
+                              })
+                            }
+                            placeholder="e.g., 135 lbs, 25 lbs each, Bodyweight"
+                            style={{
+                              padding: "8px",
+                              border: "1px solid #ddd",
+                              borderRadius: "4px",
+                              fontSize: "14px",
+                              width: "250px",
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <div style={{ marginTop: "10px" }}>
+                        <label
+                          style={{
+                            display: "block",
+                            marginBottom: "5px",
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Demo Link (YouTube URL):
+                        </label>
+                        <input
+                          type="url"
+                          value={editingItem.link || ""}
+                          onChange={(e) =>
+                            setEditingItem({
+                              ...editingItem,
+                              link: e.target.value,
+                            })
+                          }
+                          placeholder="e.g., https://www.youtube.com/watch?v=..."
+                          style={{
+                            padding: "8px",
+                            border: "1px solid #ddd",
+                            borderRadius: "4px",
+                            fontSize: "14px",
+                            width: "300px",
+                          }}
+                        />
+                        {editingItem.link && (
+                          <a
+                            href={editingItem.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              marginLeft: "10px",
+                              color: "#007bff",
+                              textDecoration: "none",
+                              fontSize: "12px",
+                            }}
+                          >
+                            🎬 Preview
+                          </a>
+                        )}
+                      </div>
+
                       <div
                         style={{
                           display: "flex",
@@ -1340,6 +1745,8 @@ const ChecklistSettingsPage = () => {
                 </div>
               )}
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>
