@@ -5,4 +5,11 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   base: "/NMRB.daily.github.io/",
+  build: {
+    rollupOptions: {
+      // Copy 404.html to root of build output
+      external: [],
+    },
+  },
+  publicDir: 'public',
 });
