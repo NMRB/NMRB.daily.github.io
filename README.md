@@ -2,6 +2,8 @@
 
 A comprehensive daily planning web application built with React and Vite. This app helps you organize your day with interactive checklists and planning sections.
 
+**Latest Updates:** Added individual item duration goals and section-wide goal times for better time management!
+
 ## 🚀 Live Site
 
 Visit the live application: [https://nmrb.github.io/NMRB.daily.github.io/](https://nmrb.github.io/NMRB.daily.github.io/)
@@ -56,3 +58,17 @@ Feel free to submit issues and enhancement requests!
 November 8, 2025
 
 # Deployment trigger
+
+
+Gym exercises 
+
+tread mill
+
+dumbells
+
+row machine
+
+Arm Machines
+
+leg machines
+
