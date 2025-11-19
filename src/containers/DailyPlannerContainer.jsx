@@ -12,20 +12,20 @@ import {
 } from "../data";
 import { useFirebaseSync } from "../hooks/useFirebaseSync";
 import { useChecklistSettings } from "../hooks/useChecklistSettings";
-import { 
-  selectExercisesWithinTimeLimit, 
+import {
+  selectExercisesWithinTimeLimit,
   getCurrentDay,
-  getTodaysTimeLimit 
+  getTodaysTimeLimit,
 } from "../utils/exerciseTimeManager";
 import DailyPlannerPage from "../pages/DailyPlannerPage";
 
 function DailyPlannerContainer() {
   // Load custom checklists and preferences
-  const { 
-    customChecklists, 
+  const {
+    customChecklists,
     preferredCategories,
     exerciseTimeLimits,
-    loading: checklistsLoading 
+    loading: checklistsLoading,
   } = useChecklistSettings();
 
   // Cookie utility functions
@@ -225,7 +225,11 @@ function DailyPlannerContainer() {
 
   // Function to regenerate gym workout
   const regenerateGymWorkout = useCallback(() => {
-    if (!exerciseTimeLimits || !preferredCategories || fullGymExercises.length === 0) {
+    if (
+      !exerciseTimeLimits ||
+      !preferredCategories ||
+      fullGymExercises.length === 0
+    ) {
       return;
     }
 
@@ -239,14 +243,18 @@ function DailyPlannerContainer() {
       preferredCategory,
       true // randomize
     );
-    
+
     setGymWorkoutSelection(selection);
     setGymWorkoutChecklist(selection.exercises);
   }, [fullGymExercises, exerciseTimeLimits, preferredCategories]);
 
   // Function to regenerate home workout
   const regenerateHomeWorkout = useCallback(() => {
-    if (!exerciseTimeLimits || !preferredCategories || fullHomeExercises.length === 0) {
+    if (
+      !exerciseTimeLimits ||
+      !preferredCategories ||
+      fullHomeExercises.length === 0
+    ) {
       return;
     }
 
@@ -260,7 +268,7 @@ function DailyPlannerContainer() {
       preferredCategory,
       true // randomize
     );
-    
+
     setHomeWorkoutSelection(selection);
     setHomeWorkoutChecklist(selection.exercises);
   }, [fullHomeExercises, exerciseTimeLimits, preferredCategories]);
@@ -299,7 +307,11 @@ function DailyPlannerContainer() {
 
   // Apply time-based filtering to gym workout
   useEffect(() => {
-    if (!exerciseTimeLimits || !preferredCategories || fullGymExercises.length === 0) {
+    if (
+      !exerciseTimeLimits ||
+      !preferredCategories ||
+      fullGymExercises.length === 0
+    ) {
       return;
     }
 
@@ -308,7 +320,8 @@ function DailyPlannerContainer() {
     const preferredCategory = preferredCategories[today];
 
     // Check if we need to regenerate (first load or preferences changed)
-    const needsRegeneration = !gymWorkoutSelection || 
+    const needsRegeneration =
+      !gymWorkoutSelection ||
       gymWorkoutSelection.categoryFilter !== preferredCategory ||
       gymWorkoutSelection.timeLimitMinutes !== timeLimitMinutes;
 
@@ -319,15 +332,24 @@ function DailyPlannerContainer() {
         preferredCategory,
         true // randomize
       );
-      
+
       setGymWorkoutSelection(selection);
       setGymWorkoutChecklist(selection.exercises);
     }
-  }, [fullGymExercises, exerciseTimeLimits, preferredCategories, gymWorkoutSelection]);
+  }, [
+    fullGymExercises,
+    exerciseTimeLimits,
+    preferredCategories,
+    gymWorkoutSelection,
+  ]);
 
   // Apply time-based filtering to home workout
   useEffect(() => {
-    if (!exerciseTimeLimits || !preferredCategories || fullHomeExercises.length === 0) {
+    if (
+      !exerciseTimeLimits ||
+      !preferredCategories ||
+      fullHomeExercises.length === 0
+    ) {
       return;
     }
 
@@ -336,7 +358,8 @@ function DailyPlannerContainer() {
     const preferredCategory = preferredCategories[today];
 
     // Check if we need to regenerate (first load or preferences changed)
-    const needsRegeneration = !homeWorkoutSelection || 
+    const needsRegeneration =
+      !homeWorkoutSelection ||
       homeWorkoutSelection.categoryFilter !== preferredCategory ||
       homeWorkoutSelection.timeLimitMinutes !== timeLimitMinutes;
 
@@ -347,11 +370,16 @@ function DailyPlannerContainer() {
         preferredCategory,
         true // randomize
       );
-      
+
       setHomeWorkoutSelection(selection);
       setHomeWorkoutChecklist(selection.exercises);
     }
-  }, [fullHomeExercises, exerciseTimeLimits, preferredCategories, homeWorkoutSelection]);
+  }, [
+    fullHomeExercises,
+    exerciseTimeLimits,
+    preferredCategories,
+    homeWorkoutSelection,
+  ]);
 
   // Update checklists when custom checklists change
   useEffect(() => {
@@ -735,6 +763,14 @@ function DailyPlannerContainer() {
     return defaultTime;
   };
 
+  // Destructure time tracking values
+  const {
+    gymWorkoutTime,
+    homeWorkoutTime,
+    warmupTime: warmupWorkoutTime,
+    cooldownTime: cooldownWorkoutTime,
+  } = timeTracking;
+
   // Prepare sections data for the template
   const sections = [
     {
@@ -760,7 +796,10 @@ function DailyPlannerContainer() {
     },
     {
       title: "Gym Workout",
-      timeIndicator: getTimeIndicator(`7:15 - 13:00 • Total: ${gymWorkoutTime}`, "gymWorkout"),
+      timeIndicator: getTimeIndicator(
+        `7:15 - 13:00 • Total: ${gymWorkoutTime}`,
+        "gymWorkout"
+      ),
       items: gymWorkoutChecklist.map((item) => ({
         ...item,
         key: item.id,

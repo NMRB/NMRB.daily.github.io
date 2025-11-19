@@ -260,7 +260,10 @@ export const savePreferredCategoriesToFirebase = async (
     };
 
     await setDoc(docRef, dataToSave, { merge: true });
-    console.log("Preferred categories saved to Firebase for user:", userIdToUse);
+    console.log(
+      "Preferred categories saved to Firebase for user:",
+      userIdToUse
+    );
     return { success: true, userId: userIdToUse };
   } catch (error) {
     console.error("Error saving preferred categories:", error);

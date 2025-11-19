@@ -1,11 +1,22 @@
-import { parseTimeToMinutes, calculateExerciseTime } from './workoutTimeCalculator';
+import {
+  parseTimeToMinutes,
+  calculateExerciseTime,
+} from "./workoutTimeCalculator";
 
 /**
  * Get the current day of the week in lowercase
  * @returns {string} Day of the week (monday, tuesday, etc.)
  */
 export const getCurrentDay = () => {
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const days = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
   return days[new Date().getDay()];
 };
 
@@ -52,12 +63,14 @@ export const shuffleArray = (array) => {
  * @returns {Array} Filtered exercises
  */
 export const filterExercisesByCategory = (exercises, preferredCategory) => {
-  if (!preferredCategory || preferredCategory.trim() === '') {
+  if (!preferredCategory || preferredCategory.trim() === "") {
     return exercises;
   }
-  
-  return exercises.filter(exercise => 
-    exercise.category && exercise.category.toLowerCase() === preferredCategory.toLowerCase()
+
+  return exercises.filter(
+    (exercise) =>
+      exercise.category &&
+      exercise.category.toLowerCase() === preferredCategory.toLowerCase()
   );
 };
 
@@ -69,40 +82,52 @@ export const filterExercisesByCategory = (exercises, preferredCategory) => {
  * @param {boolean} randomize - Whether to randomize the selection
  * @returns {Object} Result with selected exercises and metadata
  */
-export const selectExercisesWithinTimeLimit = (exercises, timeLimitMinutes, preferredCategory = '', randomize = true) => {
+export const selectExercisesWithinTimeLimit = (
+  exercises,
+  timeLimitMinutes,
+  preferredCategory = "",
+  randomize = true
+) => {
   let availableExercises = [...exercises];
-  
+
   // Filter by preferred category if specified
-  if (preferredCategory && preferredCategory.trim() !== '') {
-    const categoryFiltered = filterExercisesByCategory(availableExercises, preferredCategory);
+  if (preferredCategory && preferredCategory.trim() !== "") {
+    const categoryFiltered = filterExercisesByCategory(
+      availableExercises,
+      preferredCategory
+    );
     if (categoryFiltered.length > 0) {
       availableExercises = categoryFiltered;
     }
   }
-  
+
   // Randomize if requested
   if (randomize) {
     availableExercises = shuffleArray(availableExercises);
   }
-  
+
   const selectedExercises = [];
   let totalTime = 0;
-  
+
   // Separate exercises by priority (warmup, cooldown should be included)
-  const warmupExercises = availableExercises.filter(ex => 
-    ex.category && ex.category.toLowerCase() === 'cardio' && 
-    (ex.name || ex.text || '').toLowerCase().includes('warm')
+  const warmupExercises = availableExercises.filter(
+    (ex) =>
+      ex.category &&
+      ex.category.toLowerCase() === "cardio" &&
+      (ex.name || ex.text || "").toLowerCase().includes("warm")
   );
-  
-  const cooldownExercises = availableExercises.filter(ex => 
-    ex.category && ex.category.toLowerCase() === 'mobility' && 
-    (ex.name || ex.text || '').toLowerCase().includes('stretch')
+
+  const cooldownExercises = availableExercises.filter(
+    (ex) =>
+      ex.category &&
+      ex.category.toLowerCase() === "mobility" &&
+      (ex.name || ex.text || "").toLowerCase().includes("stretch")
   );
-  
-  const mainExercises = availableExercises.filter(ex => 
-    !warmupExercises.includes(ex) && !cooldownExercises.includes(ex)
+
+  const mainExercises = availableExercises.filter(
+    (ex) => !warmupExercises.includes(ex) && !cooldownExercises.includes(ex)
   );
-  
+
   // Always include at least one warmup if available and time permits
   if (warmupExercises.length > 0) {
     const warmup = warmupExercises[0];
@@ -112,7 +137,7 @@ export const selectExercisesWithinTimeLimit = (exercises, timeLimitMinutes, pref
       totalTime += warmupTime;
     }
   }
-  
+
   // Add main exercises while under time limit
   for (const exercise of mainExercises) {
     const exerciseTime = parseTimeToMinutes(calculateExerciseTime(exercise));
@@ -121,7 +146,7 @@ export const selectExercisesWithinTimeLimit = (exercises, timeLimitMinutes, pref
       totalTime += exerciseTime;
     }
   }
-  
+
   // Add cooldown if there's time and space
   if (cooldownExercises.length > 0) {
     const cooldown = cooldownExercises[0];
@@ -131,7 +156,7 @@ export const selectExercisesWithinTimeLimit = (exercises, timeLimitMinutes, pref
       totalTime += cooldownTime;
     }
   }
-  
+
   return {
     exercises: selectedExercises,
     totalTimeMinutes: totalTime,
@@ -140,7 +165,7 @@ export const selectExercisesWithinTimeLimit = (exercises, timeLimitMinutes, pref
     wasRandomized: randomize,
     categoryFilter: preferredCategory,
     totalAvailable: availableExercises.length,
-    selectedCount: selectedExercises.length
+    selectedCount: selectedExercises.length,
   };
 };
 
@@ -150,11 +175,11 @@ export const selectExercisesWithinTimeLimit = (exercises, timeLimitMinutes, pref
  * @returns {string} Formatted time string
  */
 export const formatTimeRemaining = (minutes) => {
-  if (minutes <= 0) return 'No time remaining';
-  
+  if (minutes <= 0) return "No time remaining";
+
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  
+
   if (hours === 0) {
     return `${mins} min remaining`;
   } else if (mins === 0) {
@@ -171,9 +196,13 @@ export const formatTimeRemaining = (minutes) => {
  * @param {number} newTimeLimitMinutes - New time limit
  * @returns {boolean} Whether exercises should be regenerated
  */
-export const shouldRegenerateExercises = (currentSelection, newPreferredCategory, newTimeLimitMinutes) => {
+export const shouldRegenerateExercises = (
+  currentSelection,
+  newPreferredCategory,
+  newTimeLimitMinutes
+) => {
   if (!currentSelection) return true;
-  
+
   return (
     currentSelection.categoryFilter !== newPreferredCategory ||
     currentSelection.timeLimitMinutes !== newTimeLimitMinutes

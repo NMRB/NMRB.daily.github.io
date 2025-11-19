@@ -97,8 +97,12 @@ const ChecklistSection = ({
   };
 
   // Calculate total workout time for workout sections
-  const isWorkoutSection = title.toLowerCase().includes('workout') || title.toLowerCase().includes('gym');
-  const totalWorkoutTime = isWorkoutSection ? calculateWorkoutTotalTime(items) : null;
+  const isWorkoutSection =
+    title.toLowerCase().includes("workout") ||
+    title.toLowerCase().includes("gym");
+  const totalWorkoutTime = isWorkoutSection
+    ? calculateWorkoutTotalTime(items)
+    : null;
 
   return (
     <section
@@ -115,7 +119,8 @@ const ChecklistSection = ({
         {workoutSelection ? (
           <>
             <Badge variant="time">
-              Used: {Math.round(workoutSelection.totalTimeMinutes)}m of {workoutSelection.timeLimitMinutes}m
+              Used: {Math.round(workoutSelection.totalTimeMinutes)}m of{" "}
+              {workoutSelection.timeLimitMinutes}m
             </Badge>
             <Badge variant="time">
               {formatTimeRemaining(workoutSelection.remainingTimeMinutes)}
@@ -126,10 +131,10 @@ const ChecklistSection = ({
               </Badge>
             )}
           </>
-        ) : totalWorkoutTime && (
-          <Badge variant="time">
-            Total: {totalWorkoutTime}
-          </Badge>
+        ) : (
+          totalWorkoutTime && (
+            <Badge variant="time">Total: {totalWorkoutTime}</Badge>
+          )
         )}
       </div>
 
@@ -148,7 +153,8 @@ const ChecklistSection = ({
               fontWeight: "bold",
             }}
           >
-            🔄 Generate New Workout ({workoutSelection.selectedCount} of {workoutSelection.totalAvailable} exercises)
+            🔄 Generate New Workout ({workoutSelection.selectedCount} of{" "}
+            {workoutSelection.totalAvailable} exercises)
           </button>
           <div
             style={{
@@ -157,7 +163,8 @@ const ChecklistSection = ({
               marginTop: "5px",
             }}
           >
-            Exercises are randomized daily based on your time limit and category preferences
+            Exercises are randomized daily based on your time limit and category
+            preferences
           </div>
         </div>
       )}

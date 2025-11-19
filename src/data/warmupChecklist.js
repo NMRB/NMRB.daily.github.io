@@ -11,7 +11,7 @@ const warmupChecklist = [
     link: "https://www.youtube.com/watch?v=ml6cT4AZdqI",
   },
   {
-    id: "warmup-2", 
+    id: "warmup-2",
     name: "Dynamic Stretching",
     text: "Dynamic Stretching",
     completed: false,
@@ -36,7 +36,7 @@ const warmupChecklist = [
     text: "Leg Swings",
     completed: false,
     reps: "10 each leg",
-    category: "mobility", 
+    category: "mobility",
     needsEquipment: false,
     link: "https://www.youtube.com/watch?v=IODxDxX7oi4",
   },
@@ -73,7 +73,7 @@ const warmupChecklist = [
   {
     id: "warmup-8",
     name: "Butt Kicks",
-    text: "Butt Kicks", 
+    text: "Butt Kicks",
     completed: false,
     duration: "30 seconds",
     category: "cardio",

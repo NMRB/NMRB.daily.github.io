@@ -28,16 +28,16 @@ export const useChecklistSettings = () => {
     thursday: "",
     friday: "",
     saturday: "",
-    sunday: ""
+    sunday: "",
   });
   const [exerciseTimeLimits, setExerciseTimeLimits] = useState({
     monday: "60",
-    tuesday: "60", 
+    tuesday: "60",
     wednesday: "60",
     thursday: "60",
     friday: "60",
     saturday: "90",
-    sunday: "90"
+    sunday: "90",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -90,7 +90,7 @@ export const useChecklistSettings = () => {
       try {
         const [checklistResult, preferencesResult] = await Promise.all([
           loadCustomChecklistsFromFirebase(),
-          loadPreferredCategoriesFromFirebase()
+          loadPreferredCategoriesFromFirebase(),
         ]);
 
         if (checklistResult.success && checklistResult.data) {
@@ -111,18 +111,22 @@ export const useChecklistSettings = () => {
             thursday: preferencesResult.data.thursday || "",
             friday: preferencesResult.data.friday || "",
             saturday: preferencesResult.data.saturday || "",
-            sunday: preferencesResult.data.sunday || ""
+            sunday: preferencesResult.data.sunday || "",
           });
-          
+
           if (preferencesResult.data.exerciseTimeLimits) {
             setExerciseTimeLimits({
               monday: preferencesResult.data.exerciseTimeLimits.monday || "60",
-              tuesday: preferencesResult.data.exerciseTimeLimits.tuesday || "60",
-              wednesday: preferencesResult.data.exerciseTimeLimits.wednesday || "60",
-              thursday: preferencesResult.data.exerciseTimeLimits.thursday || "60",
+              tuesday:
+                preferencesResult.data.exerciseTimeLimits.tuesday || "60",
+              wednesday:
+                preferencesResult.data.exerciseTimeLimits.wednesday || "60",
+              thursday:
+                preferencesResult.data.exerciseTimeLimits.thursday || "60",
               friday: preferencesResult.data.exerciseTimeLimits.friday || "60",
-              saturday: preferencesResult.data.exerciseTimeLimits.saturday || "90",
-              sunday: preferencesResult.data.exerciseTimeLimits.sunday || "90"
+              saturday:
+                preferencesResult.data.exerciseTimeLimits.saturday || "90",
+              sunday: preferencesResult.data.exerciseTimeLimits.sunday || "90",
             });
           }
         }
@@ -176,7 +180,7 @@ export const useChecklistSettings = () => {
         setError("");
         const preferencesData = {
           ...newPreferredCategories,
-          exerciseTimeLimits: newExerciseTimeLimits
+          exerciseTimeLimits: newExerciseTimeLimits,
         };
         const result = await savePreferredCategoriesToFirebase(preferencesData);
 

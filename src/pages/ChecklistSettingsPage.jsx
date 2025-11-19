@@ -35,8 +35,10 @@ const ChecklistSettingsPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [tempPreferredCategories, setTempPreferredCategories] = useState(preferredCategories);
-  const [tempExerciseTimeLimits, setTempExerciseTimeLimits] = useState(exerciseTimeLimits);
+  const [tempPreferredCategories, setTempPreferredCategories] =
+    useState(preferredCategories);
+  const [tempExerciseTimeLimits, setTempExerciseTimeLimits] =
+    useState(exerciseTimeLimits);
 
   const sections = [
     { key: "morning", title: "Morning Checklist", icon: "🌅" },
@@ -202,9 +204,9 @@ const ChecklistSettingsPage = () => {
 
   // Handle preferred category changes
   const handlePreferredCategoryChange = (day, category) => {
-    setTempPreferredCategories(prev => ({
+    setTempPreferredCategories((prev) => ({
       ...prev,
-      [day]: category
+      [day]: category,
     }));
   };
 
@@ -215,9 +217,9 @@ const ChecklistSettingsPage = () => {
 
   // Handle exercise time limit changes
   const handleExerciseTimeLimitChange = (day, timeLimit) => {
-    setTempExerciseTimeLimits(prev => ({
+    setTempExerciseTimeLimits((prev) => ({
       ...prev,
-      [day]: timeLimit
+      [day]: timeLimit,
     }));
   };
 
@@ -235,7 +237,7 @@ const ChecklistSettingsPage = () => {
     { value: "arms", label: "Arms" },
     { value: "shoulders", label: "Shoulders" },
     { value: "cardio", label: "Cardio" },
-    { value: "mobility", label: "Mobility" }
+    { value: "mobility", label: "Mobility" },
   ];
 
   // Days of the week
@@ -246,7 +248,7 @@ const ChecklistSettingsPage = () => {
     { key: "thursday", label: "Thursday" },
     { key: "friday", label: "Friday" },
     { key: "saturday", label: "Saturday" },
-    { key: "sunday", label: "Sunday" }
+    { key: "sunday", label: "Sunday" },
   ];
 
   if (loading) {
@@ -778,11 +780,25 @@ const ChecklistSettingsPage = () => {
                   }}
                 >
                   <div style={{ marginBottom: "25px" }}>
-                    <h3 style={{ margin: "0 0 15px 0", color: "#333", fontSize: "20px" }}>
+                    <h3
+                      style={{
+                        margin: "0 0 15px 0",
+                        color: "#333",
+                        fontSize: "20px",
+                      }}
+                    >
                       Daily Exercise Category Preferences
                     </h3>
-                    <p style={{ color: "#666", margin: "0 0 20px 0", fontSize: "16px" }}>
-                      Set your preferred exercise category for each day of the week. These preferences will help filter and organize your workout routines.
+                    <p
+                      style={{
+                        color: "#666",
+                        margin: "0 0 20px 0",
+                        fontSize: "16px",
+                      }}
+                    >
+                      Set your preferred exercise category for each day of the
+                      week. These preferences will help filter and organize your
+                      workout routines.
                     </p>
                   </div>
 
@@ -819,7 +835,10 @@ const ChecklistSettingsPage = () => {
                         <select
                           value={tempPreferredCategories[day.key] || ""}
                           onChange={(e) =>
-                            handlePreferredCategoryChange(day.key, e.target.value)
+                            handlePreferredCategoryChange(
+                              day.key,
+                              e.target.value
+                            )
                           }
                           style={{
                             padding: "8px 12px",
@@ -843,11 +862,25 @@ const ChecklistSettingsPage = () => {
                   {/* Exercise Time Limits Section */}
                   <div style={{ marginTop: "40px" }}>
                     <div style={{ marginBottom: "20px" }}>
-                      <h3 style={{ margin: "0 0 10px 0", color: "#333", fontSize: "18px" }}>
+                      <h3
+                        style={{
+                          margin: "0 0 10px 0",
+                          color: "#333",
+                          fontSize: "18px",
+                        }}
+                      >
                         Daily Exercise Time Limits
                       </h3>
-                      <p style={{ color: "#666", margin: "0 0 15px 0", fontSize: "14px" }}>
-                        Set maximum exercise time for each day. Workouts will be automatically filtered and randomized to fit within these limits.
+                      <p
+                        style={{
+                          color: "#666",
+                          margin: "0 0 15px 0",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Set maximum exercise time for each day. Workouts will be
+                        automatically filtered and randomized to fit within
+                        these limits.
                       </p>
                     </div>
 
@@ -888,7 +921,10 @@ const ChecklistSettingsPage = () => {
                             step="15"
                             value={tempExerciseTimeLimits[day.key] || "60"}
                             onChange={(e) =>
-                              handleExerciseTimeLimitChange(day.key, e.target.value)
+                              handleExerciseTimeLimitChange(
+                                day.key,
+                                e.target.value
+                              )
                             }
                             style={{
                               padding: "6px 10px",
@@ -944,59 +980,18 @@ const ChecklistSettingsPage = () => {
               <>
                 {/* Add New Item Form */}
                 {showAddForm && (
-              <div
-                style={{
-                  backgroundColor: "#f8f9fa",
-                  padding: "20px",
-                  borderRadius: "6px",
-                  marginBottom: "20px",
-                  border: "1px solid #dee2e6",
-                }}
-              >
-                <h3 style={{ margin: "0 0 15px 0" }}>Add New Item</h3>
-
-                <div style={{ marginBottom: "15px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "5px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Exercise/Task Name
-                  </label>
-                  <input
-                    type="text"
-                    value={newItemText}
-                    onChange={(e) => setNewItemText(e.target.value)}
-                    placeholder="Enter new checklist item..."
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "16px",
-                      boxSizing: "border-box",
-                    }}
-                    onKeyPress={(e) =>
-                      e.key === "Enter" &&
-                      !isWorkoutSection() &&
-                      handleAddItem()
-                    }
-                    autoFocus
-                  />
-                </div>
-
-                {isWorkoutSection() && (
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "15px",
-                      marginBottom: "15px",
+                      backgroundColor: "#f8f9fa",
+                      padding: "20px",
+                      borderRadius: "6px",
+                      marginBottom: "20px",
+                      border: "1px solid #dee2e6",
                     }}
                   >
-                    <div>
+                    <h3 style={{ margin: "0 0 15px 0" }}>Add New Item</h3>
+
+                    <div style={{ marginBottom: "15px" }}>
                       <label
                         style={{
                           display: "block",
@@ -1004,24 +999,93 @@ const ChecklistSettingsPage = () => {
                           fontWeight: "bold",
                         }}
                       >
-                        Reps (optional)
+                        Exercise/Task Name
                       </label>
                       <input
                         type="text"
-                        value={newItemReps}
-                        onChange={(e) => setNewItemReps(e.target.value)}
-                        placeholder="e.g., 10, 8-12, max"
+                        value={newItemText}
+                        onChange={(e) => setNewItemText(e.target.value)}
+                        placeholder="Enter new checklist item..."
                         style={{
                           width: "100%",
-                          padding: "8px",
+                          padding: "12px",
                           border: "1px solid #ddd",
                           borderRadius: "4px",
-                          fontSize: "14px",
+                          fontSize: "16px",
                           boxSizing: "border-box",
                         }}
+                        onKeyPress={(e) =>
+                          e.key === "Enter" &&
+                          !isWorkoutSection() &&
+                          handleAddItem()
+                        }
+                        autoFocus
                       />
                     </div>
-                    <div>
+
+                    {isWorkoutSection() && (
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "15px",
+                          marginBottom: "15px",
+                        }}
+                      >
+                        <div>
+                          <label
+                            style={{
+                              display: "block",
+                              marginBottom: "5px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Reps (optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={newItemReps}
+                            onChange={(e) => setNewItemReps(e.target.value)}
+                            placeholder="e.g., 10, 8-12, max"
+                            style={{
+                              width: "100%",
+                              padding: "8px",
+                              border: "1px solid #ddd",
+                              borderRadius: "4px",
+                              fontSize: "14px",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            style={{
+                              display: "block",
+                              marginBottom: "5px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Sets (optional)
+                          </label>
+                          <input
+                            type="text"
+                            value={newItemSets}
+                            onChange={(e) => setNewItemSets(e.target.value)}
+                            placeholder="e.g., 3, 2-4"
+                            style={{
+                              width: "100%",
+                              padding: "8px",
+                              border: "1px solid #ddd",
+                              borderRadius: "4px",
+                              fontSize: "14px",
+                              boxSizing: "border-box",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ marginBottom: "15px" }}>
                       <label
                         style={{
                           display: "block",
@@ -1029,722 +1093,700 @@ const ChecklistSettingsPage = () => {
                           fontWeight: "bold",
                         }}
                       >
-                        Sets (optional)
+                        Duration Goal (optional)
                       </label>
                       <input
                         type="text"
-                        value={newItemSets}
-                        onChange={(e) => setNewItemSets(e.target.value)}
-                        placeholder="e.g., 3, 2-4"
+                        value={newItemDuration}
+                        onChange={(e) => setNewItemDuration(e.target.value)}
+                        placeholder="e.g., 15 min, 30 minutes, 1 hour"
                         style={{
                           width: "100%",
-                          padding: "8px",
+                          padding: "12px",
                           border: "1px solid #ddd",
                           borderRadius: "4px",
-                          fontSize: "14px",
+                          fontSize: "16px",
                           boxSizing: "border-box",
                         }}
                       />
                     </div>
-                  </div>
-                )}
 
-                <div style={{ marginBottom: "15px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "5px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Duration Goal (optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={newItemDuration}
-                    onChange={(e) => setNewItemDuration(e.target.value)}
-                    placeholder="e.g., 15 min, 30 minutes, 1 hour"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "16px",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                </div>
+                    <div style={{ marginBottom: "15px" }}>
+                      <label
+                        style={{
+                          display: "block",
+                          marginBottom: "5px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Category (optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={newItemCategory}
+                        onChange={(e) => setNewItemCategory(e.target.value)}
+                        placeholder="e.g., Legs, Cardio, Stretching, Work"
+                        style={{
+                          width: "100%",
+                          padding: "12px",
+                          border: "1px solid #ddd",
+                          borderRadius: "4px",
+                          fontSize: "16px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </div>
 
-                <div style={{ marginBottom: "15px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "5px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Category (optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={newItemCategory}
-                    onChange={(e) => setNewItemCategory(e.target.value)}
-                    placeholder="e.g., Legs, Cardio, Stretching, Work"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "16px",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                </div>
+                    <div style={{ marginBottom: "15px" }}>
+                      <label
+                        style={{
+                          display: "block",
+                          marginBottom: "5px",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Demo Link (optional)
+                      </label>
+                      <input
+                        type="url"
+                        value={newItemLink}
+                        onChange={(e) => setNewItemLink(e.target.value)}
+                        placeholder="e.g., https://www.youtube.com/watch?v=..."
+                        style={{
+                          width: "100%",
+                          padding: "12px",
+                          border: "1px solid #ddd",
+                          borderRadius: "4px",
+                          fontSize: "16px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                      {newItemLink && (
+                        <a
+                          href={newItemLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "inline-block",
+                            marginTop: "5px",
+                            color: "#007bff",
+                            textDecoration: "none",
+                            fontSize: "14px",
+                          }}
+                        >
+                          🎬 Preview Link
+                        </a>
+                      )}
+                    </div>
 
-                <div style={{ marginBottom: "15px" }}>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "5px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Demo Link (optional)
-                  </label>
-                  <input
-                    type="url"
-                    value={newItemLink}
-                    onChange={(e) => setNewItemLink(e.target.value)}
-                    placeholder="e.g., https://www.youtube.com/watch?v=..."
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      border: "1px solid #ddd",
-                      borderRadius: "4px",
-                      fontSize: "16px",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                  {newItemLink && (
-                    <a
-                      href={newItemLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: "inline-block",
-                        marginTop: "5px",
-                        color: "#007bff",
-                        textDecoration: "none",
-                        fontSize: "14px",
-                      }}
-                    >
-                      🎬 Preview Link
-                    </a>
-                  )}
-                </div>
-
-                <div style={{ marginBottom: "15px" }}>
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={newItemEquipment}
-                      onChange={(e) => setNewItemEquipment(e.target.checked)}
-                      style={{
-                        width: "18px",
-                        height: "18px",
-                        cursor: "pointer",
-                      }}
-                    />
-                    Requires Equipment
-                  </label>
-                </div>
-
-                {newItemEquipment && (
-                  <div style={{ marginBottom: "15px" }}>
-                    <label
-                      style={{
-                        display: "block",
-                        marginBottom: "5px",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Weight/Resistance (optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={newItemWeight}
-                      onChange={(e) => setNewItemWeight(e.target.value)}
-                      placeholder="e.g., 135 lbs, 25 lbs each, Bodyweight"
-                      style={{
-                        width: "100%",
-                        padding: "12px",
-                        border: "1px solid #ddd",
-                        borderRadius: "4px",
-                        fontSize: "16px",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-                )}
-
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <button
-                    onClick={handleAddItem}
-                    style={{
-                      padding: "12px 20px",
-                      backgroundColor: "#28a745",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowAddForm(false);
-                      setNewItemText("");
-                      setNewItemReps("");
-                      setNewItemSets("");
-                      setNewItemDuration("");
-                      setNewItemCategory("");
-                      setNewItemLink("");
-                      setNewItemEquipment(false);
-                      setNewItemWeight("");
-                    }}
-                    style={{
-                      padding: "12px 20px",
-                      backgroundColor: "#6c757d",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Items List */}
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-            >
-              {getCurrentItems().map((item, index) => (
-                <div
-                  key={item.id}
-                  style={{
-                    backgroundColor:
-                      editingItem?.id === item.id ? "#fff3cd" : "#f8f9fa",
-                    padding: "15px",
-                    borderRadius: "6px",
-                    border: "1px solid #dee2e6",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "15px",
-                  }}
-                >
-                  {/* Move buttons */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "5px",
-                    }}
-                  >
-                    <button
-                      onClick={() => moveItem(item.id, "up")}
-                      disabled={index === 0}
-                      style={{
-                        width: "30px",
-                        height: "25px",
-                        border: "1px solid #ccc",
-                        backgroundColor: index === 0 ? "#f5f5f5" : "white",
-                        borderRadius: "3px",
-                        cursor: index === 0 ? "not-allowed" : "pointer",
-                        fontSize: "12px",
-                      }}
-                    >
-                      ↑
-                    </button>
-                    <button
-                      onClick={() => moveItem(item.id, "down")}
-                      disabled={index === getCurrentItems().length - 1}
-                      style={{
-                        width: "30px",
-                        height: "25px",
-                        border: "1px solid #ccc",
-                        backgroundColor:
-                          index === getCurrentItems().length - 1
-                            ? "#f5f5f5"
-                            : "white",
-                        borderRadius: "3px",
-                        cursor:
-                          index === getCurrentItems().length - 1
-                            ? "not-allowed"
-                            : "pointer",
-                        fontSize: "12px",
-                      }}
-                    >
-                      ↓
-                    </button>
-                  </div>
-
-                  {/* Item content */}
-                  {editingItem?.id === item.id ? (
-                    <div style={{ flex: 1 }}>
-                      <div style={{ marginBottom: "10px" }}>
+                    <div style={{ marginBottom: "15px" }}>
+                      <label
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          cursor: "pointer",
+                        }}
+                      >
                         <input
-                          type="text"
-                          value={editingItem.text}
+                          type="checkbox"
+                          checked={newItemEquipment}
                           onChange={(e) =>
-                            setEditingItem({
-                              ...editingItem,
-                              text: e.target.value,
-                            })
+                            setNewItemEquipment(e.target.checked)
                           }
                           style={{
+                            width: "18px",
+                            height: "18px",
+                            cursor: "pointer",
+                          }}
+                        />
+                        Requires Equipment
+                      </label>
+                    </div>
+
+                    {newItemEquipment && (
+                      <div style={{ marginBottom: "15px" }}>
+                        <label
+                          style={{
+                            display: "block",
+                            marginBottom: "5px",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          Weight/Resistance (optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={newItemWeight}
+                          onChange={(e) => setNewItemWeight(e.target.value)}
+                          placeholder="e.g., 135 lbs, 25 lbs each, Bodyweight"
+                          style={{
                             width: "100%",
-                            padding: "8px",
+                            padding: "12px",
                             border: "1px solid #ddd",
                             borderRadius: "4px",
                             fontSize: "16px",
                             boxSizing: "border-box",
                           }}
-                          onKeyPress={(e) =>
-                            e.key === "Enter" &&
-                            !isWorkoutSection() &&
-                            handleSaveEdit()
-                          }
-                          placeholder="Exercise/Task name"
                         />
                       </div>
+                    )}
 
-                      {isWorkoutSection() && (
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: "10px",
-                            marginBottom: "10px",
-                          }}
-                        >
-                          <input
-                            type="text"
-                            value={editingItem.reps || ""}
-                            onChange={(e) =>
-                              setEditingItem({
-                                ...editingItem,
-                                reps: e.target.value,
-                              })
-                            }
-                            style={{
-                              padding: "6px",
-                              border: "1px solid #ddd",
-                              borderRadius: "4px",
-                              fontSize: "14px",
-                            }}
-                            placeholder="Reps (e.g., 10)"
-                          />
-                          <input
-                            type="text"
-                            value={editingItem.sets || ""}
-                            onChange={(e) =>
-                              setEditingItem({
-                                ...editingItem,
-                                sets: e.target.value,
-                              })
-                            }
-                            style={{
-                              padding: "6px",
-                              border: "1px solid #ddd",
-                              borderRadius: "4px",
-                              fontSize: "14px",
-                            }}
-                            placeholder="Sets (e.g., 3)"
-                          />
-                        </div>
-                      )}
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <button
+                        onClick={handleAddItem}
+                        style={{
+                          padding: "12px 20px",
+                          backgroundColor: "#28a745",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Add
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowAddForm(false);
+                          setNewItemText("");
+                          setNewItemReps("");
+                          setNewItemSets("");
+                          setNewItemDuration("");
+                          setNewItemCategory("");
+                          setNewItemLink("");
+                          setNewItemEquipment(false);
+                          setNewItemWeight("");
+                        }}
+                        style={{
+                          padding: "12px 20px",
+                          backgroundColor: "#6c757d",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-                      <div style={{ marginTop: "10px" }}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "5px",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Duration Goal:
-                        </label>
-                        <input
-                          type="text"
-                          value={editingItem.duration || ""}
-                          onChange={(e) =>
-                            setEditingItem({
-                              ...editingItem,
-                              duration: e.target.value,
-                            })
-                          }
-                          placeholder="e.g., 15 min, 30 minutes, 1 hour"
-                          style={{
-                            padding: "8px",
-                            border: "1px solid #ddd",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            width: "200px",
-                          }}
-                        />
-                      </div>
-
-                      <div style={{ marginTop: "10px" }}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "5px",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Category:
-                        </label>
-                        <input
-                          type="text"
-                          value={editingItem.category || ""}
-                          onChange={(e) =>
-                            setEditingItem({
-                              ...editingItem,
-                              category: e.target.value,
-                            })
-                          }
-                          placeholder="e.g., Legs, Cardio, Stretching, Work"
-                          style={{
-                            padding: "8px",
-                            border: "1px solid #ddd",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            width: "200px",
-                          }}
-                        />
-                      </div>
-
-                      <div style={{ marginTop: "10px" }}>
-                        <label
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={editingItem.needsEquipment || false}
-                            onChange={(e) =>
-                              setEditingItem({
-                                ...editingItem,
-                                needsEquipment: e.target.checked,
-                              })
-                            }
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              cursor: "pointer",
-                            }}
-                          />
-                          Requires Equipment
-                        </label>
-                      </div>
-
-                      {editingItem.needsEquipment && (
-                        <div style={{ marginTop: "10px" }}>
-                          <label
-                            style={{
-                              display: "block",
-                              marginBottom: "5px",
-                              fontSize: "14px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            Weight/Resistance:
-                          </label>
-                          <input
-                            type="text"
-                            value={editingItem.weight || ""}
-                            onChange={(e) =>
-                              setEditingItem({
-                                ...editingItem,
-                                weight: e.target.value,
-                              })
-                            }
-                            placeholder="e.g., 135 lbs, 25 lbs each, Bodyweight"
-                            style={{
-                              padding: "8px",
-                              border: "1px solid #ddd",
-                              borderRadius: "4px",
-                              fontSize: "14px",
-                              width: "250px",
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      <div style={{ marginTop: "10px" }}>
-                        <label
-                          style={{
-                            display: "block",
-                            marginBottom: "5px",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Demo Link (YouTube URL):
-                        </label>
-                        <input
-                          type="url"
-                          value={editingItem.link || ""}
-                          onChange={(e) =>
-                            setEditingItem({
-                              ...editingItem,
-                              link: e.target.value,
-                            })
-                          }
-                          placeholder="e.g., https://www.youtube.com/watch?v=..."
-                          style={{
-                            padding: "8px",
-                            border: "1px solid #ddd",
-                            borderRadius: "4px",
-                            fontSize: "14px",
-                            width: "300px",
-                          }}
-                        />
-                        {editingItem.link && (
-                          <a
-                            href={editingItem.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              marginLeft: "10px",
-                              color: "#007bff",
-                              textDecoration: "none",
-                              fontSize: "12px",
-                            }}
-                          >
-                            🎬 Preview
-                          </a>
-                        )}
-                      </div>
-
+                {/* Items List */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  {getCurrentItems().map((item, index) => (
+                    <div
+                      key={item.id}
+                      style={{
+                        backgroundColor:
+                          editingItem?.id === item.id ? "#fff3cd" : "#f8f9fa",
+                        padding: "15px",
+                        borderRadius: "6px",
+                        border: "1px solid #dee2e6",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "15px",
+                      }}
+                    >
+                      {/* Move buttons */}
                       <div
                         style={{
                           display: "flex",
-                          gap: "10px",
-                          marginTop: "15px",
+                          flexDirection: "column",
+                          gap: "5px",
                         }}
                       >
                         <button
-                          onClick={handleSaveEdit}
+                          onClick={() => moveItem(item.id, "up")}
+                          disabled={index === 0}
                           style={{
-                            padding: "8px 16px",
-                            backgroundColor: "#28a745",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
+                            width: "30px",
+                            height: "25px",
+                            border: "1px solid #ccc",
+                            backgroundColor: index === 0 ? "#f5f5f5" : "white",
+                            borderRadius: "3px",
+                            cursor: index === 0 ? "not-allowed" : "pointer",
+                            fontSize: "12px",
                           }}
                         >
-                          Save
+                          ↑
                         </button>
                         <button
-                          onClick={() => setEditingItem(null)}
+                          onClick={() => moveItem(item.id, "down")}
+                          disabled={index === getCurrentItems().length - 1}
                           style={{
-                            padding: "8px 16px",
-                            backgroundColor: "#6c757d",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
+                            width: "30px",
+                            height: "25px",
+                            border: "1px solid #ccc",
+                            backgroundColor:
+                              index === getCurrentItems().length - 1
+                                ? "#f5f5f5"
+                                : "white",
+                            borderRadius: "3px",
+                            cursor:
+                              index === getCurrentItems().length - 1
+                                ? "not-allowed"
+                                : "pointer",
+                            fontSize: "12px",
                           }}
                         >
-                          Cancel
+                          ↓
                         </button>
                       </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div style={{ flex: 1 }}>
-                        <div
-                          style={{
-                            fontSize: "16px",
-                            marginBottom: "5px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {item.text || item.name}
-                        </div>
 
-                        {isWorkoutSection() && (item.reps || item.sets) && (
-                          <div
-                            style={{
-                              fontSize: "14px",
-                              color: "#007bff",
-                              marginBottom: "3px",
-                              display: "flex",
-                              gap: "15px",
-                            }}
-                          >
-                            {item.reps && (
-                              <span
-                                style={{
-                                  backgroundColor: "#e7f3ff",
-                                  padding: "2px 8px",
-                                  borderRadius: "12px",
-                                  border: "1px solid #007bff",
-                                }}
-                              >
-                                🔢 {item.reps} reps
-                              </span>
-                            )}
-                            {item.sets && (
-                              <span
-                                style={{
-                                  backgroundColor: "#e7f3ff",
-                                  padding: "2px 8px",
-                                  borderRadius: "12px",
-                                  border: "1px solid #007bff",
-                                }}
-                              >
-                                🔄 {item.sets} sets
-                              </span>
-                            )}
-                          </div>
-                        )}
-
-                        {item.duration && (
-                          <div
-                            style={{
-                              fontSize: "14px",
-                              color: "#ffc107",
-                              marginBottom: "3px",
-                            }}
-                          >
-                            <span
+                      {/* Item content */}
+                      {editingItem?.id === item.id ? (
+                        <div style={{ flex: 1 }}>
+                          <div style={{ marginBottom: "10px" }}>
+                            <input
+                              type="text"
+                              value={editingItem.text}
+                              onChange={(e) =>
+                                setEditingItem({
+                                  ...editingItem,
+                                  text: e.target.value,
+                                })
+                              }
                               style={{
-                                backgroundColor: "#fffbf0",
-                                padding: "2px 8px",
-                                borderRadius: "12px",
-                                border: "1px solid #ffc107",
+                                width: "100%",
+                                padding: "8px",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "16px",
+                                boxSizing: "border-box",
+                              }}
+                              onKeyPress={(e) =>
+                                e.key === "Enter" &&
+                                !isWorkoutSection() &&
+                                handleSaveEdit()
+                              }
+                              placeholder="Exercise/Task name"
+                            />
+                          </div>
+
+                          {isWorkoutSection() && (
+                            <div
+                              style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr 1fr",
+                                gap: "10px",
+                                marginBottom: "10px",
                               }}
                             >
-                              ⏱️ {item.duration}
-                            </span>
-                          </div>
-                        )}
+                              <input
+                                type="text"
+                                value={editingItem.reps || ""}
+                                onChange={(e) =>
+                                  setEditingItem({
+                                    ...editingItem,
+                                    reps: e.target.value,
+                                  })
+                                }
+                                style={{
+                                  padding: "6px",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "4px",
+                                  fontSize: "14px",
+                                }}
+                                placeholder="Reps (e.g., 10)"
+                              />
+                              <input
+                                type="text"
+                                value={editingItem.sets || ""}
+                                onChange={(e) =>
+                                  setEditingItem({
+                                    ...editingItem,
+                                    sets: e.target.value,
+                                  })
+                                }
+                                style={{
+                                  padding: "6px",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "4px",
+                                  fontSize: "14px",
+                                }}
+                                placeholder="Sets (e.g., 3)"
+                              />
+                            </div>
+                          )}
 
-                        {(item.category || item.needsEquipment) && (
+                          <div style={{ marginTop: "10px" }}>
+                            <label
+                              style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Duration Goal:
+                            </label>
+                            <input
+                              type="text"
+                              value={editingItem.duration || ""}
+                              onChange={(e) =>
+                                setEditingItem({
+                                  ...editingItem,
+                                  duration: e.target.value,
+                                })
+                              }
+                              placeholder="e.g., 15 min, 30 minutes, 1 hour"
+                              style={{
+                                padding: "8px",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "14px",
+                                width: "200px",
+                              }}
+                            />
+                          </div>
+
+                          <div style={{ marginTop: "10px" }}>
+                            <label
+                              style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Category:
+                            </label>
+                            <input
+                              type="text"
+                              value={editingItem.category || ""}
+                              onChange={(e) =>
+                                setEditingItem({
+                                  ...editingItem,
+                                  category: e.target.value,
+                                })
+                              }
+                              placeholder="e.g., Legs, Cardio, Stretching, Work"
+                              style={{
+                                padding: "8px",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "14px",
+                                width: "200px",
+                              }}
+                            />
+                          </div>
+
+                          <div style={{ marginTop: "10px" }}>
+                            <label
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={editingItem.needsEquipment || false}
+                                onChange={(e) =>
+                                  setEditingItem({
+                                    ...editingItem,
+                                    needsEquipment: e.target.checked,
+                                  })
+                                }
+                                style={{
+                                  width: "16px",
+                                  height: "16px",
+                                  cursor: "pointer",
+                                }}
+                              />
+                              Requires Equipment
+                            </label>
+                          </div>
+
+                          {editingItem.needsEquipment && (
+                            <div style={{ marginTop: "10px" }}>
+                              <label
+                                style={{
+                                  display: "block",
+                                  marginBottom: "5px",
+                                  fontSize: "14px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                Weight/Resistance:
+                              </label>
+                              <input
+                                type="text"
+                                value={editingItem.weight || ""}
+                                onChange={(e) =>
+                                  setEditingItem({
+                                    ...editingItem,
+                                    weight: e.target.value,
+                                  })
+                                }
+                                placeholder="e.g., 135 lbs, 25 lbs each, Bodyweight"
+                                style={{
+                                  padding: "8px",
+                                  border: "1px solid #ddd",
+                                  borderRadius: "4px",
+                                  fontSize: "14px",
+                                  width: "250px",
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          <div style={{ marginTop: "10px" }}>
+                            <label
+                              style={{
+                                display: "block",
+                                marginBottom: "5px",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Demo Link (YouTube URL):
+                            </label>
+                            <input
+                              type="url"
+                              value={editingItem.link || ""}
+                              onChange={(e) =>
+                                setEditingItem({
+                                  ...editingItem,
+                                  link: e.target.value,
+                                })
+                              }
+                              placeholder="e.g., https://www.youtube.com/watch?v=..."
+                              style={{
+                                padding: "8px",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                                fontSize: "14px",
+                                width: "300px",
+                              }}
+                            />
+                            {editingItem.link && (
+                              <a
+                                href={editingItem.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  marginLeft: "10px",
+                                  color: "#007bff",
+                                  textDecoration: "none",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                🎬 Preview
+                              </a>
+                            )}
+                          </div>
+
                           <div
                             style={{
-                              fontSize: "14px",
-                              marginBottom: "3px",
                               display: "flex",
                               gap: "10px",
-                              flexWrap: "wrap",
+                              marginTop: "15px",
                             }}
                           >
-                            {item.category && (
-                              <span
+                            <button
+                              onClick={handleSaveEdit}
+                              style={{
+                                padding: "8px 16px",
+                                backgroundColor: "#28a745",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingItem(null)}
+                              style={{
+                                padding: "8px 16px",
+                                backgroundColor: "#6c757d",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ flex: 1 }}>
+                            <div
+                              style={{
+                                fontSize: "16px",
+                                marginBottom: "5px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {item.text || item.name}
+                            </div>
+
+                            {isWorkoutSection() && (item.reps || item.sets) && (
+                              <div
                                 style={{
-                                  backgroundColor: "#e7f3ff",
-                                  padding: "2px 8px",
-                                  borderRadius: "12px",
-                                  border: "1px solid #007bff",
+                                  fontSize: "14px",
                                   color: "#007bff",
-                                  fontSize: "12px",
+                                  marginBottom: "3px",
+                                  display: "flex",
+                                  gap: "15px",
                                 }}
                               >
-                                📂 {item.category}
-                              </span>
+                                {item.reps && (
+                                  <span
+                                    style={{
+                                      backgroundColor: "#e7f3ff",
+                                      padding: "2px 8px",
+                                      borderRadius: "12px",
+                                      border: "1px solid #007bff",
+                                    }}
+                                  >
+                                    🔢 {item.reps} reps
+                                  </span>
+                                )}
+                                {item.sets && (
+                                  <span
+                                    style={{
+                                      backgroundColor: "#e7f3ff",
+                                      padding: "2px 8px",
+                                      borderRadius: "12px",
+                                      border: "1px solid #007bff",
+                                    }}
+                                  >
+                                    🔄 {item.sets} sets
+                                  </span>
+                                )}
+                              </div>
                             )}
-                            {item.needsEquipment && (
-                              <span
+
+                            {item.duration && (
+                              <div
                                 style={{
-                                  backgroundColor: "#fff3cd",
-                                  padding: "2px 8px",
-                                  borderRadius: "12px",
-                                  border: "1px solid #ffc107",
-                                  color: "#856404",
-                                  fontSize: "12px",
+                                  fontSize: "14px",
+                                  color: "#ffc107",
+                                  marginBottom: "3px",
                                 }}
                               >
-                                🔧 Equipment Needed
-                              </span>
+                                <span
+                                  style={{
+                                    backgroundColor: "#fffbf0",
+                                    padding: "2px 8px",
+                                    borderRadius: "12px",
+                                    border: "1px solid #ffc107",
+                                  }}
+                                >
+                                  ⏱️ {item.duration}
+                                </span>
+                              </div>
+                            )}
+
+                            {(item.category || item.needsEquipment) && (
+                              <div
+                                style={{
+                                  fontSize: "14px",
+                                  marginBottom: "3px",
+                                  display: "flex",
+                                  gap: "10px",
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                {item.category && (
+                                  <span
+                                    style={{
+                                      backgroundColor: "#e7f3ff",
+                                      padding: "2px 8px",
+                                      borderRadius: "12px",
+                                      border: "1px solid #007bff",
+                                      color: "#007bff",
+                                      fontSize: "12px",
+                                    }}
+                                  >
+                                    📂 {item.category}
+                                  </span>
+                                )}
+                                {item.needsEquipment && (
+                                  <span
+                                    style={{
+                                      backgroundColor: "#fff3cd",
+                                      padding: "2px 8px",
+                                      borderRadius: "12px",
+                                      border: "1px solid #ffc107",
+                                      color: "#856404",
+                                      fontSize: "12px",
+                                    }}
+                                  >
+                                    🔧 Equipment Needed
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
-                      </div>
 
-                      <div style={{ display: "flex", gap: "10px" }}>
-                        <button
-                          onClick={() => handleEditItem(item)}
-                          style={{
-                            padding: "8px 12px",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteItem(item.id)}
-                          style={{
-                            padding: "8px 12px",
-                            backgroundColor: "#dc3545",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </>
+                          <div style={{ display: "flex", gap: "10px" }}>
+                            <button
+                              onClick={() => handleEditItem(item)}
+                              style={{
+                                padding: "8px 12px",
+                                backgroundColor: "#007bff",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteItem(item.id)}
+                              style={{
+                                padding: "8px 12px",
+                                backgroundColor: "#dc3545",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+
+                  {getCurrentItems().length === 0 && (
+                    <div
+                      style={{
+                        textAlign: "center",
+                        padding: "40px",
+                        color: "#666",
+                        fontSize: "18px",
+                      }}
+                    >
+                      No items in this checklist yet. Click "Add Item" to get
+                      started!
+                    </div>
                   )}
                 </div>
-              ))}
-
-              {getCurrentItems().length === 0 && (
-                <div
-                  style={{
-                    textAlign: "center",
-                    padding: "40px",
-                    color: "#666",
-                    fontSize: "18px",
-                  }}
-                >
-                  No items in this checklist yet. Click "Add Item" to get
-                  started!
-                </div>
-              )}
-            </div>
               </>
             )}
           </div>

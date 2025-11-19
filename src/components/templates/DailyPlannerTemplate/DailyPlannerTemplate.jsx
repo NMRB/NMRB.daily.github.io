@@ -30,12 +30,16 @@ const DailyPlannerTemplate = ({
 
       <main className="main-content">
         {sections.map((section, index) => {
-          const isGymWorkout = section.title?.toLowerCase().includes("gym workout");
-          const isHomeWorkout = section.title?.toLowerCase().includes("home workout");
-          
+          const isGymWorkout = section.title
+            ?.toLowerCase()
+            .includes("gym workout");
+          const isHomeWorkout = section.title
+            ?.toLowerCase()
+            .includes("home workout");
+
           let workoutSelection = null;
           let onRegenerateWorkout = null;
-          
+
           if (isGymWorkout) {
             workoutSelection = gymWorkoutSelection;
             onRegenerateWorkout = onRegenerateGymWorkout;
@@ -43,7 +47,7 @@ const DailyPlannerTemplate = ({
             workoutSelection = homeWorkoutSelection;
             onRegenerateWorkout = onRegenerateHomeWorkout;
           }
-          
+
           return (
             <ChecklistSection
               key={section.title || index}
