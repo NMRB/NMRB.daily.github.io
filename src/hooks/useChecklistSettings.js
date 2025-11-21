@@ -5,6 +5,8 @@ import {
   loadCustomChecklistsFromFirebase,
   savePreferredCategoriesToFirebase,
   loadPreferredCategoriesFromFirebase,
+  saveSectionDisabledToFirebase,
+  loadSectionDisabledFromFirebase,
 } from "../firebase";
 import {
   morningChecklist as defaultMorningChecklist,
@@ -39,6 +41,7 @@ export const useChecklistSettings = () => {
     saturday: "90",
     sunday: "90",
   });
+  const [sectionDisabled, setSectionDisabled] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -88,10 +91,12 @@ export const useChecklistSettings = () => {
       setError("");
 
       try {
-        const [checklistResult, preferencesResult] = await Promise.all([
-          loadCustomChecklistsFromFirebase(),
-          loadPreferredCategoriesFromFirebase(),
-        ]);
+        const [checklistResult, preferencesResult, sectionDisabledResult] =
+          await Promise.all([
+            loadCustomChecklistsFromFirebase(),
+            loadPreferredCategoriesFromFirebase(),
+            loadSectionDisabledFromFirebase(),
+          ]);
 
         if (checklistResult.success && checklistResult.data) {
           // Merge with defaults to ensure all sections exist
@@ -129,6 +134,10 @@ export const useChecklistSettings = () => {
               sunday: preferencesResult.data.exerciseTimeLimits.sunday || "90",
             });
           }
+        }
+
+        if (sectionDisabledResult.success && sectionDisabledResult.data) {
+          setSectionDisabled(sectionDisabledResult.data);
         }
       } catch (err) {
         console.error("Error loading custom checklists:", err);
@@ -170,7 +179,11 @@ export const useChecklistSettings = () => {
 
   // Save preferences (categories and time limits) to Firebase
   const savePreferences = useCallback(
-    async (newPreferredCategories, newExerciseTimeLimits) => {
+    async (
+      newPreferredCategories,
+      newExerciseTimeLimits,
+      newSectionDisabled
+    ) => {
       if (!currentUser) {
         setError("Must be logged in to save preferences");
         return;
@@ -182,14 +195,25 @@ export const useChecklistSettings = () => {
           ...newPreferredCategories,
           exerciseTimeLimits: newExerciseTimeLimits,
         };
-        const result = await savePreferredCategoriesToFirebase(preferencesData);
 
-        if (result.success) {
+        // Save preferences and section disabled settings in parallel
+        const promises = [savePreferredCategoriesToFirebase(preferencesData)];
+
+        if (newSectionDisabled !== undefined) {
+          promises.push(saveSectionDisabledToFirebase(newSectionDisabled));
+        }
+
+        const results = await Promise.all(promises);
+
+        if (results.every((result) => result.success)) {
           setPreferredCategories(newPreferredCategories);
           setExerciseTimeLimits(newExerciseTimeLimits);
+          if (newSectionDisabled !== undefined) {
+            setSectionDisabled(newSectionDisabled);
+          }
           console.log("Preferences saved successfully");
         } else {
-          throw new Error(result.error || "Failed to save");
+          throw new Error("Failed to save some preferences");
         }
       } catch (err) {
         console.error("Error saving preferences:", err);
@@ -298,6 +322,7 @@ export const useChecklistSettings = () => {
     customChecklists,
     preferredCategories,
     exerciseTimeLimits,
+    sectionDisabled,
     loading,
     error,
     saveCustomChecklists,

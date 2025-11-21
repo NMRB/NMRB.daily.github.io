@@ -1,0 +1,156 @@
+.points-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  border-radius: 8px;
+  color: #ffffff !important;
+  transition: all 0.2s ease;
+}
+
+.points-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(100, 108, 255, 0.3);
+  border-color: #646cff !important;
+}
+
+.points-card__icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #646cff, #00d2ff);
+  color: #ffffff !important;
+}
+
+.points-card__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.points-card__points {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  font-family: "Press Start 2P", monospace;
+}
+
+.points-card__label {
+  font-size: 0.875rem;
+  color: #aaa !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Size variants */
+.points-card--small {
+  padding: 0.75rem;
+}
+
+.points-card--small .points-card__icon {
+  font-size: 1.25rem;
+  min-width: 2rem;
+  height: 2rem;
+}
+
+.points-card--small .points-card__points {
+  font-size: 1.25rem;
+}
+
+.points-card--small .points-card__label {
+  font-size: 0.75rem;
+}
+
+.points-card--large {
+  padding: 1.5rem;
+}
+
+.points-card--large .points-card__icon {
+  font-size: 2rem;
+  min-width: 3rem;
+  height: 3rem;
+}
+
+.points-card--large .points-card__points {
+  font-size: 2rem;
+}
+
+.points-card--large .points-card__label {
+  font-size: 1rem;
+}
+
+/* Color variants */
+.points-card--success {
+  border-color: #28a745 !important;
+}
+
+.points-card--success .points-card__icon {
+  background: linear-gradient(135deg, #28a745, #34ce57);
+}
+
+.points-card--success:hover {
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+  border-color: #28a745 !important;
+}
+
+.points-card--warning {
+  border-color: #ffc107 !important;
+}
+
+.points-card--warning .points-card__icon {
+  background: linear-gradient(135deg, #ffc107, #ffcd39);
+}
+
+.points-card--warning:hover {
+  box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+  border-color: #ffc107 !important;
+}
+
+.points-card--info {
+  border-color: #17a2b8 !important;
+}
+
+.points-card--info .points-card__icon {
+  background: linear-gradient(135deg, #17a2b8, #1fc8db);
+}
+
+.points-card--info:hover {
+  box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+  border-color: #17a2b8 !important;
+}
+
+.points-card--streak {
+  border-color: #00d2ff !important;
+}
+
+.points-card--streak .points-card__icon {
+  background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+  animation: pulse 2s infinite;
+}
+
+.points-card--streak:hover {
+  box-shadow: 0 8px 25px rgba(0, 210, 255, 0.3);
+  border-color: #00d2ff !important;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(0, 210, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
+  }
+}

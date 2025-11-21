@@ -4,6 +4,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import WeeklyBreakdownTemplate from "./templates/WeeklyBreakdownTemplate/WeeklyBreakdownTemplate";
+import "./WeeklyBreakdown.scss";
 
 const WeeklyBreakdown = ({ onBack, initialWeekStart }) => {
   const navigate = useNavigate();

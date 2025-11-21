@@ -1,0 +1,137 @@
+// ==========================================================================
+// Retro Game Card - Sass Module
+// ==========================================================================
+
+@import '../../../styles/abstracts';
+
+.card {
+  @include retro-card;
+  transition: $transition-fast;
+  
+  &:hover {
+    @include neon-glow($primary-color);
+    transform: translate(-2px, -2px);
+  }
+  
+  // Card Variants
+  // -------------------------
+  &--summary {
+    text-align: center;
+    padding: $spacing-lg $spacing-base;
+    background: linear-gradient(135deg, $retro-gray-50 0%, $retro-gray-100 100%);
+    border-color: $retro-gray-200;
+  }
+  
+  &--category {
+    border-left: 4px solid $success-color;
+    padding: $spacing-md $spacing-base;
+  }
+  
+  &--day {
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+  }
+  
+  &--compact {
+    padding: $spacing-sm $spacing-md;
+  }
+  
+  &--interactive {
+    cursor: pointer;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $shadow-lg;
+    }
+  }
+  
+  &--elevated {
+    box-shadow: $shadow-md;
+    
+    &:hover {
+      box-shadow: $shadow-xl;
+    }
+  }
+  
+  &--outline {
+    background: transparent;
+    border: 2px solid $border-color;
+    box-shadow: none;
+    
+    &:hover {
+      border-color: $primary-color;
+      box-shadow: $shadow-sm;
+    }
+  }
+  
+  &--success {
+    border-color: $success-color;
+    background: tint($success-color, 95%);
+  }
+  
+  &--warning {
+    border-color: $warning-color;
+    background: tint($warning-color, 95%);
+  }
+  
+  &--error {
+    border-color: $error-color;
+    background: tint($error-color, 95%);
+  }
+  
+  &--info {
+    border-color: $info-color;
+    background: tint($info-color, 95%);
+  }
+}
+
+// Card Components
+// -------------------------
+.card__header {
+  margin-bottom: $spacing-base;
+  padding-bottom: $spacing-sm;
+  border-bottom: $border-width solid $border-color-light;
+  
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.card__title {
+  @include heading($font-size-lg, $font-weight-semibold);
+  margin-bottom: $spacing-xs;
+}
+
+.card__subtitle {
+  @include small-text();
+}
+
+.card__body {
+  &:not(:last-child) {
+    margin-bottom: $spacing-base;
+  }
+}
+
+.card__footer {
+  margin-top: $spacing-base;
+  padding-top: $spacing-sm;
+  border-top: $border-width solid $border-color-light;
+  
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+}
+
+// Card Grid
+// -------------------------
+.card-grid {
+  @include grid-responsive(1, 2, 3, $spacing-base);
+  
+  @include large-desktop-up {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

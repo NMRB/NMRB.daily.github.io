@@ -1,0 +1,160 @@
+// ==========================================================================
+// Retro Game Button - Sass Module
+// ==========================================================================
+
+@import '../../../styles/abstracts';
+
+.btn {
+  @include retro-button;
+  gap: $spacing-sm;
+  box-shadow: 4px 4px 0px rgba($primary-color, 0.5);
+  transition: all 0.1s ease;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($primary-color);
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0px rgba($primary-color, 0.7);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px rgba($primary-color, 0.3);
+  }
+}
+
+// Retro Button Variants
+// -------------------------
+.btn-primary {
+  background: linear-gradient(145deg, 
+    lighten($primary-color, 10%) 0%, 
+    $primary-color 50%, 
+    darken($primary-color, 10%) 100%);
+  border-color: $primary-color;
+  color: $retro-black;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($primary-color);
+  }
+}
+
+.btn-secondary {
+  background: linear-gradient(145deg, 
+    lighten($secondary-color, 10%) 0%, 
+    $secondary-color 50%, 
+    darken($secondary-color, 10%) 100%);
+  border-color: $secondary-color;
+  color: $retro-white;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($secondary-color);
+  }
+}
+
+.btn-success {
+  background: linear-gradient(145deg, 
+    lighten($success-color, 10%) 0%, 
+    $success-color 50%, 
+    darken($success-color, 10%) 100%);
+  border-color: $success-color;
+  color: $retro-black;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($success-color);
+  }
+}
+
+.btn-warning {
+  background: linear-gradient(145deg, 
+    lighten($warning-color, 10%) 0%, 
+    $warning-color 50%, 
+    darken($warning-color, 10%) 100%);
+  border-color: $warning-color;
+  color: $retro-black;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($warning-color);
+  }
+}
+
+.btn-danger {
+  background: linear-gradient(145deg, 
+    lighten($error-color, 10%) 0%, 
+    $error-color 50%, 
+    darken($error-color, 10%) 100%);
+  border-color: $error-color;
+  color: $retro-white;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($error-color);
+  }
+}
+
+.btn-info {
+  background: linear-gradient(145deg, 
+    lighten($info-color, 10%) 0%, 
+    $info-color 50%, 
+    darken($info-color, 10%) 100%);
+  border-color: $info-color;
+  color: $retro-white;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($info-color);
+  }
+}
+
+.btn-clear {
+  background: linear-gradient(145deg, 
+    $retro-gray-500 0%, 
+    $retro-gray-600 50%, 
+    $retro-gray-700 100%);
+  border-color: $retro-gray-400;
+  color: $retro-white;
+  
+  &:hover:not(:disabled) {
+    @include neon-glow($retro-gray-400);
+  }
+}
+
+// Button Sizes
+// -------------------------
+.btn-sm {
+  padding: $spacing-xs $spacing-sm;
+  font-size: $font-size-sm;
+}
+
+.btn-lg {
+  padding: $spacing-base $spacing-xl;
+  font-size: $font-size-lg;
+}
+
+// Button States
+// -------------------------
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: button-loading-spinner 1s ease infinite;
+  }
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+  
+  to {
+    transform: rotate(1turn);
+  }
+}

@@ -1,0 +1,265 @@
+// ==========================================================================
+// Base - Reset and Global Styles
+// ==========================================================================
+
+@import '../abstracts';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  line-height: $line-height-normal;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: $font-family-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-normal;
+  color: #ffffff !important;
+  background-color: #000000 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Force all text to be white and backgrounds to be dark
+* {
+  color: #ffffff !important;
+}
+
+// Ensure all elements have white text and dark backgrounds where appropriate
+p, div, span, label, input, textarea, select, button, a, li, td, th, section, article, main, aside, nav, header, footer {
+  color: #ffffff !important;
+}
+
+// Headings also white
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+}
+
+// Force dark backgrounds on container elements
+div, section, article, main, aside, nav, header, footer, .container, .card, .panel {
+  background-color: #000000 !important;
+}
+
+// Input elements
+input, textarea, select {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 1px solid #333333 !important;
+}
+
+// Button elements
+button, .btn {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 1px solid #333333 !important;
+}
+
+// Typography
+// -------------------------
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 $spacing-base 0;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-tight;
+}
+
+h1 {
+  font-size: $font-size-4xl;
+  
+  @include tablet-up {
+    font-size: $font-size-5xl;
+  }
+}
+
+h2 {
+  font-size: $font-size-3xl;
+  
+  @include tablet-up {
+    font-size: $font-size-4xl;
+  }
+}
+
+h3 {
+  font-size: $font-size-2xl;
+  
+  @include tablet-up {
+    font-size: $font-size-3xl;
+  }
+}
+
+h4 {
+  font-size: $font-size-xl;
+  
+  @include tablet-up {
+    font-size: $font-size-2xl;
+  }
+}
+
+h5 {
+  font-size: $font-size-lg;
+  
+  @include tablet-up {
+    font-size: $font-size-xl;
+  }
+}
+
+h6 {
+  font-size: $font-size-base;
+  
+  @include tablet-up {
+    font-size: $font-size-lg;
+  }
+}
+
+p {
+  margin: 0 0 $spacing-base 0;
+}
+
+// Links
+// -------------------------
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: $transition-base;
+  
+  &:hover,
+  &:focus {
+    color: $primary-dark;
+    text-decoration: underline;
+  }
+  
+  @include focus-visible;
+}
+
+// Lists
+// -------------------------
+ul, ol {
+  margin: 0 0 $spacing-base 0;
+  padding-left: $spacing-lg;
+}
+
+li {
+  margin-bottom: $spacing-xs;
+}
+
+// Images
+// -------------------------
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+// Tables
+// -------------------------
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: $spacing-lg;
+}
+
+th, td {
+  padding: $spacing-sm $spacing-base;
+  text-align: left;
+  border-bottom: $border-width solid $border-color;
+}
+
+th {
+  font-weight: $font-weight-semibold;
+  background-color: $bg-secondary;
+}
+
+// Forms
+// -------------------------
+button,
+input,
+optgroup,
+select,
+textarea {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+button,
+input {
+  overflow: visible;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  appearance: button;
+}
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  padding: 0;
+  border-style: none;
+}
+
+input[type="search"] {
+  -webkit-appearance: textfield;
+  appearance: textfield;
+  outline-offset: -2px;
+}
+
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+legend {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin-bottom: $spacing-sm;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  line-height: inherit;
+  color: inherit;
+  white-space: normal;
+}
+
+// Utilities
+// -------------------------
+.sr-only {
+  @include sr-only;
+}
+
+// Scrollbar
+// -------------------------
+html {
+  @include custom-scrollbar;
+}

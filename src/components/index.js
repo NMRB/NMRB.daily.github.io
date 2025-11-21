@@ -6,6 +6,7 @@ export { default as Badge } from "./atoms/Badge/Badge";
 export { default as Card } from "./atoms/Card/Card";
 export { default as StatNumber } from "./atoms/StatNumber/StatNumber";
 export { default as ProgressBar } from "./atoms/ProgressBar/ProgressBar";
+export { default as PointsCard } from "./atoms/PointsCard/PointsCard";
 
 // Molecules
 export { default as ChecklistItem } from "./molecules/ChecklistItem/ChecklistItem";
@@ -15,6 +16,7 @@ export { default as TimeTracker } from "./molecules/TimeTracker/TimeTracker";
 export { default as SummaryCard } from "./molecules/SummaryCard/SummaryCard";
 export { default as CategoryCard } from "./molecules/CategoryCard/CategoryCard";
 export { default as DayCard } from "./molecules/DayCard/DayCard";
+export { default as PointsStats } from "./molecules/PointsStats/PointsStats";
 
 // Organisms
 export { default as ChecklistSection } from "./organisms/ChecklistSection/ChecklistSection";

@@ -12,6 +12,7 @@ import {
 } from "../data";
 import { useFirebaseSync } from "../hooks/useFirebaseSync";
 import { useChecklistSettings } from "../hooks/useChecklistSettings";
+import { useUserPoints } from "../hooks/useUserPoints";
 import {
   selectExercisesWithinTimeLimit,
   getCurrentDay,
@@ -25,6 +26,7 @@ function DailyPlannerContainer() {
     customChecklists,
     preferredCategories,
     exerciseTimeLimits,
+    sectionDisabled,
     loading: checklistsLoading,
   } = useChecklistSettings();
 
@@ -305,6 +307,9 @@ function DailyPlannerContainer() {
   const { saveToFirebase, loadFromFirebase, logCompletionEvent } =
     useFirebaseSync(checklistData, setters);
 
+  // Use user points system
+  const { addPoints } = useUserPoints();
+
   // Apply time-based filtering to gym workout
   useEffect(() => {
     if (
@@ -559,6 +564,30 @@ function DailyPlannerContainer() {
               }
             );
 
+            // Add points if task was completed (not unchecked)
+            if (newCompleted && addPoints) {
+              addPoints({
+                id: item.id,
+                name: item.name || item.text,
+                checklistType: checklistType,
+                category: item.category || null,
+              })
+                .then((result) => {
+                  if (result.success) {
+                    console.log(
+                      `Added ${result.pointsAdded} point(s) for completing "${
+                        item.name || item.text
+                      }". Total: ${result.newTotal}`
+                    );
+                  } else {
+                    console.error("Failed to add points:", result.error);
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error adding points:", error);
+                });
+            }
+
             return updatedItem;
           }
           return item;
@@ -771,8 +800,16 @@ function DailyPlannerContainer() {
     cooldownTime: cooldownWorkoutTime,
   } = timeTracking;
 
-  // Prepare sections data for the template
-  const sections = [
+  // Get current day for filtering disabled sections
+  const currentDay = getCurrentDay();
+
+  // Check if a section is disabled for the current day
+  const isSectionDisabled = (sectionKey) => {
+    return sectionDisabled?.[currentDay]?.[sectionKey] || false;
+  };
+
+  // Prepare all sections data for the template
+  const allSections = [
     {
       title: "Morning Checklist",
       timeIndicator: getTimeIndicator("6:00 - 7:00", "morning"),
@@ -870,6 +907,25 @@ function DailyPlannerContainer() {
       })),
     },
   ];
+
+  // Filter sections based on disabled settings for current day
+  const sections = allSections.filter((section, index) => {
+    // Map sections to their keys based on order
+    const sectionKeys = [
+      "morning", // Morning Checklist
+      "warmup", // Warmup
+      "gymWorkout", // Gym Workout
+      "homeWorkout", // Home Workout
+      "cooldown", // Cooldown
+      "lunchGoals", // Lunch Goals
+      "afterWorkGoals", // After Work Goals
+      "dreams", // Dreams
+      "evening", // Evening Checklist
+    ];
+
+    const sectionKey = sectionKeys[index];
+    return sectionKey ? !isSectionDisabled(sectionKey) : true;
+  });
 
   // Show loading while custom checklists are being loaded
   if (checklistsLoading) {

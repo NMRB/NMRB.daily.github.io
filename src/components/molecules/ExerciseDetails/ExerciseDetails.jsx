@@ -28,7 +28,7 @@ const ExerciseDetails = ({ item }) => {
               window.open(item.link, "_blank", "noopener,noreferrer")
             }
           >
-            📹 Demo
+            ℹ️ Demo
           </Button>
         )}
       </div>

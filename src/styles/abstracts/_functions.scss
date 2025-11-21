@@ -1,0 +1,135 @@
+// ==========================================================================
+// Functions - Utility Functions
+// ==========================================================================
+
+// Color Functions
+// -------------------------
+@use "sass:color";
+
+@function tint($color, $percentage) {
+  @return color.mix(white, $color, $percentage);
+}
+
+@function shade($color, $percentage) {
+  @return color.mix(black, $color, $percentage);
+}
+
+@function alpha($color, $opacity) {
+  @return rgba($color, $opacity);
+}
+
+// Spacing Functions
+// -------------------------
+@function spacing($multiplier: 1) {
+  @return $spacing-base * $multiplier;
+}
+
+@function rem($pixels) {
+  @return ($pixels / 16) * 1rem;
+}
+
+@function em($pixels, $context: 16) {
+  @return ($pixels / $context) * 1em;
+}
+
+// Typography Functions
+// -------------------------
+@function font-size($level) {
+  $sizes: (
+    'xs': $font-size-xs,
+    'sm': $font-size-sm,
+    'base': $font-size-base,
+    'lg': $font-size-lg,
+    'xl': $font-size-xl,
+    '2xl': $font-size-2xl,
+    '3xl': $font-size-3xl,
+    '4xl': $font-size-4xl,
+    '5xl': $font-size-5xl
+  );
+  
+  @return map-get($sizes, $level);
+}
+
+@function font-weight($weight) {
+  $weights: (
+    'light': $font-weight-light,
+    'normal': $font-weight-normal,
+    'medium': $font-weight-medium,
+    'semibold': $font-weight-semibold,
+    'bold': $font-weight-bold,
+    'extrabold': $font-weight-extrabold
+  );
+  
+  @return map-get($weights, $weight);
+}
+
+// Layout Functions
+// -------------------------
+@function breakpoint($size) {
+  $breakpoints: (
+    'xs': $breakpoint-xs,
+    'sm': $breakpoint-sm,
+    'md': $breakpoint-md,
+    'lg': $breakpoint-lg,
+    'xl': $breakpoint-xl,
+    '2xl': $breakpoint-2xl
+  );
+  
+  @return map-get($breakpoints, $size);
+}
+
+@function z-index($level) {
+  $z-indexes: (
+    'dropdown': $z-index-dropdown,
+    'sticky': $z-index-sticky,
+    'fixed': $z-index-fixed,
+    'modal-backdrop': $z-index-modal-backdrop,
+    'modal': $z-index-modal,
+    'popover': $z-index-popover,
+    'tooltip': $z-index-tooltip
+  );
+  
+  @return map-get($z-indexes, $level);
+}
+
+// Math Functions
+// -------------------------
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  
+  @return $number;
+}
+
+@function pow($base, $exponent) {
+  $result: 1;
+  
+  @for $_ from 1 through $exponent {
+    $result: $result * $base;
+  }
+  
+  @return $result;
+}
+
+// String Functions
+// -------------------------
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+  
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+  
+  @return $string;
+}
+
+// Validation Functions
+// -------------------------
+@function is-valid-color($color) {
+  @return type-of($color) == color;
+}
+
+@function is-valid-length($length) {
+  @return type-of($length) == number and (unitless($length) or unit($length) == 'px' or unit($length) == 'rem' or unit($length) == 'em' or unit($length) == '%');
+}

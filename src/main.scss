@@ -1,0 +1,302 @@
+// ==========================================================================
+// Retro Game Application - Main Entry Point
+// ==========================================================================
+
+@import 'styles/base';
+
+// Force Dark Mode - Pure Black Background
+html, body {
+  background: #000000 !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+}
+
+// Force dark mode on all major containers
+#root, .app, .App, [data-reactroot], main {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+// Force dark backgrounds on all containers
+div, section, article, aside, nav, header, footer {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// Override any light backgrounds
+.bg-white, .background-white, .white-bg, .light-bg {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+@keyframes starfield {
+  0% { 
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; 
+  }
+  100% { 
+    background-position: -200px -100px, -200px -100px, -200px -100px, -200px -100px, -200px -100px, -20px -20px, -20px -20px, 0 0; 
+  }
+}
+
+// Global white text styling
+h1, h2, h3, h4, h5, h6 {
+  @include neon-glow($primary-color);
+  font-family: $font-family-display;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ffffff !important;
+}
+
+// Force all text elements to be white
+p, span, div, label, a, li, td, th, strong, em, small {
+  color: #ffffff !important;
+}
+
+// Override any other text colors
+.text-muted {
+  color: #ffffff !important;
+}
+
+.text-secondary {
+  color: #ffffff !important;
+}
+
+.text-primary {
+  color: #ffffff !important;
+}
+
+// Import component styles
+@import 'components/WeeklyBreakdown.scss';
+
+// =====================================
+// DARK MODE OVERRIDES - FORCE BLACK BACKGROUNDS
+// =====================================
+
+// Force all major containers to be dark
+.daily-planner,
+.weekly-breakdown,
+.workout-section,
+.checklist-container,
+.settings-page,
+.planner-container {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+// Override any component with light backgrounds
+.weekly-breakdown {
+  background-color: #000000 !important;
+  
+  .workout-day,
+  .workout-card,
+  .exercise-item,
+  .checklist-item {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+  }
+  
+  .day-header {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+  }
+}
+
+// Force all cards and containers to be dark
+.card,
+.panel,
+.section,
+.container,
+.wrapper {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+// Override any remaining light backgrounds
+[class*="bg-"],
+[class*="background-"],
+[style*="background: white"],
+[style*="background: #fff"],
+[style*="background-color: white"],
+[style*="background-color: #fff"] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+// React component overrides
+div[class],
+section[class],
+article[class],
+main[class] {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// Force all page containers to be dark
+.page,
+.view,
+.route,
+.component {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+// Nuclear option - override everything
+*,
+*::before,
+*::after {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// But allow specific dark backgrounds for containers
+body, 
+html, 
+#root,
+.app,
+.App {
+  background-color: #000000 !important;
+}
+
+// SUPER AGGRESSIVE DARK MODE OVERRIDES
+// Override any possible white backgrounds
+div:not([style*="background-color: transparent"]) {
+  background-color: transparent !important;
+}
+
+// Target specific page components that might have white backgrounds
+.daily-page,
+.weekly-page,
+.planner-page,
+.daily-planner-template,
+.weekly-breakdown-template,
+.weekly-breakdown-template__content,
+.daily-planner-template__content,
+[class*="page"],
+[class*="view"],
+[class*="container"],
+[class*="template"] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+// Override React component backgrounds
+div[data-reactroot],
+div[data-react-class],
+.react-component {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// Force transparent on all divs and sections
+div, section, article, main, aside, header, footer, nav {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// Override any inline styles
+[style] {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// Target common CSS classes that might force white backgrounds
+.bg-light,
+.bg-white, 
+.background-light,
+.background-white,
+.light-theme,
+.white-bg,
+.content-wrapper,
+.main-content,
+.page-content {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+// Override CSS variables that might be setting white backgrounds
+:root {
+  --background-color: #000000 !important;
+  --bg-color: #000000 !important;
+  --page-bg: #000000 !important;
+  --container-bg: transparent !important;
+  --text-color: #ffffff !important;
+}
+
+// Use CSS custom properties for dark mode
+html[data-theme="dark"],
+html[data-theme="light"],
+html {
+  --bg-primary: #000000;
+  --bg-secondary: transparent;
+  --text-primary: #ffffff;
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+// STICKY HEADER AND NAVIGATION FIXES
+// =====================================
+
+// Force dark backgrounds on sticky/fixed headers
+header,
+nav,
+.header,
+.navigation,
+.nav-bar,
+.navbar,
+.sticky,
+.fixed,
+[class*="header"],
+[class*="nav"] {
+  background-color: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  backdrop-filter: none !important;
+}
+
+// Sticky positioned elements
+.sticky,
+[style*="position: sticky"],
+[style*="position: fixed"] {
+  background-color: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+// Common header patterns
+h1, h2, h3, h4, h5, h6 {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+// Navigation links
+nav a,
+header a,
+.nav a,
+.header a,
+[class*="nav"] a,
+[class*="header"] a {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+// Utility class overrides for positioning
+.position-sticky,
+.position-fixed,
+.sticky-top,
+.fixed-top {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  backdrop-filter: none !important;
+}
+
+// Any element with backdrop-filter (glass effect)
+[style*="backdrop-filter"],
+.glass,
+.backdrop,
+.blur {
+  background-color: #000000 !important;
+  backdrop-filter: none !important;
+  color: #ffffff !important;
+}

@@ -305,4 +305,267 @@ export const loadPreferredCategoriesFromFirebase = async (userId = null) => {
   }
 };
 
+// Save section disabled settings to Firebase
+export const saveSectionDisabledToFirebase = async (
+  sectionDisabled,
+  userId = null
+) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn(
+        "No authenticated user, cannot save section disabled settings"
+      );
+      return { success: false, error: "No authenticated user" };
+    }
+
+    const docRef = doc(db, "users", userIdToUse, "settings", "preferences");
+
+    const dataToSave = {
+      sectionDisabled,
+      lastUpdated: serverTimestamp(),
+      userId: userIdToUse,
+    };
+
+    await setDoc(docRef, dataToSave, { merge: true });
+    console.log(
+      "Section disabled settings saved to Firebase for user:",
+      userIdToUse
+    );
+    return { success: true, userId: userIdToUse };
+  } catch (error) {
+    console.error("Error saving section disabled settings:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Load section disabled settings from Firebase
+export const loadSectionDisabledFromFirebase = async (userId = null) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn(
+        "No authenticated user, cannot load section disabled settings"
+      );
+      return { success: false, error: "No authenticated user" };
+    }
+
+    const docRef = doc(db, "users", userIdToUse, "settings", "preferences");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log(
+        "Section disabled settings loaded from Firebase for user:",
+        userIdToUse
+      );
+      return { success: true, data: data.sectionDisabled || {} };
+    } else {
+      console.log("No section disabled settings found for user:", userIdToUse);
+      return {
+        success: false,
+        error: "No section disabled settings found",
+      };
+    }
+  } catch (error) {
+    console.error("Error loading section disabled settings:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Save user points to Firebase
+export const saveUserPointsToFirebase = async (pointsData, userId = null) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn("No authenticated user, cannot save user points");
+      return { success: false, error: "No authenticated user" };
+    }
+
+    const docRef = doc(db, "users", userIdToUse, "userData", "points");
+
+    const dataToSave = {
+      ...pointsData,
+      lastUpdated: serverTimestamp(),
+      userId: userIdToUse,
+    };
+
+    await setDoc(docRef, dataToSave, { merge: true });
+    console.log("User points saved to Firebase for user:", userIdToUse);
+    return { success: true, userId: userIdToUse };
+  } catch (error) {
+    console.error("Error saving user points:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Load user points from Firebase
+export const loadUserPointsFromFirebase = async (userId = null) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn("No authenticated user, cannot load user points");
+      return { success: false, error: "No authenticated user" };
+    }
+
+    const docRef = doc(db, "users", userIdToUse, "userData", "points");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log("User points loaded from Firebase for user:", userIdToUse);
+      return {
+        success: true,
+        data: {
+          totalPoints: data.totalPoints || 0,
+          dailyPoints: data.dailyPoints || {},
+          pointsHistory: data.pointsHistory || [],
+          achievements: data.achievements || [],
+          streaks: data.streaks || { current: 0, longest: 0 },
+        },
+      };
+    } else {
+      console.log("No user points found for user:", userIdToUse);
+      return {
+        success: false,
+        error: "No user points found",
+      };
+    }
+  } catch (error) {
+    console.error("Error loading user points:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Add points for completed task
+export const addPointsForTask = async (taskData, userId = null) => {
+  try {
+    const currentUser = auth.currentUser;
+    const userIdToUse = userId || currentUser?.uid;
+
+    if (!userIdToUse) {
+      console.warn("No authenticated user, cannot add points");
+      return { success: false, error: "No authenticated user" };
+    }
+
+    // Load current points data
+    const pointsResult = await loadUserPointsFromFirebase(userIdToUse);
+    let currentData = {
+      totalPoints: 0,
+      dailyPoints: {},
+      pointsHistory: [],
+      achievements: [],
+      streaks: { current: 0, longest: 0 },
+    };
+
+    if (pointsResult.success) {
+      currentData = pointsResult.data;
+    }
+
+    // Get today's date string
+    const today = new Date().toISOString().split("T")[0];
+
+    // Add 1 point for the completed task
+    const pointsToAdd = 1;
+    const newTotalPoints = currentData.totalPoints + pointsToAdd;
+
+    // Update daily points
+    const updatedDailyPoints = {
+      ...currentData.dailyPoints,
+      [today]: (currentData.dailyPoints[today] || 0) + pointsToAdd,
+    };
+
+    // Add to points history
+    const newHistoryEntry = {
+      date: today,
+      timestamp: new Date().toISOString(),
+      points: pointsToAdd,
+      taskId: taskData.id,
+      taskName: taskData.name || taskData.text,
+      taskType: taskData.checklistType || "unknown",
+    };
+
+    const updatedHistory = [
+      ...currentData.pointsHistory,
+      newHistoryEntry,
+    ].slice(-100); // Keep only last 100 entries
+
+    // Calculate streaks
+    const streaks = calculateStreaks(updatedDailyPoints);
+
+    // Save updated points data
+    const updatedPointsData = {
+      totalPoints: newTotalPoints,
+      dailyPoints: updatedDailyPoints,
+      pointsHistory: updatedHistory,
+      achievements: currentData.achievements,
+      streaks: streaks,
+    };
+
+    const saveResult = await saveUserPointsToFirebase(
+      updatedPointsData,
+      userIdToUse
+    );
+
+    if (saveResult.success) {
+      return {
+        success: true,
+        pointsAdded: pointsToAdd,
+        newTotal: newTotalPoints,
+        data: updatedPointsData,
+      };
+    } else {
+      return saveResult;
+    }
+  } catch (error) {
+    console.error("Error adding points for task:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Helper function to calculate streaks
+const calculateStreaks = (dailyPoints) => {
+  const dates = Object.keys(dailyPoints).sort();
+  let currentStreak = 0;
+  let longestStreak = 0;
+  let tempStreak = 0;
+
+  // Calculate current streak (counting backwards from today)
+  const today = new Date();
+  let checkDate = new Date(today);
+
+  while (true) {
+    const dateStr = checkDate.toISOString().split("T")[0];
+    if (dailyPoints[dateStr] && dailyPoints[dateStr] > 0) {
+      currentStreak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  // Calculate longest streak
+  for (let i = 0; i < dates.length; i++) {
+    if (dailyPoints[dates[i]] > 0) {
+      tempStreak++;
+      longestStreak = Math.max(longestStreak, tempStreak);
+    } else {
+      tempStreak = 0;
+    }
+  }
+
+  return {
+    current: currentStreak,
+    longest: Math.max(longestStreak, currentStreak),
+  };
+};
+
 export default app;

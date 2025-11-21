@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import NavigationHeader from "../components/organisms/NavigationHeader/NavigationHeader";
 import { useAuth } from "../contexts/AuthContext";
 import { useChecklistSettings } from "../hooks/useChecklistSettings";
+import { useUserPoints } from "../hooks/useUserPoints";
+import { PointsStats } from "../components";
 
 const ChecklistSettingsPage = () => {
   const { currentUser } = useAuth();
@@ -10,6 +12,7 @@ const ChecklistSettingsPage = () => {
     customChecklists,
     preferredCategories,
     exerciseTimeLimits,
+    sectionDisabled,
     saveCustomChecklists,
     savePreferredCategories,
     savePreferences,
@@ -20,7 +23,15 @@ const ChecklistSettingsPage = () => {
     importChecklists,
   } = useChecklistSettings();
 
-  const [activeSection, setActiveSection] = useState("morning");
+  // User points hook
+  const {
+    pointsData,
+    loading: pointsLoading,
+    error: pointsError,
+  } = useUserPoints();
+
+  const [activeSection, setActiveSection] = useState("points");
+  const [activeExerciseSection, setActiveExerciseSection] = useState("warmup");
   const [editingItem, setEditingItem] = useState(null);
   const [editingSectionGoal, setEditingSectionGoal] = useState(false);
   const [sectionGoalTime, setSectionGoalTime] = useState("");
@@ -39,18 +50,24 @@ const ChecklistSettingsPage = () => {
     useState(preferredCategories);
   const [tempExerciseTimeLimits, setTempExerciseTimeLimits] =
     useState(exerciseTimeLimits);
+  const [tempSectionDisabled, setTempSectionDisabled] = useState({});
 
   const sections = [
+    { key: "points", title: "Points & Progress", icon: "🏆" },
     { key: "morning", title: "Morning Checklist", icon: "🌅" },
     { key: "evening", title: "Evening Checklist", icon: "🌙" },
-    { key: "warmup", title: "Warmup", icon: "🔥" },
-    { key: "gymWorkout", title: "Gym Workout", icon: "🏋️" },
-    { key: "homeWorkout", title: "Home Workout", icon: "🏠" },
-    { key: "cooldown", title: "Cooldown", icon: "❄️" },
+    { key: "exercises", title: "Exercises", icon: "💪" },
     { key: "lunchGoals", title: "Lunch Goals", icon: "🥗" },
     { key: "afterWorkGoals", title: "After Work Goals", icon: "⚡" },
     { key: "dreams", title: "Dreams", icon: "💭" },
     { key: "preferences", title: "Workout Preferences", icon: "⚙️" },
+  ];
+
+  const exerciseSections = [
+    { key: "warmup", title: "Warmup", icon: "🔥" },
+    { key: "gymWorkout", title: "Gym Workout", icon: "🏋️" },
+    { key: "homeWorkout", title: "Home Workout", icon: "🏠" },
+    { key: "cooldown", title: "Cooldown", icon: "❄️" },
   ];
 
   // Update section goal time when active section changes
@@ -68,6 +85,11 @@ const ChecklistSettingsPage = () => {
   useEffect(() => {
     setTempExerciseTimeLimits(exerciseTimeLimits);
   }, [exerciseTimeLimits]);
+
+  // Update temp section disabled when section disabled changes
+  useEffect(() => {
+    setTempSectionDisabled(sectionDisabled);
+  }, [sectionDisabled]);
 
   // Handle window resize for responsive behavior
   useEffect(() => {
@@ -223,9 +245,13 @@ const ChecklistSettingsPage = () => {
     }));
   };
 
-  // Save all preferences (categories and time limits)
+  // Save all preferences (categories, time limits, and section disabled)
   const handleSaveAllPreferences = () => {
-    savePreferences(tempPreferredCategories, tempExerciseTimeLimits);
+    savePreferences(
+      tempPreferredCategories,
+      tempExerciseTimeLimits,
+      tempSectionDisabled
+    );
   };
 
   // Available exercise categories
@@ -748,7 +774,7 @@ const ChecklistSettingsPage = () => {
                 )}
               </div>
 
-              {activeSection !== "preferences" && (
+              {activeSection !== "preferences" && activeSection !== "points" && (
                 <button
                   onClick={() => setShowAddForm(true)}
                   style={{
@@ -947,6 +973,102 @@ const ChecklistSettingsPage = () => {
                     </div>
                   </div>
 
+                  {/* Section Disable Settings */}
+                  <div style={{ marginTop: "40px" }}>
+                    <div style={{ marginBottom: "20px" }}>
+                      <h3
+                        style={{
+                          margin: "0 0 10px 0",
+                          color: "#333",
+                          fontSize: "18px",
+                        }}
+                      >
+                        Section Visibility by Day
+                      </h3>
+                      <p
+                        style={{
+                          color: "#666",
+                          margin: "0 0 15px 0",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Choose which sections to hide on specific days of the
+                        week. Hidden sections won't appear in your daily
+                        planner.
+                      </p>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gap: "15px",
+                        maxWidth: "800px",
+                      }}
+                    >
+                      {daysOfWeek.map((day) => (
+                        <div
+                          key={day.key}
+                          style={{
+                            padding: "15px",
+                            border: "1px solid #dee2e6",
+                            borderRadius: "6px",
+                            backgroundColor: "#f8f9fa",
+                          }}
+                        >
+                          <h4 style={{ margin: "0 0 10px 0", color: "#333" }}>
+                            {day.label}
+                          </h4>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns:
+                                "repeat(auto-fit, minmax(200px, 1fr))",
+                              gap: "8px",
+                            }}
+                          >
+                            {sections.map((section) => (
+                              <label
+                                key={section.key}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                  cursor: "pointer",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    !tempSectionDisabled[day.key]?.[section.key]
+                                  }
+                                  onChange={(e) => {
+                                    const newSectionDisabled = {
+                                      ...tempSectionDisabled,
+                                    };
+                                    if (!newSectionDisabled[day.key]) {
+                                      newSectionDisabled[day.key] = {};
+                                    }
+                                    newSectionDisabled[day.key][section.key] =
+                                      !e.target.checked;
+                                    setTempSectionDisabled(newSectionDisabled);
+                                  }}
+                                  style={{
+                                    width: "16px",
+                                    height: "16px",
+                                  }}
+                                />
+                                <span>
+                                  {section.icon} {section.title}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <div
                     style={{
                       marginTop: "30px",
@@ -975,8 +1097,89 @@ const ChecklistSettingsPage = () => {
               </div>
             )}
 
-            {/* Regular checklist sections - hide for preferences */}
-            {activeSection !== "preferences" && (
+            {/* Points Section */}
+            {activeSection === "points" && (
+              <div style={{ marginTop: "30px" }}>
+                {pointsLoading ? (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "2rem",
+                      color: "#ffffff",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Loading your points...
+                  </div>
+                ) : pointsError ? (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "2rem",
+                      color: "#ff6b6b",
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Error loading points: {pointsError}
+                  </div>
+                ) : (
+                  <>
+                    <PointsStats pointsData={pointsData} />
+
+                    <div
+                      style={{
+                        backgroundColor: "#1a1a1a",
+                        border: "1px solid #333",
+                        padding: "1.5rem",
+                        borderRadius: "8px",
+                        marginTop: "1.5rem",
+                      }}
+                    >
+                      <h3
+                        style={{
+                          margin: "0 0 1rem 0",
+                          color: "#ffffff",
+                          fontSize: "1.25rem",
+                          fontFamily: "'Press Start 2P', monospace",
+                        }}
+                      >
+                        🎯 How Points Work
+                      </h3>
+
+                      <div style={{ color: "#aaa", lineHeight: "1.6" }}>
+                        <p style={{ margin: "0 0 0.75rem 0" }}>
+                          <strong style={{ color: "#ffffff" }}>
+                            • 1 point
+                          </strong>{" "}
+                          = 1 completed task
+                        </p>
+                        <p style={{ margin: "0 0 0.75rem 0" }}>
+                          <strong style={{ color: "#ffffff" }}>Streaks:</strong>{" "}
+                          Complete at least one task per day to maintain your
+                          streak
+                        </p>
+                        <p style={{ margin: "0 0 0.75rem 0" }}>
+                          <strong style={{ color: "#ffffff" }}>
+                            Daily Progress:
+                          </strong>{" "}
+                          Track your consistency and improvement over time
+                        </p>
+                        <p style={{ margin: "0" }}>
+                          <strong style={{ color: "#ffffff" }}>
+                            Challenge Yourself:
+                          </strong>{" "}
+                          Try to beat your longest streak and highest daily
+                          score!
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Regular checklist sections - hide for preferences and points */}
+            {activeSection !== "preferences" && activeSection !== "points" && (
               <>
                 {/* Add New Item Form */}
                 {showAddForm && (

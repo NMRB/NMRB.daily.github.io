@@ -1,0 +1,15 @@
+// ==========================================================================
+// Main Sass Entry Point
+// ==========================================================================
+
+// Foundation - Design tokens and utilities
+@import 'abstracts';
+@import 'base';
+
+// Components - Atomic design system
+@import '../components/atoms/Button/Button.scss';
+@import '../components/atoms/Card/Card.scss';
+// Add more component imports as needed
+
+// Layout and page-specific styles
+@import '../components/WeeklyBreakdown.scss';
