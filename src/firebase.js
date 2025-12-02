@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { logFirebaseError } from "./utils/errorLogger";
 import {
   getFirestore,
   doc,
@@ -95,6 +96,7 @@ export const saveDailyChecklistToFirebase = async (
     return { success: true, date: today, userId: userIdToUse };
   } catch (error) {
     console.error("Error saving to Firebase:", error);
+    logFirebaseError("saveDailyChecklistToFirebase", error);
     return { success: false, error: error.message };
   }
 };
@@ -131,6 +133,7 @@ export const loadDailyChecklistFromFirebase = async (
     }
   } catch (error) {
     console.error("Error loading from Firebase:", error);
+    logFirebaseError("loadDailyChecklistFromFirebase", error);
     return { success: false, error: error.message };
   }
 };
@@ -161,6 +164,7 @@ export const saveChecklistCompletionEvent = async (
     return { success: true, eventId: docRef.id };
   } catch (error) {
     console.error("Error saving checklist event:", error);
+    logFirebaseError("saveChecklistCompletionEvent", error);
     return { success: false, error: error.message };
   }
 };

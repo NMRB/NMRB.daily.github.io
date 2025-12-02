@@ -1,15 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import {
-  morningChecklist as defaultMorningChecklist,
-  eveningChecklist as defaultEveningChecklist,
-  gymWorkoutChecklist as defaultGymWorkoutChecklist,
-  homeWorkoutChecklist as defaultHomeWorkoutChecklist,
-  lunchGoalsChecklist as defaultLunchGoalsChecklist,
-  afterWorkGoalsChecklist as defaultAfterWorkGoalsChecklist,
-  dreamsChecklist as defaultDreamsChecklist,
-  warmupChecklist as defaultWarmupChecklist,
-  cooldownChecklist as defaultCooldownChecklist,
-} from "../data";
+
 import { useFirebaseSync } from "../hooks/useFirebaseSync";
 import { useChecklistSettings } from "../hooks/useChecklistSettings";
 import { useUserPoints } from "../hooks/useUserPoints";
@@ -18,15 +8,20 @@ import {
   getCurrentDay,
   getTodaysTimeLimit,
 } from "../utils/exerciseTimeManager";
-import DailyPlannerPage from "../pages/DailyPlannerPage";
+import { useNavigate } from "react-router-dom";
+import NavigationHeader from "../components/organisms/NavigationHeader/NavigationHeader";
+import DailyPlannerTemplate from "../components/templates/DailyPlannerTemplate/DailyPlannerTemplate";
 
 function DailyPlannerContainer() {
+  const navigate = useNavigate();
+
   // Load custom checklists and preferences
   const {
     customChecklists,
     preferredCategories,
     exerciseTimeLimits,
     sectionDisabled,
+    saveCustomChecklists,
     loading: checklistsLoading,
   } = useChecklistSettings();
 
@@ -102,97 +97,9 @@ function DailyPlannerContainer() {
   };
 
   // Initialize state with stored data or custom checklists
-  const [morningChecklist, setMorningChecklist] = useState(() =>
-    getStoredData(
-      "morningChecklist",
-      customChecklists.morning || defaultMorningChecklist
-    )
-  );
-
-  const [eveningChecklist, setEveningChecklist] = useState(() =>
-    getStoredData(
-      "eveningChecklist",
-      customChecklists.evening || defaultEveningChecklist
-    )
-  );
-
-  // Create the full exercise pool
-  const fullGymExercises = useMemo(() => {
-    const defaultFlattened = [
-      ...defaultGymWorkoutChecklist.warmup,
-      ...defaultGymWorkoutChecklist.main.legs,
-      ...defaultGymWorkoutChecklist.main.chest,
-      ...defaultGymWorkoutChecklist.main.back,
-      ...defaultGymWorkoutChecklist.main.arms,
-      ...defaultGymWorkoutChecklist.main.shoulders,
-      ...defaultGymWorkoutChecklist.cooldown,
-    ];
-    return customChecklists.gymWorkout || defaultFlattened;
-  }, [customChecklists.gymWorkout]);
-
-  // State for filtered gym workout
-  const [gymWorkoutSelection, setGymWorkoutSelection] = useState(null);
-  const [gymWorkoutChecklist, setGymWorkoutChecklist] = useState([]);
-
-  // Create the full home exercise pool
-  const fullHomeExercises = useMemo(() => {
-    const defaultFlattened = [
-      ...defaultHomeWorkoutChecklist.warmup,
-      ...defaultHomeWorkoutChecklist.main,
-      ...defaultHomeWorkoutChecklist.cooldown,
-    ];
-    return customChecklists.homeWorkout || defaultFlattened;
-  }, [customChecklists.homeWorkout]);
-
-  // State for filtered home workout
-  const [homeWorkoutSelection, setHomeWorkoutSelection] = useState(null);
-  const [homeWorkoutChecklist, setHomeWorkoutChecklist] = useState([]);
-
-  const [lunchGoalsChecklist, setLunchGoalsChecklist] = useState(() =>
-    getStoredData(
-      "lunchGoalsChecklist",
-      customChecklists.lunchGoals || defaultLunchGoalsChecklist
-    )
-  );
-
-  const [afterWorkGoalsChecklist, setAfterWorkGoalsChecklist] = useState(() =>
-    getStoredData(
-      "afterWorkGoalsChecklist",
-      customChecklists.afterWorkGoals || defaultAfterWorkGoalsChecklist
-    )
-  );
-
-  const [dreamsChecklist, setDreamsChecklist] = useState(() =>
-    getStoredData(
-      "dreamsChecklist",
-      customChecklists.dreams || defaultDreamsChecklist
-    )
-  );
-
-  const [warmupChecklist, setWarmupChecklist] = useState(() =>
-    getStoredData(
-      "warmupChecklist",
-      customChecklists.warmup || defaultWarmupChecklist
-    )
-  );
-
-  const [cooldownChecklist, setCooldownChecklist] = useState(() =>
-    getStoredData(
-      "cooldownChecklist",
-      customChecklists.cooldown || defaultCooldownChecklist
-    )
-  );
 
   // Time tracking state
-  const [timeTracking, setTimeTracking] = useState(() => ({
-    gymWorkoutTime: getStoredData("gymWorkoutTime", ""),
-    homeWorkoutTime: getStoredData("homeWorkoutTime", ""),
-    lunchTime: getStoredData("lunchTime", ""),
-    afterWorkTime: getStoredData("afterWorkTime", ""),
-    dreamsTime: getStoredData("dreamsTime", ""),
-    warmupTime: getStoredData("warmupTime", ""),
-    cooldownTime: getStoredData("cooldownTime", ""),
-  }));
+  const [timeTracking, setTimeTracking] = useState(() => ({}));
 
   // Weight tracking state
   const [weightInputs, setWeightInputs] = useState({});
@@ -200,102 +107,15 @@ function DailyPlannerContainer() {
   // Firebase sync integration - memoized to prevent unnecessary re-renders
   const checklistData = useMemo(
     () => ({
-      morningChecklist,
-      eveningChecklist,
-      gymWorkoutChecklist,
-      homeWorkoutChecklist,
-      lunchGoalsChecklist,
-      afterWorkGoalsChecklist,
-      dreamsChecklist,
-      warmupChecklist,
-      cooldownChecklist,
       ...timeTracking,
     }),
-    [
-      morningChecklist,
-      eveningChecklist,
-      gymWorkoutChecklist,
-      homeWorkoutChecklist,
-      lunchGoalsChecklist,
-      afterWorkGoalsChecklist,
-      dreamsChecklist,
-      warmupChecklist,
-      cooldownChecklist,
-      timeTracking,
-    ]
+    [timeTracking]
   );
-
-  // Function to regenerate gym workout
-  const regenerateGymWorkout = useCallback(() => {
-    if (
-      !exerciseTimeLimits ||
-      !preferredCategories ||
-      fullGymExercises.length === 0
-    ) {
-      return;
-    }
-
-    const today = getCurrentDay();
-    const timeLimitMinutes = getTodaysTimeLimit(exerciseTimeLimits);
-    const preferredCategory = preferredCategories[today];
-
-    const selection = selectExercisesWithinTimeLimit(
-      fullGymExercises,
-      timeLimitMinutes,
-      preferredCategory,
-      true // randomize
-    );
-
-    setGymWorkoutSelection(selection);
-    setGymWorkoutChecklist(selection.exercises);
-  }, [fullGymExercises, exerciseTimeLimits, preferredCategories]);
-
-  // Function to regenerate home workout
-  const regenerateHomeWorkout = useCallback(() => {
-    if (
-      !exerciseTimeLimits ||
-      !preferredCategories ||
-      fullHomeExercises.length === 0
-    ) {
-      return;
-    }
-
-    const today = getCurrentDay();
-    const timeLimitMinutes = getTodaysTimeLimit(exerciseTimeLimits);
-    const preferredCategory = preferredCategories[today];
-
-    const selection = selectExercisesWithinTimeLimit(
-      fullHomeExercises,
-      timeLimitMinutes,
-      preferredCategory,
-      true // randomize
-    );
-
-    setHomeWorkoutSelection(selection);
-    setHomeWorkoutChecklist(selection.exercises);
-  }, [fullHomeExercises, exerciseTimeLimits, preferredCategories]);
 
   const setters = useMemo(
     () => ({
-      setMorningChecklist,
-      setEveningChecklist,
-      setGymWorkoutChecklist,
-      setHomeWorkoutChecklist,
-      setLunchGoalsChecklist,
-      setAfterWorkGoalsChecklist,
-      setDreamsChecklist,
-      setWarmupChecklist,
-      setCooldownChecklist,
       setGymWorkoutTime: (value) =>
         setTimeTracking((prev) => ({ ...prev, gymWorkoutTime: value })),
-      setHomeWorkoutTime: (value) =>
-        setTimeTracking((prev) => ({ ...prev, homeWorkoutTime: value })),
-      setLunchTime: (value) =>
-        setTimeTracking((prev) => ({ ...prev, lunchTime: value })),
-      setAfterWorkTime: (value) =>
-        setTimeTracking((prev) => ({ ...prev, afterWorkTime: value })),
-      setDreamsTime: (value) =>
-        setTimeTracking((prev) => ({ ...prev, dreamsTime: value })),
       setWarmupTime: (value) =>
         setTimeTracking((prev) => ({ ...prev, warmupTime: value })),
       setCooldownTime: (value) =>
@@ -309,82 +129,6 @@ function DailyPlannerContainer() {
 
   // Use user points system
   const { addPoints } = useUserPoints();
-
-  // Apply time-based filtering to gym workout
-  useEffect(() => {
-    if (
-      !exerciseTimeLimits ||
-      !preferredCategories ||
-      fullGymExercises.length === 0
-    ) {
-      return;
-    }
-
-    const today = getCurrentDay();
-    const timeLimitMinutes = getTodaysTimeLimit(exerciseTimeLimits);
-    const preferredCategory = preferredCategories[today];
-
-    // Check if we need to regenerate (first load or preferences changed)
-    const needsRegeneration =
-      !gymWorkoutSelection ||
-      gymWorkoutSelection.categoryFilter !== preferredCategory ||
-      gymWorkoutSelection.timeLimitMinutes !== timeLimitMinutes;
-
-    if (needsRegeneration) {
-      const selection = selectExercisesWithinTimeLimit(
-        fullGymExercises,
-        timeLimitMinutes,
-        preferredCategory,
-        true // randomize
-      );
-
-      setGymWorkoutSelection(selection);
-      setGymWorkoutChecklist(selection.exercises);
-    }
-  }, [
-    fullGymExercises,
-    exerciseTimeLimits,
-    preferredCategories,
-    gymWorkoutSelection,
-  ]);
-
-  // Apply time-based filtering to home workout
-  useEffect(() => {
-    if (
-      !exerciseTimeLimits ||
-      !preferredCategories ||
-      fullHomeExercises.length === 0
-    ) {
-      return;
-    }
-
-    const today = getCurrentDay();
-    const timeLimitMinutes = getTodaysTimeLimit(exerciseTimeLimits);
-    const preferredCategory = preferredCategories[today];
-
-    // Check if we need to regenerate (first load or preferences changed)
-    const needsRegeneration =
-      !homeWorkoutSelection ||
-      homeWorkoutSelection.categoryFilter !== preferredCategory ||
-      homeWorkoutSelection.timeLimitMinutes !== timeLimitMinutes;
-
-    if (needsRegeneration) {
-      const selection = selectExercisesWithinTimeLimit(
-        fullHomeExercises,
-        timeLimitMinutes,
-        preferredCategory,
-        true // randomize
-      );
-
-      setHomeWorkoutSelection(selection);
-      setHomeWorkoutChecklist(selection.exercises);
-    }
-  }, [
-    fullHomeExercises,
-    exerciseTimeLimits,
-    preferredCategories,
-    homeWorkoutSelection,
-  ]);
 
   // Update checklists when custom checklists change
   useEffect(() => {
@@ -408,90 +152,10 @@ function DailyPlannerContainer() {
       };
 
       // Always update checklists but preserve completion states
-      if (customChecklists.morning) {
-        setMorningChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.morning, prev)
-        );
-      }
-      if (customChecklists.evening) {
-        setEveningChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.evening, prev)
-        );
-      }
-      if (customChecklists.gymWorkout) {
-        setGymWorkoutChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.gymWorkout, prev)
-        );
-      }
-      if (customChecklists.warmup) {
-        setWarmupChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.warmup, prev)
-        );
-      }
-      if (customChecklists.homeWorkout) {
-        setHomeWorkoutChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.homeWorkout, prev)
-        );
-      }
-      if (customChecklists.cooldown) {
-        setCooldownChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.cooldown, prev)
-        );
-      }
-      if (customChecklists.lunchGoals) {
-        setLunchGoalsChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.lunchGoals, prev)
-        );
-      }
-      if (customChecklists.afterWorkGoals) {
-        setAfterWorkGoalsChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.afterWorkGoals, prev)
-        );
-      }
-      if (customChecklists.dreams) {
-        setDreamsChecklist((prev) =>
-          mergeWithCompletionState(customChecklists.dreams, prev)
-        );
-      }
     }
   }, [customChecklists, checklistsLoading]);
 
   // Save data to cookies whenever state changes
-  useEffect(() => {
-    saveData("morningChecklist", morningChecklist);
-  }, [morningChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("eveningChecklist", eveningChecklist);
-  }, [eveningChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("gymWorkoutChecklist", gymWorkoutChecklist);
-  }, [gymWorkoutChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("warmupChecklist", warmupChecklist);
-  }, [warmupChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("homeWorkoutChecklist", homeWorkoutChecklist);
-  }, [homeWorkoutChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("cooldownChecklist", cooldownChecklist);
-  }, [cooldownChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("lunchGoalsChecklist", lunchGoalsChecklist);
-  }, [lunchGoalsChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("afterWorkGoalsChecklist", afterWorkGoalsChecklist);
-  }, [afterWorkGoalsChecklist, saveData]);
-
-  useEffect(() => {
-    saveData("dreamsChecklist", dreamsChecklist);
-  }, [dreamsChecklist, saveData]);
 
   // Save time data to cookies whenever time state changes
   useEffect(() => {
@@ -504,33 +168,12 @@ function DailyPlannerContainer() {
   const createCheckedItemsMap = () => {
     const checkedItems = {};
 
-    morningChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
-
-    eveningChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
-
-    gymWorkoutChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
-
-    homeWorkoutChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
-
-    lunchGoalsChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
-
-    afterWorkGoalsChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
-
-    dreamsChecklist.forEach((item) => {
-      if (item.completed) checkedItems[item.id] = true;
-    });
+    // Add custom tasks
+    if (customChecklists && customChecklists.tasks) {
+      customChecklists.tasks.forEach((item) => {
+        if (item.completed) checkedItems[item.id] = true;
+      });
+    }
 
     return checkedItems;
   };
@@ -596,36 +239,60 @@ function DailyPlannerContainer() {
     };
 
     // Check which checklist contains this item
-    if (morningChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(morningChecklist, setMorningChecklist, "morning");
-    } else if (eveningChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(eveningChecklist, setEveningChecklist, "evening");
-    } else if (gymWorkoutChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(
-        gymWorkoutChecklist,
-        setGymWorkoutChecklist,
-        "gymWorkout"
-      );
-    } else if (homeWorkoutChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(
-        homeWorkoutChecklist,
-        setHomeWorkoutChecklist,
-        "homeWorkout"
-      );
-    } else if (lunchGoalsChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(
-        lunchGoalsChecklist,
-        setLunchGoalsChecklist,
-        "lunchGoals"
-      );
-    } else if (afterWorkGoalsChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(
-        afterWorkGoalsChecklist,
-        setAfterWorkGoalsChecklist,
-        "afterWorkGoals"
-      );
-    } else if (dreamsChecklist.some((item) => item.id === id)) {
-      toggleInChecklist(dreamsChecklist, setDreamsChecklist, "dreams");
+    if (
+      customChecklists &&
+      customChecklists.tasks &&
+      customChecklists.tasks.some((item) => item.id === id)
+    ) {
+      // Handle custom tasks
+      const updatedTasks = customChecklists.tasks.map((item) => {
+        if (item.id === id) {
+          const newCompleted = !item.completed;
+          const updatedItem = { ...item, completed: newCompleted };
+
+          // Log to Firebase
+          logCompletionEvent(
+            newCompleted ? "item_completed" : "item_unchecked",
+            {
+              id: item.id,
+              name: item.text,
+              checklistType: "customTasks",
+              wasCompleted: item.completed,
+              nowCompleted: newCompleted,
+              hour: item.hour,
+              category: item.category,
+            }
+          );
+
+          // Add points if task was completed (not unchecked)
+          if (newCompleted && addPoints) {
+            addPoints({
+              id: item.id,
+              name: item.text,
+              checklistType: "customTasks",
+              category: "custom",
+            })
+              .then((result) => {
+                if (result.success) {
+                  console.log(
+                    `Added ${result.pointsAdded} point(s) for completing "${item.text}". Total: ${result.newTotal}`
+                  );
+                } else {
+                  console.error("Failed to add points:", result.error);
+                }
+              })
+              .catch((error) => {
+                console.error("Error adding points:", error);
+              });
+          }
+
+          return updatedItem;
+        }
+        return item;
+      });
+
+      // Update custom checklists with the new task state
+      saveCustomChecklists({ ...customChecklists, tasks: updatedTasks });
     }
   };
 
@@ -675,12 +342,6 @@ function DailyPlannerContainer() {
       );
     };
 
-    if (gymWorkoutChecklist.some((item) => item.id === exerciseKey)) {
-      updateWeight(gymWorkoutChecklist, setGymWorkoutChecklist);
-    } else if (homeWorkoutChecklist.some((item) => item.id === exerciseKey)) {
-      updateWeight(homeWorkoutChecklist, setHomeWorkoutChecklist);
-    }
-
     // Clear the input after updating
     setWeightInputs((prev) => ({ ...prev, [exerciseKey]: "" }));
   };
@@ -691,36 +352,9 @@ function DailyPlannerContainer() {
       window.confirm("Are you sure you want to reset all progress for today?")
     ) {
       // Reset all checklists to unchecked state
-      setMorningChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
-      setEveningChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
-      setGymWorkoutChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
-      setHomeWorkoutChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
-      setLunchGoalsChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
-      setAfterWorkGoalsChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
-      setDreamsChecklist((prev) =>
-        prev.map((item) => ({ ...item, completed: false }))
-      );
 
       // Reset time tracking
-      setTimeTracking({
-        gymWorkoutTime: "",
-        homeWorkoutTime: "",
-        lunchTime: "",
-        afterWorkTime: "",
-        dreamsTime: "",
-      });
+      setTimeTracking({});
 
       // Reset weight inputs
       setWeightInputs({});
@@ -738,28 +372,8 @@ function DailyPlannerContainer() {
     const now = new Date();
     const currentHour = now.getHours();
 
-    let targetSectionId = "";
-
-    // 6 AM - Morning checklist
-    if (currentHour >= 6 && currentHour < 7) {
-      targetSectionId = "morning-checklist";
-    }
-    // 7 AM - Gym workout
-    else if (currentHour >= 7 && currentHour < 13) {
-      targetSectionId = "gym-workout";
-    }
-    // 1 PM (13:00) - Lunch goals
-    else if (currentHour >= 13 && currentHour < 19) {
-      targetSectionId = "lunch-goals";
-    }
-    // 7 PM (19:00) - Evening checklist
-    else if (currentHour >= 19) {
-      targetSectionId = "evening-checklist";
-    }
-    // Before 6 AM - Default to morning
-    else {
-      targetSectionId = "morning-checklist";
-    }
+    // No specific sections to scroll to anymore
+    const targetSectionId = "";
 
     // Scroll to the target section with smooth behavior
     setTimeout(() => {
@@ -795,7 +409,6 @@ function DailyPlannerContainer() {
   // Destructure time tracking values
   const {
     gymWorkoutTime,
-    homeWorkoutTime,
     warmupTime: warmupWorkoutTime,
     cooldownTime: cooldownWorkoutTime,
   } = timeTracking;
@@ -808,120 +421,105 @@ function DailyPlannerContainer() {
     return sectionDisabled?.[currentDay]?.[sectionKey] || false;
   };
 
+  // Get custom tasks for a specific hour
+  const getTasksForHour = (hour) => {
+    if (!customChecklists || !customChecklists.tasks) return [];
+
+    return customChecklists.tasks.filter((task) => {
+      // Handle both old (startHour) and new (hour) task structures
+      const taskHour = task.hour || task.startHour;
+      return taskHour === hour;
+    });
+  };
+
+  // Create a custom task section
+  const createTaskSection = (tasks, timeRange, sectionTitle) => {
+    if (!tasks || tasks.length === 0) return null;
+
+    return {
+      title: sectionTitle,
+      timeIndicator: timeRange,
+      items: tasks.map((task) => ({
+        ...task,
+        key: task.id,
+        text: `[${task.category?.toUpperCase() || "TASK"}] ${task.text}`,
+        completed: task.completed || false,
+      })),
+      isCustomTasks: true,
+    };
+  };
+
   // Prepare all sections data for the template
-  const allSections = [
-    {
-      title: "Morning Checklist",
-      timeIndicator: getTimeIndicator("6:00 - 7:00", "morning"),
-      items: morningChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.text,
-      })),
-    },
-    {
-      title: "Warmup",
-      timeIndicator: getTimeIndicator(
-        `7:00 - 7:15 • Total: ${warmupWorkoutTime}`,
-        "warmup"
-      ),
-      items: warmupChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.name || item.text,
-      })),
-    },
-    {
-      title: "Gym Workout",
-      timeIndicator: getTimeIndicator(
-        `7:15 - 13:00 • Total: ${gymWorkoutTime}`,
-        "gymWorkout"
-      ),
-      items: gymWorkoutChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.name || item.text,
-        hasWeight:
-          item.category &&
-          ["Legs", "Chest", "Back", "Arms", "Shoulders"].includes(
-            item.category
-          ),
-      })),
-      showWeightTracking: true,
-    },
-    {
-      title: "Home Workout",
-      timeIndicator: getTimeIndicator("7:00 - 13:00", "homeWorkout"),
-      items: homeWorkoutChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.name || item.text,
-      })),
-    },
-    {
-      title: "Cooldown",
-      timeIndicator: getTimeIndicator(
-        `13:00 - 13:15 • Total: ${cooldownWorkoutTime}`,
-        "cooldown"
-      ),
-      items: cooldownChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.name || item.text,
-      })),
-    },
-    {
-      title: "Lunch Goals",
-      timeIndicator: getTimeIndicator("13:15 - 19:00", "lunchGoals"),
-      items: lunchGoalsChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.text,
-      })),
-    },
-    {
-      title: "After Work Goals",
-      timeIndicator: getTimeIndicator("17:00 - 21:00", "afterWorkGoals"),
-      items: afterWorkGoalsChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.text,
-      })),
-    },
-    {
-      title: "Dreams",
-      timeIndicator: getTimeIndicator("21:00 - 23:00", "dreams"),
-      items: dreamsChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.text,
-      })),
-    },
-    {
-      title: "Evening Checklist",
-      timeIndicator: getTimeIndicator("19:00 - 23:00", "evening"),
-      items: eveningChecklist.map((item) => ({
-        ...item,
-        key: item.id,
-        text: item.text,
-      })),
-    },
-  ];
+  const buildSectionsWithTasks = () => {
+    const baseSections = [];
+
+    // Add custom task sections at appropriate time slots
+    const sectionsWithTasks = [...baseSections];
+
+    // Insert task sections for individual hours
+    if (
+      customChecklists &&
+      customChecklists.tasks &&
+      customChecklists.tasks.length > 0
+    ) {
+      // Create individual hour slots for each task
+      const tasksByHour = {};
+      if (customChecklists.tasks) {
+        customChecklists.tasks.forEach((task) => {
+          // Handle both old (startHour) and new (hour) task structures
+          const taskHour = task.hour || task.startHour;
+          if (taskHour !== undefined) {
+            if (!tasksByHour[taskHour]) {
+              tasksByHour[taskHour] = [];
+            }
+            // Ensure task has the new structure
+            const normalizedTask = {
+              ...task,
+              hour: taskHour,
+              category: task.category || "other",
+            };
+            tasksByHour[taskHour].push(normalizedTask);
+          }
+        });
+      }
+
+      // Sort hours to maintain chronological order
+      const sortedHours = Object.keys(tasksByHour)
+        .map(Number)
+        .sort((a, b) => a - b);
+
+      let insertOffset = 0;
+      sortedHours.forEach((hour) => {
+        const tasks = tasksByHour[hour];
+        if (tasks && tasks.length > 0) {
+          const taskSection = createTaskSection(
+            tasks,
+            `${String(hour).padStart(2, "0")}:00`,
+            `${String(hour).padStart(2, "0")}:00 Tasks`
+          );
+          if (taskSection) {
+            // Insert task sections in chronological order
+            const insertPosition = hour < 12 ? 0 : sectionsWithTasks.length;
+            sectionsWithTasks.splice(
+              insertPosition + insertOffset,
+              0,
+              taskSection
+            );
+            insertOffset++;
+          }
+        }
+      });
+    }
+
+    return sectionsWithTasks;
+  };
+
+  const allSections = buildSectionsWithTasks();
 
   // Filter sections based on disabled settings for current day
   const sections = allSections.filter((section, index) => {
     // Map sections to their keys based on order
-    const sectionKeys = [
-      "morning", // Morning Checklist
-      "warmup", // Warmup
-      "gymWorkout", // Gym Workout
-      "homeWorkout", // Home Workout
-      "cooldown", // Cooldown
-      "lunchGoals", // Lunch Goals
-      "afterWorkGoals", // After Work Goals
-      "dreams", // Dreams
-      "evening", // Evening Checklist
-    ];
+    const sectionKeys = [];
 
     const sectionKey = sectionKeys[index];
     return sectionKey ? !isSectionDisabled(sectionKey) : true;
@@ -968,22 +566,22 @@ function DailyPlannerContainer() {
   }
 
   return (
-    <DailyPlannerPage
-      sections={sections}
-      checkedItems={createCheckedItemsMap()}
-      onItemToggle={handleItemToggle}
-      timeTracking={timeTracking}
-      onTimeChange={handleTimeChange}
-      weightInputs={weightInputs}
-      onWeightChange={handleWeightChange}
-      onUpdateWeight={handleUpdateWeight}
-      onResetDay={resetDay}
-      onScrollToActive={scrollToActiveSection}
-      gymWorkoutSelection={gymWorkoutSelection}
-      onRegenerateGymWorkout={regenerateGymWorkout}
-      homeWorkoutSelection={homeWorkoutSelection}
-      onRegenerateHomeWorkout={regenerateHomeWorkout}
-    />
+    <>
+      <NavigationHeader />
+      <DailyPlannerTemplate
+        sections={sections}
+        checkedItems={createCheckedItemsMap()}
+        onItemToggle={handleItemToggle}
+        timeTracking={timeTracking}
+        onTimeChange={handleTimeChange}
+        weightInputs={weightInputs}
+        onWeightChange={handleWeightChange}
+        onUpdateWeight={handleUpdateWeight}
+        onShowWeeklyBreakdown={() => navigate("/weekly")}
+        onResetDay={resetDay}
+        onScrollToActive={scrollToActiveSection}
+      />
+    </>
   );
 }
 

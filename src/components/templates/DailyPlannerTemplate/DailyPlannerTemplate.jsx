@@ -17,8 +17,6 @@ const DailyPlannerTemplate = ({
   onScrollToActive,
   gymWorkoutSelection,
   onRegenerateGymWorkout,
-  homeWorkoutSelection,
-  onRegenerateHomeWorkout,
 }) => {
   return (
     <div className="daily-planner-template">
@@ -33,19 +31,12 @@ const DailyPlannerTemplate = ({
           const isGymWorkout = section.title
             ?.toLowerCase()
             .includes("gym workout");
-          const isHomeWorkout = section.title
-            ?.toLowerCase()
-            .includes("home workout");
-
           let workoutSelection = null;
           let onRegenerateWorkout = null;
 
           if (isGymWorkout) {
             workoutSelection = gymWorkoutSelection;
             onRegenerateWorkout = onRegenerateGymWorkout;
-          } else if (isHomeWorkout) {
-            workoutSelection = homeWorkoutSelection;
-            onRegenerateWorkout = onRegenerateHomeWorkout;
           }
 
           return (

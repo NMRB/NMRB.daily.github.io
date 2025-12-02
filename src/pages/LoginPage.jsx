@@ -50,157 +50,43 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#f5f5f5",
-        padding: "20px",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "40px",
-          borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-          width: "100%",
-          maxWidth: "400px",
-        }}
-      >
-        <h1
-          style={{
-            textAlign: "center",
-            marginBottom: "30px",
-            color: "#333",
-            fontSize: "24px",
-          }}
-        >
-          Welcome Back
-        </h1>
+    <div>
+      <div>
+        <h1>Welcome Back</h1>
 
-        {error && (
-          <div
-            style={{
-              backgroundColor: "#fee",
-              color: "#c33",
-              padding: "10px",
-              borderRadius: "4px",
-              marginBottom: "20px",
-              border: "1px solid #fcc",
-            }}
-          >
-            {error}
-          </div>
-        )}
+        {error && <div>{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "20px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "5px",
-                fontWeight: "bold",
-                color: "#333",
-              }}
-            >
-              Email
-            </label>
+          <div>
+            <label>Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                fontSize: "16px",
-                boxSizing: "border-box",
-              }}
               placeholder="Enter your email"
               required
             />
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "5px",
-                fontWeight: "bold",
-                color: "#333",
-              }}
-            >
-              Password
-            </label>
+          <div>
+            <label>Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                fontSize: "16px",
-                boxSizing: "border-box",
-              }}
               placeholder="Enter your password"
               required
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: loading ? "#ccc" : "#007bff",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              fontSize: "16px",
-              cursor: loading ? "not-allowed" : "pointer",
-              marginBottom: "20px",
-            }}
-          >
+          <button type="submit" disabled={loading}>
             {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
-        <div
-          style={{
-            textAlign: "center",
-            margin: "20px 0",
-            color: "#666",
-          }}
-        >
-          or
-        </div>
+        <div>or</div>
 
-        <button
-          onClick={handleGoogleLogin}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "12px",
-            backgroundColor: "#fff",
-            color: "#333",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "16px",
-            cursor: loading ? "not-allowed" : "pointer",
-            marginBottom: "20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "10px",
-          }}
-        >
+        <button onClick={handleGoogleLogin} disabled={loading}>
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
@@ -222,18 +108,9 @@ const LoginPage = () => {
           {loading ? "Signing In..." : "Continue with Google"}
         </button>
 
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <span style={{ color: "#666" }}>Don't have an account? </span>
-          <Link
-            to="/register"
-            style={{
-              color: "#007bff",
-              textDecoration: "none",
-              fontWeight: "bold",
-            }}
-          >
-            Sign up
-          </Link>
+        <div>
+          <span>Don't have an account? </span>
+          <Link to="/register">Sign up</Link>
         </div>
       </div>
     </div>

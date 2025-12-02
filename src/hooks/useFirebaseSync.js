@@ -4,6 +4,7 @@ import {
   loadDailyChecklistFromFirebase,
   saveChecklistCompletionEvent,
 } from "../firebase";
+import { logFirebaseError } from "../utils/errorLogger";
 
 export const useFirebaseSync = (checklistData, setters) => {
   const isInitialized = useRef(false);
@@ -20,46 +21,8 @@ export const useFirebaseSync = (checklistData, setters) => {
           const firebaseData = result.data;
 
           // Only update if the Firebase data has checklist items
-          if (firebaseData.morningChecklist) {
-            setters.setMorningChecklist(firebaseData.morningChecklist);
-          }
-          if (firebaseData.eveningChecklist) {
-            setters.setEveningChecklist(firebaseData.eveningChecklist);
-          }
-          if (firebaseData.gymWorkoutChecklist) {
-            setters.setGymWorkoutChecklist(firebaseData.gymWorkoutChecklist);
-          }
-          if (firebaseData.homeWorkoutChecklist) {
-            setters.setHomeWorkoutChecklist(firebaseData.homeWorkoutChecklist);
-          }
-          if (firebaseData.lunchGoalsChecklist) {
-            setters.setLunchGoalsChecklist(firebaseData.lunchGoalsChecklist);
-          }
-          if (firebaseData.afterWorkGoalsChecklist) {
-            setters.setAfterWorkGoalsChecklist(
-              firebaseData.afterWorkGoalsChecklist
-            );
-          }
-          if (firebaseData.dreamsChecklist) {
-            setters.setDreamsChecklist(firebaseData.dreamsChecklist);
-          }
 
           // Update time data if available
-          if (firebaseData.gymWorkoutTime !== undefined) {
-            setters.setGymWorkoutTime(firebaseData.gymWorkoutTime);
-          }
-          if (firebaseData.homeWorkoutTime !== undefined) {
-            setters.setHomeWorkoutTime(firebaseData.homeWorkoutTime);
-          }
-          if (firebaseData.lunchTime !== undefined) {
-            setters.setLunchTime(firebaseData.lunchTime);
-          }
-          if (firebaseData.afterWorkTime !== undefined) {
-            setters.setAfterWorkTime(firebaseData.afterWorkTime);
-          }
-          if (firebaseData.dreamsTime !== undefined) {
-            setters.setDreamsTime(firebaseData.dreamsTime);
-          }
 
           if (forceLoad || !hasLoadedOnce.current) {
             console.log("Successfully loaded data from Firebase");
@@ -67,6 +30,7 @@ export const useFirebaseSync = (checklistData, setters) => {
         }
       } catch (error) {
         console.error("Error loading from Firebase:", error);
+        logFirebaseError("useFirebaseSync.loadFromFirebase", error);
       }
     },
     [setters]
@@ -90,6 +54,7 @@ export const useFirebaseSync = (checklistData, setters) => {
           }
         } catch (error) {
           console.error("Auto-save failed:", error);
+          logFirebaseError("useFirebaseSync.saveToFirebase", error);
         }
       };
 
@@ -115,6 +80,7 @@ export const useFirebaseSync = (checklistData, setters) => {
       });
     } catch (error) {
       console.error("Error logging completion event:", error);
+      logFirebaseError("useFirebaseSync.logCompletionEvent", error);
     }
   }, []);
 
@@ -140,15 +106,6 @@ export const useFirebaseSync = (checklistData, setters) => {
     checklistData.morningChecklist,
     checklistData.eveningChecklist,
     checklistData.gymWorkoutChecklist,
-    checklistData.homeWorkoutChecklist,
-    checklistData.lunchGoalsChecklist,
-    checklistData.afterWorkGoalsChecklist,
-    checklistData.dreamsChecklist,
-    checklistData.gymWorkoutTime,
-    checklistData.homeWorkoutTime,
-    checklistData.lunchTime,
-    checklistData.afterWorkTime,
-    checklistData.dreamsTime,
     saveToFirebase,
   ]);
 

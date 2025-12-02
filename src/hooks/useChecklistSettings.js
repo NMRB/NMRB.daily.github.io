@@ -8,17 +8,6 @@ import {
   saveSectionDisabledToFirebase,
   loadSectionDisabledFromFirebase,
 } from "../firebase";
-import {
-  morningChecklist as defaultMorningChecklist,
-  eveningChecklist as defaultEveningChecklist,
-  gymWorkoutChecklist as defaultGymWorkoutChecklist,
-  homeWorkoutChecklist as defaultHomeWorkoutChecklist,
-  lunchGoalsChecklist as defaultLunchGoalsChecklist,
-  afterWorkGoalsChecklist as defaultAfterWorkGoalsChecklist,
-  dreamsChecklist as defaultDreamsChecklist,
-  warmupChecklist as defaultWarmupChecklist,
-  cooldownChecklist as defaultCooldownChecklist,
-} from "../data";
 
 export const useChecklistSettings = () => {
   const { currentUser } = useAuth();
@@ -41,40 +30,83 @@ export const useChecklistSettings = () => {
     saturday: "90",
     sunday: "90",
   });
+  const [workoutTimes, setWorkoutTimes] = useState({
+    monday: "07:00",
+    tuesday: "07:00",
+    wednesday: "07:00",
+    thursday: "07:00",
+    friday: "07:00",
+    saturday: "08:00",
+    sunday: "08:00",
+  });
   const [sectionDisabled, setSectionDisabled] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   // Default checklists structure
   const getDefaultChecklists = useCallback(() => {
-    // Flatten gym workout checklist
-    const flattenedGymWorkout = [
-      ...defaultGymWorkoutChecklist.warmup,
-      ...defaultGymWorkoutChecklist.main.legs,
-      ...defaultGymWorkoutChecklist.main.chest,
-      ...defaultGymWorkoutChecklist.main.back,
-      ...defaultGymWorkoutChecklist.main.arms,
-      ...defaultGymWorkoutChecklist.main.shoulders,
-      ...defaultGymWorkoutChecklist.cooldown,
-    ];
-
-    // Flatten home workout checklist
-    const flattenedHomeWorkout = [
-      ...defaultHomeWorkoutChecklist.warmup,
-      ...defaultHomeWorkoutChecklist.main,
-      ...defaultHomeWorkoutChecklist.cooldown,
+    // Default custom tasks for new users
+    const defaultTasks = [
+      {
+        id: "task_morning_1",
+        text: "Drink a glass of water",
+        hour: 6,
+        category: "health",
+        completed: false,
+      },
+      {
+        id: "task_morning_2",
+        text: "Check daily weather",
+        hour: 7,
+        category: "personal",
+        completed: false,
+      },
+      {
+        id: "task_midday_1",
+        text: "Take a 10-minute walk",
+        hour: 12,
+        category: "fitness",
+        completed: false,
+      },
+      {
+        id: "task_midday_2",
+        text: "Healthy lunch break",
+        hour: 11,
+        category: "health",
+        completed: false,
+      },
+      {
+        id: "task_afternoon_1",
+        text: "Review daily progress",
+        hour: 15,
+        category: "work",
+        completed: false,
+      },
+      {
+        id: "task_afternoon_2",
+        text: "Prep for tomorrow",
+        hour: 16,
+        category: "work",
+        completed: false,
+      },
+      {
+        id: "task_evening_1",
+        text: "Call family/friends",
+        hour: 18,
+        category: "social",
+        completed: false,
+      },
+      {
+        id: "task_evening_2",
+        text: "Tidy up workspace",
+        hour: 19,
+        category: "household",
+        completed: false,
+      },
     ];
 
     return {
-      morning: defaultMorningChecklist,
-      evening: defaultEveningChecklist,
-      gymWorkout: flattenedGymWorkout,
-      homeWorkout: flattenedHomeWorkout,
-      lunchGoals: defaultLunchGoalsChecklist,
-      afterWorkGoals: defaultAfterWorkGoalsChecklist,
-      dreams: defaultDreamsChecklist,
-      warmup: defaultWarmupChecklist,
-      cooldown: defaultCooldownChecklist,
+      tasks: defaultTasks,
     };
   }, []);
 
@@ -134,6 +166,19 @@ export const useChecklistSettings = () => {
               sunday: preferencesResult.data.exerciseTimeLimits.sunday || "90",
             });
           }
+
+          if (preferencesResult.data.workoutTimes) {
+            setWorkoutTimes({
+              monday: preferencesResult.data.workoutTimes.monday || "07:00",
+              tuesday: preferencesResult.data.workoutTimes.tuesday || "07:00",
+              wednesday:
+                preferencesResult.data.workoutTimes.wednesday || "07:00",
+              thursday: preferencesResult.data.workoutTimes.thursday || "07:00",
+              friday: preferencesResult.data.workoutTimes.friday || "07:00",
+              saturday: preferencesResult.data.workoutTimes.saturday || "08:00",
+              sunday: preferencesResult.data.workoutTimes.sunday || "08:00",
+            });
+          }
         }
 
         if (sectionDisabledResult.success && sectionDisabledResult.data) {
@@ -177,12 +222,13 @@ export const useChecklistSettings = () => {
     [currentUser]
   );
 
-  // Save preferences (categories and time limits) to Firebase
+  // Save preferences (categories, time limits, and workout times) to Firebase
   const savePreferences = useCallback(
     async (
       newPreferredCategories,
       newExerciseTimeLimits,
-      newSectionDisabled
+      newSectionDisabled,
+      newWorkoutTimes
     ) => {
       if (!currentUser) {
         setError("Must be logged in to save preferences");
@@ -194,6 +240,7 @@ export const useChecklistSettings = () => {
         const preferencesData = {
           ...newPreferredCategories,
           exerciseTimeLimits: newExerciseTimeLimits,
+          workoutTimes: newWorkoutTimes || workoutTimes,
         };
 
         // Save preferences and section disabled settings in parallel
@@ -208,6 +255,9 @@ export const useChecklistSettings = () => {
         if (results.every((result) => result.success)) {
           setPreferredCategories(newPreferredCategories);
           setExerciseTimeLimits(newExerciseTimeLimits);
+          if (newWorkoutTimes) {
+            setWorkoutTimes(newWorkoutTimes);
+          }
           if (newSectionDisabled !== undefined) {
             setSectionDisabled(newSectionDisabled);
           }
@@ -220,7 +270,7 @@ export const useChecklistSettings = () => {
         setError("Failed to save preferences. Please try again.");
       }
     },
-    [currentUser]
+    [currentUser, workoutTimes]
   );
 
   // Save preferred categories (backward compatibility)
@@ -265,13 +315,23 @@ export const useChecklistSettings = () => {
     return JSON.stringify(customChecklists) !== JSON.stringify(defaults);
   }, [customChecklists, getDefaultChecklists]);
 
-  // Export checklists as JSON
+  // Export all settings as JSON (checklists + preferences)
   const exportChecklists = useCallback(() => {
-    const dataStr = JSON.stringify(customChecklists, null, 2);
+    const allSettingsData = {
+      customChecklists,
+      preferredCategories,
+      exerciseTimeLimits,
+      workoutTimes,
+      sectionDisabled,
+      exportDate: new Date().toISOString(),
+      version: "2.0", // Version for backward compatibility
+    };
+
+    const dataStr = JSON.stringify(allSettingsData, null, 2);
     const dataUri =
       "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
 
-    const exportFileDefaultName = `checklist-settings-${
+    const exportFileDefaultName = `daily-planner-settings-${
       new Date().toISOString().split("T")[0]
     }.json`;
 
@@ -279,49 +339,105 @@ export const useChecklistSettings = () => {
     linkElement.setAttribute("href", dataUri);
     linkElement.setAttribute("download", exportFileDefaultName);
     linkElement.click();
-  }, [customChecklists]);
+  }, [
+    customChecklists,
+    preferredCategories,
+    exerciseTimeLimits,
+    workoutTimes,
+    sectionDisabled,
+  ]);
 
-  // Import checklists from JSON
+  // Import complete settings from JSON
   const importChecklists = useCallback(
     async (jsonData) => {
       try {
         const imported = JSON.parse(jsonData);
 
-        // Validate the structure
-        const requiredSections = [
-          "morning",
-          "evening",
-          "gymWorkout",
-          "homeWorkout",
-          "lunchGoals",
-          "afterWorkGoals",
-          "dreams",
-        ];
-        const hasAllSections = requiredSections.every(
-          (section) => imported[section] && Array.isArray(imported[section])
-        );
+        // Check if this is new format (v2.0) or legacy format
+        const isNewFormat = imported.version && imported.customChecklists;
 
-        if (!hasAllSections) {
-          throw new Error(
-            "Invalid checklist format. Missing required sections."
+        if (isNewFormat) {
+          // New format - import all settings
+          const promises = [];
+
+          // Import checklists if present
+          if (imported.customChecklists) {
+            promises.push(saveCustomChecklists(imported.customChecklists));
+          }
+
+          // Import preferences if present
+          if (
+            imported.preferredCategories ||
+            imported.exerciseTimeLimits ||
+            imported.workoutTimes
+          ) {
+            const newPreferredCategories =
+              imported.preferredCategories || preferredCategories;
+            const newExerciseTimeLimits =
+              imported.exerciseTimeLimits || exerciseTimeLimits;
+            const newWorkoutTimes = imported.workoutTimes || workoutTimes;
+            const newSectionDisabled =
+              imported.sectionDisabled || sectionDisabled;
+
+            promises.push(
+              savePreferences(
+                newPreferredCategories,
+                newExerciseTimeLimits,
+                newSectionDisabled,
+                newWorkoutTimes
+              )
+            );
+          }
+
+          await Promise.all(promises);
+        } else {
+          // Legacy format - validate and import only checklists
+          const requiredSections = [
+            "morning",
+            "evening",
+            "gymWorkout",
+            "lunchGoals",
+            "afterWorkGoals",
+          ]; // Check if it has the old structure with individual sections
+          const hasLegacySections = requiredSections.some(
+            (section) => imported[section] && Array.isArray(imported[section])
           );
+
+          if (hasLegacySections) {
+            // Remove homeWorkout if it exists in legacy data
+            if (imported.homeWorkout) {
+              delete imported.homeWorkout;
+            }
+            await saveCustomChecklists(imported);
+          } else {
+            throw new Error(
+              "Invalid settings format. Please export settings from the latest version."
+            );
+          }
         }
 
-        await saveCustomChecklists(imported);
         return { success: true };
       } catch (err) {
-        console.error("Error importing checklists:", err);
-        setError(`Failed to import checklists: ${err.message}`);
+        console.error("Error importing settings:", err);
+        setError(`Failed to import settings: ${err.message}`);
         return { success: false, error: err.message };
       }
     },
-    [saveCustomChecklists]
+    [
+      saveCustomChecklists,
+      savePreferences,
+      preferredCategories,
+      exerciseTimeLimits,
+      workoutTimes,
+      sectionDisabled,
+    ]
   );
 
   return {
     customChecklists,
     preferredCategories,
     exerciseTimeLimits,
+    workoutTimes,
     sectionDisabled,
     loading,
     error,
